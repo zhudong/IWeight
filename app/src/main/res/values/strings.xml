@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">IWeight</string>
+    
+    <string name="string_previous_page">上翻</string>
+    <string name="string_next_page">下翻</string>
+    <string name="string_delete">删除</string>
 </resources>
