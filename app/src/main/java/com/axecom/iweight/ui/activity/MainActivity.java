@@ -11,9 +11,15 @@ import android.widget.TextView;
 
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
+import com.axecom.iweight.net.RetrofitFactory;
+import com.axecom.iweight.utils.LogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.Observer;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
 
 public class MainActivity extends BaseActivity {
 
@@ -38,11 +44,39 @@ public class MainActivity extends BaseActivity {
         }
         commodityAdapter = new CommodityAdapter(this, list);
         commoditysListView.setAdapter(commodityAdapter);
+        test();
     }
 
     @Override
     public void onClick(View v) {
 
+    }
+
+    public void test(){
+       RetrofitFactory.getInstance().API()
+               .test()
+               .compose(this.<String>setThread())
+               .subscribe(new Observer<String>() {
+                   @Override
+                   public void onSubscribe(@NonNull Disposable d) {
+
+                   }
+
+                   @Override
+                   public void onNext(@NonNull String s) {
+                       LogUtils.d(s);
+                   }
+
+                   @Override
+                   public void onError(@NonNull Throwable e) {
+
+                   }
+
+                   @Override
+                   public void onComplete() {
+
+                   }
+               });
     }
 
     class CommodityAdapter extends BaseAdapter{

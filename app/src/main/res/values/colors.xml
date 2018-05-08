@@ -7,8 +7,10 @@
     <color name="title_bar_black_dark">#DF4213</color>
     <color name="default_bg">#F1F1F1</color>
     <color name="green_218868">#218868</color>
-    <color name="green_3CB371">#3CB371</color>
+    <color name="green_3CB371">#009966</color>
+    <color name="green_008B00">#008B00</color>
     <color name="white">#ffffff</color>
     <color name="black">#000</color>
     <color name="gray_ccc">#CCCCCC</color>
+    <color name="gray_555">#555555</color>
 </resources>
