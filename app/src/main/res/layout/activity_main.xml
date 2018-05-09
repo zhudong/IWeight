@@ -9,23 +9,65 @@
 
     <LinearLayout
         style="@style/layout_style"
-        android:layout_width="match_parent"
+        android:layout_width="720dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:padding="5dp">
 
-        <GridView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="5dp"
+            android:background="@color/black" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <GridView
+                android:id="@+id/main_commoditys_grid_view"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:horizontalSpacing="5dp"
+                android:numColumns="5"
+                android:verticalSpacing="5dp" />
+
+            <Button
+                android:layout_marginBottom="13dp"
+                android:layout_width="135dp"
+                android:layout_height="100dp"
+                android:layout_alignParentBottom="true"
+                android:layout_toLeftOf="@+id/main_grid_next_btn"
+                android:background="@drawable/shape_btn_bg"
+                android:text="@string/string_previous_page"
+                android:textColor="@color/white"
+                android:textSize="25sp" />
+
+            <Button
+                android:layout_marginBottom="13dp"
+                android:layout_marginRight="1dp"
+                android:id="@+id/main_grid_next_btn"
+                android:layout_width="135dp"
+                android:layout_height="100dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginLeft="9dp"
+                android:background="@drawable/shape_btn_bg"
+                android:text="@string/string_next_page"
+                android:textColor="@color/white"
+                android:textSize="25sp" />
+        </RelativeLayout>
     </LinearLayout>
 
     <LinearLayout
         style="@style/layout_style"
-        android:layout_width="match_parent"
+        android:layout_width="565dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
         android:orientation="vertical"
         android:padding="5dp">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
@@ -162,11 +204,12 @@
 
 
         </LinearLayout>
+
         <LinearLayout
-            android:layout_marginTop="10dp"
-            android:background="@color/gray_ccc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@color/gray_ccc"
             android:orientation="horizontal">
 
             <TextView
@@ -191,7 +234,8 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="数量"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:visibility="gone" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -217,64 +261,73 @@
                 android:text="操作"
                 android:textColor="@color/black" />
         </LinearLayout>
+
         <ListView
             android:id="@+id/main_commoditys_list_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
 
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/gray_ccc"/>
+            android:background="@color/gray_ccc" />
+
         <LinearLayout
-            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:orientation="horizontal">
+
             <LinearLayout
-                android:gravity="center"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:layout_weight="1">
-            <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="总重："
-            android:textColor="@color/black"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="10.75 kg"
-                android:textColor="@color/black"/>
-            <TextView
-                android:layout_marginLeft="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="总货款："
-                android:textColor="@color/black"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="125.50 元"
-                android:textColor="@color/black"/>
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="总重："
+                    android:textColor="@color/black" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="10.75 kg"
+                    android:textColor="@color/black" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:text="总货款："
+                    android:textColor="@color/black" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="125.50 元"
+                    android:textColor="@color/black" />
             </LinearLayout>
+
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/shape_btn_bg"
                 android:text="@string/string_previous_page"
                 android:textColor="@color/white"
-                android:textSize="25sp"/>
+                android:textSize="25sp" />
+
             <Button
-                android:layout_marginLeft="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
                 android:background="@drawable/shape_btn_bg"
                 android:text="@string/string_next_page"
                 android:textColor="@color/white"
-                android:textSize="25sp"/>
+                android:textSize="25sp" />
         </LinearLayout>
     </LinearLayout>
 
@@ -283,7 +336,6 @@
         style="@style/layout_style"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
         android:orientation="vertical">
 
 

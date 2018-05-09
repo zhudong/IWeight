@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -25,12 +26,16 @@ public class MainActivity extends BaseActivity {
 
     private View rootView;
 
+    private GridView commoditysGridView;
     private ListView commoditysListView;
     private CommodityAdapter commodityAdapter;
+    private GridAdapter gridAdapter;
 
     @Override
     public View setInitView() {
         rootView = LayoutInflater.from(this).inflate(R.layout.activity_main, null);
+
+        commoditysGridView = rootView.findViewById(R.id.main_commoditys_grid_view);
         commoditysListView = rootView.findViewById(R.id.main_commoditys_list_view);
 
         return rootView;
@@ -44,6 +49,16 @@ public class MainActivity extends BaseActivity {
         }
         commodityAdapter = new CommodityAdapter(this, list);
         commoditysListView.setAdapter(commodityAdapter);
+
+        List<String> list2 = new ArrayList<>();
+        for (int i = 0; i < 23; i++) {
+            list2.add("白菜" + i);
+        }
+        list2.add("上翻");
+        list2.add("下翻");
+        gridAdapter = new GridAdapter(this, list2);
+        commoditysGridView.setAdapter(gridAdapter);
+
         test();
     }
 
@@ -79,6 +94,61 @@ public class MainActivity extends BaseActivity {
                });
     }
 
+    class GridAdapter extends BaseAdapter{
+        private Context context;
+        private List<String> list;
+
+        public GridAdapter(Context context, List<String> list){
+            this.context = context;
+            this.list = list;
+        }
+        @Override
+        public int getCount() {
+            return list.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return list.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(final int position, View convertView, ViewGroup parent) {
+            ViewHolder holder = null;
+            if(convertView == null){
+                convertView = LayoutInflater.from(context).inflate(R.layout.main_grid_item, null);
+                holder = new ViewHolder();
+                holder.commodityBtn = convertView.findViewById(R.id.main_grid_item_btn);
+                convertView.setTag(holder);
+            }else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+            holder.commodityBtn.setText(list.get(position));
+            convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(position == list.size() - 1){
+                        commoditysGridView.smoothScrollToPosition(5);
+                    }
+                    if(position == list.size() - 2){
+                        commoditysGridView.smoothScrollToPosition(1);
+                    }
+                }
+            });
+
+            return convertView;
+        }
+
+        class ViewHolder{
+            Button commodityBtn;
+        }
+    }
+
     class CommodityAdapter extends BaseAdapter{
         private Context context;
         private List<String> list;
@@ -111,7 +181,7 @@ public class MainActivity extends BaseActivity {
                 holder = new ViewHolder();
                 holder.nameTv = convertView.findViewById(R.id.commodity_name_tv);
                 holder.priceTv = convertView.findViewById(R.id.commodity_price_tv);
-                holder.countTv = convertView.findViewById(R.id.commodity_count_tv);
+//                holder.countTv = convertView.findViewById(R.id.commodity_count_tv);
                 holder.weightTv = convertView.findViewById(R.id.commodity_weight_tv);
                 holder.subtotalTv = convertView.findViewById(R.id.commodity_subtotal_tv);
                 holder.deleteBtn = convertView.findViewById(R.id.commodity_delete_btn);
@@ -127,7 +197,7 @@ public class MainActivity extends BaseActivity {
         class ViewHolder{
             TextView nameTv;
             TextView priceTv;
-            TextView countTv;
+//            TextView countTv;
             TextView weightTv;
             TextView subtotalTv;
             Button deleteBtn;
