@@ -13,4 +13,7 @@
     <color name="black">#000</color>
     <color name="gray_ccc">#CCCCCC</color>
     <color name="gray_555">#555555</color>
+    <color name="transparent">#01000000</color>
+    <color name="red_000">#FF0000</color>
+
 </resources>

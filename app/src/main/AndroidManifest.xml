@@ -30,7 +30,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.activity.MainActivity"
+            android:hardwareAccelerated="false"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
+
+        <activity android:name=".ui.activity.UseBankCardActivity" android:theme="@style/dialog"/>
+        <activity android:name=".ui.activity.UseCashActivity" android:theme="@style/dialog"/>
     </application>
 
 </manifest>
