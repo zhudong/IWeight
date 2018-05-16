@@ -8,7 +8,7 @@
         android:id="@+id/main_digitial_btn"
         android:layout_width="125dp"
         android:layout_height="90dp"
-        android:textSize="30sp"
+        android:textSize="60sp"
         android:textStyle="bold"
         android:background="@drawable/shape_weight_display_bg"
         android:text="1"/>

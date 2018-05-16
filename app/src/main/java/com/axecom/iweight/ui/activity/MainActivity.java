@@ -16,6 +16,8 @@ import android.widget.TextView;
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
 import com.axecom.iweight.net.RetrofitFactory;
+import com.axecom.iweight.ui.adapter.DigitalAdapter;
+import com.axecom.iweight.ui.adapter.GridAdapter;
 import com.axecom.iweight.utils.LogUtils;
 
 import java.util.ArrayList;
@@ -39,6 +41,7 @@ public class MainActivity extends BaseActivity {
     private DigitalAdapter digitalAdapter;
     private Button bankCardBtn;
     private Button cashBtn;
+    private Button settingsBtn;
 
     @Override
     public View setInitView() {
@@ -49,9 +52,11 @@ public class MainActivity extends BaseActivity {
         commoditysListView = rootView.findViewById(R.id.main_commoditys_list_view);
         bankCardBtn = rootView.findViewById(R.id.main_bank_card_btn);
         cashBtn = rootView.findViewById(R.id.main_cash_btn);
+        settingsBtn = rootView.findViewById(R.id.main_settings_btn);
 
         bankCardBtn.setOnClickListener(this);
         cashBtn.setOnClickListener(this);
+        settingsBtn.setOnClickListener(this);
         return rootView;
     }
 
@@ -90,6 +95,9 @@ public class MainActivity extends BaseActivity {
             case R.id.main_bank_card_btn:
             case R.id.main_cash_btn:
                 showDialog(v);
+                break;
+            case R.id.main_settings_btn:
+                startDDMActivity(SettingsActivity.class, false);
                 break;
         }
     }
@@ -133,110 +141,6 @@ public class MainActivity extends BaseActivity {
 
                    }
                });
-    }
-
-    class DigitalAdapter extends BaseAdapter{
-
-        private Context context;
-        private List<String> list;
-
-        public DigitalAdapter(Context context, List<String> list){
-            this.context = context;
-            this.list = list;
-        }
-        @Override
-        public int getCount() {
-            return list.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return list.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder = null;
-            if(convertView == null){
-                convertView = LayoutInflater.from(context).inflate(R.layout.digital_item, null);
-                holder = new ViewHolder();
-                holder.digitalBtn = convertView.findViewById(R.id.main_digitial_btn);
-                convertView.setTag(holder);
-            }else {
-                holder = (ViewHolder) convertView.getTag();
-            }
-            holder.digitalBtn.setText(list.get(position));
-            convertView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                }
-            });
-
-            return convertView;
-        }
-        class ViewHolder{
-            Button digitalBtn;
-        }
-    }
-
-    class GridAdapter extends BaseAdapter{
-        private Context context;
-        private List<String> list;
-
-        public GridAdapter(Context context, List<String> list){
-            this.context = context;
-            this.list = list;
-        }
-        @Override
-        public int getCount() {
-            return list.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return list.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            ViewHolder holder = null;
-            if(convertView == null){
-                convertView = LayoutInflater.from(context).inflate(R.layout.main_grid_item, null);
-                holder = new ViewHolder();
-                holder.commodityBtn = convertView.findViewById(R.id.main_grid_item_btn);
-                convertView.setTag(holder);
-            }else {
-                holder = (ViewHolder) convertView.getTag();
-            }
-            holder.commodityBtn.setText(list.get(position));
-            convertView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(position == list.size() - 1){
-                        commoditysGridView.smoothScrollToPosition(5);
-                    }
-                    if(position == list.size() - 2){
-                        commoditysGridView.smoothScrollToPosition(1);
-                    }
-                }
-            });
-
-            return convertView;
-        }
-
-        class ViewHolder{
-            Button commodityBtn;
-        }
     }
 
     class CommodityAdapter extends BaseAdapter{

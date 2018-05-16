@@ -27,6 +27,6 @@ public class HomeActivity extends BaseActivity {
 
     @Override
     public void onClick(View v) {
-        startDDMActivity(MainActivity.class, false);
+        startDDMActivity(SimpleModeActivity.class, false);
     }
 }
