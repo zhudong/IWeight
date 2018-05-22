@@ -5,6 +5,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -28,7 +29,7 @@ public class SettingsActivity extends BaseActivity {
                                         R.drawable.reports_setting,
                                         R.drawable.server_setting,
                                         R.drawable.order_setting,
-                                        R.drawable.patch_setting,
+                                        R.drawable.abnormal_setting,
                                         R.drawable.bd_setting,
                                         R.drawable.commodity_setting,
                                         R.drawable.simple_mode_setting,
@@ -37,8 +38,8 @@ public class SettingsActivity extends BaseActivity {
                                         R.drawable.local_setting,
                                         R.drawable.system_setting,
                                         R.drawable.payment_setting,
-                                        R.drawable.weight_setting
-                                        };
+                                        R.drawable.weight_setting};
+
     private static final int[] TITLES = {R.string.string_switching_setting_txt,
                                         R.string.string_patch_setting_txt,
                                         R.string.string_reports_setting_txt,
@@ -53,9 +54,7 @@ public class SettingsActivity extends BaseActivity {
                                         R.string.string_local_setting_txt,
                                         R.string.string_system_setting_txt,
                                         R.string.string_payment_setting_txt,
-                                        R.string.string_weight_setting_txt
-                                        };
-
+                                        R.string.string_weight_setting_txt};
 
     private View rootView;
     private GridView settingsGV;
@@ -82,6 +81,14 @@ public class SettingsActivity extends BaseActivity {
         }
         settingsAdapter = new SettingsAdapter(this, settngsList);
         settingsGV.setAdapter(settingsAdapter);
+        settingsGV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(position == 4){
+                    startDDMActivity(OrderInvalidActivity.class, false);
+                }
+            }
+        });
     }
 
     @Override

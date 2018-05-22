@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="400dp"
+    android:gravity="center"
+    android:background="#01000000"
+    android:layout_height="250dp">
+
+    <LinearLayout
+        android:gravity="center"
+        android:layout_width="400dp"
+        android:layout_height="250dp"
+        android:background="@drawable/shape_weight_display_bg"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:text="确认作废数据"/>
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:orientation="horizontal">
+            
+            <Button
+                android:id="@+id/dialog_confirm_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/string_confirm"
+                android:textColor="@color/black"
+                android:background="@drawable/shape_weight_display_bg"
+                android:layout_weight="1"
+                android:textSize="20sp"/>
+            <Button
+                android:id="@+id/dialog_cancel_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/string_cancel_txt"
+                android:textColor="@color/black"
+                android:background="@drawable/shape_weight_display_bg"
+                android:layout_weight="1"
+                android:textSize="20sp"/>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

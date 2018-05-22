@@ -29,7 +29,7 @@ import io.reactivex.disposables.Disposable;
 
 public class MainActivity extends BaseActivity {
 
-    private static final String[] DATA_DIGITAL = {"7","8","9","4","5","6","1","2","3","删除","0","."};
+    private static final String[] DATA_DIGITAL = {"1","2","3","4","5","6","7","8","9","删除","0","."};
 
     private View rootView;
 
@@ -50,11 +50,11 @@ public class MainActivity extends BaseActivity {
         commoditysGridView = rootView.findViewById(R.id.main_commoditys_grid_view);
         digitalGridView = rootView.findViewById(R.id.main_digital_keys_grid_view);
         commoditysListView = rootView.findViewById(R.id.main_commoditys_list_view);
-        bankCardBtn = rootView.findViewById(R.id.main_bank_card_btn);
+//        bankCardBtn = rootView.findViewById(R.id.main_bank_card_btn);
         cashBtn = rootView.findViewById(R.id.main_cash_btn);
         settingsBtn = rootView.findViewById(R.id.main_settings_btn);
 
-        bankCardBtn.setOnClickListener(this);
+//        bankCardBtn.setOnClickListener(this);
         cashBtn.setOnClickListener(this);
         settingsBtn.setOnClickListener(this);
         return rootView;
@@ -92,7 +92,7 @@ public class MainActivity extends BaseActivity {
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.main_bank_card_btn:
+//            case R.id.main_bank_card_btn:
             case R.id.main_cash_btn:
                 showDialog(v);
                 break;
@@ -105,9 +105,9 @@ public class MainActivity extends BaseActivity {
     public void showDialog(View v){
         Intent intent = new Intent();
         switch (v.getId()){
-            case R.id.main_bank_card_btn:
-                intent.setClass(this, UseBankCardActivity.class);
-                break;
+//            case R.id.main_bank_card_btn:
+//                intent.setClass(this, UseBankCardActivity.class);
+//                break;
             case R.id.main_cash_btn:
                 intent.setClass(this, UseCashActivity.class);
                 break;

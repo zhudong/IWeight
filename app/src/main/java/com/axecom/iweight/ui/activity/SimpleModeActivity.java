@@ -69,7 +69,7 @@ public class SimpleModeActivity extends BaseActivity {
     @Override
     public void onClick(View v) {
         switch (v.getId()){
-            case R.id.main_bank_card_btn:
+//            case R.id.main_bank_card_btn:
             case R.id.main_cash_btn:
                 showDialog(v);
                 break;
@@ -82,9 +82,9 @@ public class SimpleModeActivity extends BaseActivity {
     public void showDialog(View v){
         Intent intent = new Intent();
         switch (v.getId()){
-            case R.id.main_bank_card_btn:
-                intent.setClass(this, UseBankCardActivity.class);
-                break;
+//            case R.id.main_bank_card_btn:
+//                intent.setClass(this, UseBankCardActivity.class);
+//                break;
             case R.id.main_cash_btn:
                 intent.setClass(this, UseCashActivity.class);
                 break;

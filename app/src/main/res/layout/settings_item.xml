@@ -9,7 +9,7 @@
         android:layout_height="100dp"
         android:orientation="horizontal"
         android:gravity="center"
-        android:background="@drawable/shape_weight_display_bg">
+        android:background="@drawable/shape_layer_bg">
 
         <ImageView
             android:id="@+id/settings_item_icon_iv"
