@@ -207,7 +207,11 @@
                             android:layout_height="wrap_content"
                             android:src="@drawable/user" />
 
-                        <EditText
+                        <TextView
+                            android:id="@+id/home_card_number_tv"
+                            android:gravity="center_vertical"
+                            android:textSize="20sp"
+                            android:textColor="@color/black"
                             android:layout_width="match_parent"
                             android:layout_height="55dp"
                             android:layout_marginLeft="10dp"
@@ -230,7 +234,11 @@
                             android:layout_height="wrap_content"
                             android:src="@drawable/lock" />
 
-                        <EditText
+                        <TextView
+                            android:id="@+id/home_pwd_tv"
+                            android:gravity="center_vertical"
+                            android:textSize="20sp"
+                            android:textColor="@color/black"
                             android:layout_width="match_parent"
                             android:layout_height="55dp"
                             android:layout_marginLeft="10dp"

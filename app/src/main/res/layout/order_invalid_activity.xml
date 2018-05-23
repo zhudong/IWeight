@@ -23,7 +23,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:background="@color/gray_e3"
             android:gravity="center"
             android:orientation="horizontal">
@@ -102,10 +102,57 @@
 
 
         </LinearLayout>
-
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/black"/>
         <ListView
             android:id="@+id/order_invalid_listview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/black"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/order_invalid_previous_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_marginLeft="300dp"
+                android:layout_weight="1"
+                android:background="@drawable/shape_weight_display_bg"
+                android:text="上一页"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
+
+            <Button
+                android:id="@+id/order_invalid_next_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_marginLeft="100dp"
+                android:layout_marginRight="200dp"
+                android:layout_weight="1"
+                android:background="@drawable/shape_weight_display_bg"
+                android:text="下一页"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
+
+            <Button
+                android:id="@+id/order_invalid_back_btn"
+                android:layout_width="300dp"
+                android:layout_height="50dp"
+                android:background="@drawable/shape_white_btn_bg"
+                android:text="返回设置"
+                android:textColor="@color/black"
+                android:textSize="20sp" />
+
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

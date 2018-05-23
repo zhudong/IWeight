@@ -52,7 +52,7 @@
     <string name="string_system_setting_txt">系统设置</string>
     <string name="string_payment_setting_txt">支付设置</string>
     <string name="string_weight_setting_txt">称重</string>
-
+    <string name="string_confirm_invalid_txt">确认作废数据</string>
 
 
 </resources>

@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
+import com.axecom.iweight.ui.view.CustomDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,19 +26,32 @@ public class OrderInvalidActivity extends BaseActivity {
     private View rootView;
     private ListView orderListView;
     private OrderAdapter orderAdapter;
+    private Button previousBtn, nextBtn, backBtn;
+    private int previousPos = 8;
+    private int nextPos = 16;
+    private  CustomDialog mDialog;
+    private CustomDialog.Builder builder;
 
     @Override
     public View setInitView() {
         rootView = LayoutInflater.from(this).inflate(R.layout.order_invalid_activity, null);
         orderListView = rootView.findViewById(R.id.order_invalid_listview);
+        previousBtn = rootView.findViewById(R.id.order_invalid_previous_btn);
+        nextBtn = rootView.findViewById(R.id.order_invalid_next_btn);
+        backBtn = rootView.findViewById(R.id.order_invalid_back_btn);
+        builder = new CustomDialog.Builder(this);
+
+        previousBtn.setOnClickListener(this);
+        nextBtn.setOnClickListener(this);
+        backBtn.setOnClickListener(this);
         return rootView;
     }
 
     @Override
     public void initView() {
         List<String> list = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            list.add("11111111111111111111");
+        for (int i = 0; i < 100; i++) {
+            list.add("ddddddddddddd" + i);
         }
         orderAdapter = new OrderAdapter(this, list);
         orderListView.setAdapter(orderAdapter);
@@ -45,7 +59,34 @@ public class OrderInvalidActivity extends BaseActivity {
 
     @Override
     public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.order_invalid_previous_btn:
+                scrollTo(orderListView.getFirstVisiblePosition() - previousPos <= 0 ? 0 : orderListView.getFirstVisiblePosition() - previousPos);
+                break;
+            case R.id.order_invalid_next_btn:
+                scrollTo(orderListView.getFirstVisiblePosition() + nextPos);
+                break;
+            case R.id.order_invalid_back_btn:
+                finish();
+                break;
+        }
+    }
 
+    public void scrollTo(final int position){
+        orderListView.post(new Runnable() {
+            @Override
+            public void run() {
+                orderListView.smoothScrollToPosition(position);
+            }
+        });
+    }
+
+    private void showTwoButtonDialog(String alertText, String confirmText, String cancelText, View.OnClickListener conFirmListener, View.OnClickListener cancelListener) {
+        mDialog = builder.setMessage(alertText)
+                .setPositiveButton(confirmText, conFirmListener)
+                .setNegativeButton(cancelText, cancelListener)
+                .createTwoButtonDialog();
+        mDialog.show();
     }
 
     class OrderAdapter extends BaseAdapter{
@@ -97,20 +138,23 @@ public class OrderInvalidActivity extends BaseActivity {
             holder.invalidBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(context,R.style.dialog);
-                    View view = LayoutInflater.from(context).inflate(R.layout.dialog_layout, null);
-                    builder.setView(view);
-                    Button confirmBtn = view.findViewById(R.id.dialog_confirm_btn);
-                    Button cancelBtn = view.findViewById(R.id.dialog_cancel_btn);
-                    final AlertDialog dialog = builder.create();
-                    dialog.setCanceledOnTouchOutside(false);
-                    cancelBtn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            dialog.dismiss();
-                        }
-                    });
-                    dialog.show();
+                    showTwoButtonDialog(getString(R.string.string_confirm_invalid_txt),
+                            getString(R.string.string_confirm),
+                            getString(R.string.string_cancel_txt),
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    mDialog.dismiss();
+                                }
+                            },
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    mDialog.dismiss();
+
+                                }
+                            });
+
                 }
             });
             return convertView;
