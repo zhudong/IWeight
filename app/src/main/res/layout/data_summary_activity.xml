@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/green_3CB371">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/shape_bg"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/black" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/shape_weight_display_bg"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="300dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/shape_white_btn_bg"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center"
+                    android:text="报表"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/shape_white_btn_bg"
+                    android:gravity="center|left"
+                    android:paddingLeft="10dp"
+                    android:text="日报表"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="-2dp"
+                    android:background="@drawable/shape_white_btn_bg"
+                    android:gravity="center|left"
+                    android:paddingLeft="10dp"
+                    android:text="月报表"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="-2dp"
+                    android:background="@drawable/shape_white_btn_bg"
+                    android:gravity="center|left"
+                    android:paddingLeft="10dp"
+                    android:text="销售明细"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="30dp"
+                    android:layout_weight="1"
+                    android:gravity="center|bottom"
+                    android:text="2018-04"
+                    android:textColor="@color/green_3CB371"
+                    android:textSize="25sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="65dp"
+                    android:background="@drawable/shape_white_btn_bg"
+                    android:gravity="center"
+                    android:paddingLeft="10dp"
+                    android:text="返回"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_marginTop="1dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@color/gray_ccc"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="245dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="时间"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:layout_width="245dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="笔数"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:layout_width="245dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="重量(kg)"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:layout_width="245dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="小计(元)"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:layout_width="245dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="实收(元)"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+                </LinearLayout>
+
+                <ListView
+                    android:id="@+id/data_summary_listview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:listSelector="@color/gray_ccc" />
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/gray_ccc" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="245dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="总计"
+                        android:textColor="@color/green_3CB371"
+                        android:textSize="25sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="245dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="495"
+                        android:textColor="@color/green_3CB371"
+                        android:textSize="25sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="245dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="49.32"
+                        android:textColor="@color/green_3CB371"
+                        android:textSize="25sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="245dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="1150.32"
+                        android:textColor="@color/green_3CB371"
+                        android:textSize="25sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="245dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="1150.32"
+                        android:textColor="@color/green_3CB371"
+                        android:textSize="25sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/gray_ccc" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="5dp">
+
+                    <Button
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="50dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/shape_weight_display_bg"
+                        android:text="@string/string_previous_page"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+                    <Button
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/shape_weight_display_bg"
+                        android:text="@string/string_next_page"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+                    <Button
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="50dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/shape_weight_display_bg"
+                        android:text="@string/string_previous_month"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+                    <Button
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="50dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/shape_weight_display_bg"
+                        android:text="@string/string_next_month"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

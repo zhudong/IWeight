@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">IWeight</string>
     
-    <string name="string_previous_page">上翻</string>
-    <string name="string_next_page">下翻</string>
+    <string name="string_previous_page">上一页</string>
+    <string name="string_next_page">下一页</string>
+    <string name="string_previous_month">上一月</string>
+    <string name="string_next_month">下一月</string>
     <string name="string_delete">删除</string>
     <string name="string_login_txt">登&#160;陆</string>
     <string name="string_home_txt1">高效</string>
@@ -41,16 +43,19 @@
     <string name="string_patch_setting_txt">补打上笔</string>
     <string name="string_reports_setting_txt">数据汇总</string>
     <string name="string_server_setting_txt">服务器测试</string>
-    <string name="string_order_setting_txt">订单管理</string>
+    <string name="string_order_setting_txt">订单作废</string>
     <string name="string_abnormal_setting_txt">异常订单</string>
     <string name="string_bd_setting_txt">标定管理</string>
     <string name="string_commodity_setting_txt">商品设置</string>
-    <string name="string_simple_mode_setting_txt">切换简易</string>
+    <!--<string name="string_simple_mode_setting_txt">切换简易</string>-->
     <string name="string_update_setting_txt">数据更新</string>
+    <string name="string_reconnection_txt">一键重连</string>
     <string name="string_wifi_setting_txt">WIFI设置</string>
     <string name="string_local_setting_txt">本机设置</string>
     <string name="string_system_setting_txt">系统设置</string>
-    <string name="string_payment_setting_txt">支付设置</string>
+    <string name="string_back_txt">返回</string>
+    <string name="string_reboot_txt">重启</string>
+    <!--<string name="string_payment_setting_txt">支付设置</string>-->
     <string name="string_weight_setting_txt">称重</string>
     <string name="string_confirm_invalid_txt">确认作废数据</string>
 

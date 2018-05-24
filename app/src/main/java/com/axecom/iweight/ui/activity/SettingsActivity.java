@@ -24,21 +24,37 @@ import java.util.List;
 
 public class SettingsActivity extends BaseActivity {
 
+    private static final int POSITION_SWITCH = 0;
+    private static final int POSITION_PATCH = 1;
+    private static final int POSITION_REPORTS = 2;
+    private static final int POSITION_SERVER = 3;
+    private static final int POSITION_INVALID = 4;
+    private static final int POSITION_ABNORMAL = 5;
+    private static final int POSITION_BD = 6;
+    private static final int POSITION_COMMODITY = 7;
+    private static final int POSITION_UPDATE = 8;
+    private static final int POSITION_RE_CONNECTING = 9;
+    private static final int POSITION_WIFI = 10;
+    private static final int POSITION_LOCAL = 11;
+    private static final int POSITION_SYSTEM = 12;
+    private static final int POSITION_WEIGHT = 13;
+    private static final int POSITION_RE_BOOT = 14;
+
     private static final int[] ICONS = {R.drawable.switching_setting,
                                         R.drawable.patch_setting,
                                         R.drawable.reports_setting,
                                         R.drawable.server_setting,
-                                        R.drawable.order_setting,
+                                        R.drawable.invalid,
                                         R.drawable.abnormal_setting,
                                         R.drawable.bd_setting,
                                         R.drawable.commodity_setting,
-                                        R.drawable.simple_mode_setting,
                                         R.drawable.update_setting,
+                                        R.drawable.re_connecting,
                                         R.drawable.wifi_setting,
                                         R.drawable.local_setting,
                                         R.drawable.system_setting,
-                                        R.drawable.payment_setting,
-                                        R.drawable.weight_setting};
+                                        R.drawable.weight_setting,
+                                        R.drawable.re_boot};
 
     private static final int[] TITLES = {R.string.string_switching_setting_txt,
                                         R.string.string_patch_setting_txt,
@@ -48,13 +64,13 @@ public class SettingsActivity extends BaseActivity {
                                         R.string.string_abnormal_setting_txt,
                                         R.string.string_bd_setting_txt,
                                         R.string.string_commodity_setting_txt,
-                                        R.string.string_simple_mode_setting_txt,
                                         R.string.string_update_setting_txt,
+                                        R.string.string_reconnection_txt,
                                         R.string.string_wifi_setting_txt,
                                         R.string.string_local_setting_txt,
                                         R.string.string_system_setting_txt,
-                                        R.string.string_payment_setting_txt,
-                                        R.string.string_weight_setting_txt};
+                                        R.string.string_back_txt,
+                                        R.string.string_reboot_txt};
 
     private View rootView;
     private GridView settingsGV;
@@ -84,8 +100,13 @@ public class SettingsActivity extends BaseActivity {
         settingsGV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(position == 4){
-                    startDDMActivity(OrderInvalidActivity.class, false);
+                switch (position){
+                    case POSITION_REPORTS:
+                        startDDMActivity(DataSummaryActivity.class, false);
+                        break;
+                    case POSITION_INVALID:
+                        startDDMActivity(OrderInvalidActivity.class, false);
+                        break;
                 }
             }
         });
