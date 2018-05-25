@@ -49,6 +49,7 @@
         <activity android:name=".ui.activity.SettingsActivity" />
         <activity android:name=".ui.activity.OrderInvalidActivity" />
         <activity android:name=".ui.activity.DataSummaryActivity" />
+        <activity android:name=".ui.activity.AbnormalOrderActivity" />
     </application>
 
 </manifest>

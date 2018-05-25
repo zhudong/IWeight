@@ -107,6 +107,9 @@ public class SettingsActivity extends BaseActivity {
                     case POSITION_INVALID:
                         startDDMActivity(OrderInvalidActivity.class, false);
                         break;
+                    case POSITION_ABNORMAL:
+                        startDDMActivity(AbnormalOrderActivity.class, false);
+                        break;
                 }
             }
         });

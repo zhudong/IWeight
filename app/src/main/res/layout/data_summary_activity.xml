@@ -43,9 +43,10 @@
                     android:textSize="20sp" />
 
                 <TextView
+                    android:id="@+id/data_summary_day_report_tv"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:background="@drawable/shape_white_btn_bg"
+                    android:background="@drawable/shape_gray_btn_bg"
                     android:gravity="center|left"
                     android:paddingLeft="10dp"
                     android:text="日报表"
@@ -53,6 +54,7 @@
                     android:textSize="20sp" />
 
                 <TextView
+                    android:id="@+id/data_summary_month_report_tv"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:layout_marginTop="-2dp"
@@ -64,6 +66,7 @@
                     android:textSize="20sp" />
 
                 <TextView
+                    android:id="@+id/data_summary_sales_details_report_tv"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:layout_marginTop="-2dp"
@@ -86,6 +89,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/data_summary_back_tv"
                     android:layout_width="match_parent"
                     android:layout_height="65dp"
                     android:background="@drawable/shape_white_btn_bg"
@@ -102,6 +106,7 @@
                 android:orientation="vertical">
 
                 <LinearLayout
+                    android:id="@+id/data_summary_reports_title_layout"
                     android:layout_marginTop="1dp"
                     android:layout_marginRight="2dp"
                     android:layout_width="match_parent"
@@ -150,10 +155,82 @@
                         android:textSize="20sp" />
                 </LinearLayout>
 
+                <LinearLayout
+                    android:visibility="gone"
+                    android:id="@+id/data_summary_sales_title_layout"
+                    android:layout_marginTop="1dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@color/gray_ccc"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="订单号"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="时间"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="重量(kg)"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="小计(元)"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="实收(元)"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="结算方式"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+                    </LinearLayout>
+
                 <ListView
                     android:id="@+id/data_summary_listview"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:listSelector="@color/gray_ccc" />
+                <ListView
+                    android:id="@+id/sales_details_listview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:layout_weight="1"
                     android:listSelector="@color/gray_ccc" />
 
@@ -163,6 +240,33 @@
                     android:background="@color/gray_ccc" />
 
                 <LinearLayout
+                    android:visibility="gone"
+                    android:id="@+id/data_summary_sales_total_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="总计"
+                        android:textColor="@color/green_3CB371"
+                        android:textSize="25sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                       android:layout_marginLeft="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="1150.32"
+                        android:textColor="@color/green_3CB371"
+                        android:textSize="25sp"
+                        android:textStyle="bold" />
+                    </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/data_summary_reports_total_layout"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:orientation="horizontal">
