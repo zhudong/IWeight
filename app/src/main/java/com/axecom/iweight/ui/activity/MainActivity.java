@@ -15,10 +15,13 @@ import android.widget.TextView;
 
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
+import com.axecom.iweight.manager.GPprinterManager;
 import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.ui.adapter.DigitalAdapter;
 import com.axecom.iweight.ui.adapter.GridAdapter;
 import com.axecom.iweight.utils.LogUtils;
+import com.jb.sdk.command.ReceiptCommand;
+import com.jb.sdk.service.JbPrintService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +45,7 @@ public class MainActivity extends BaseActivity {
     private Button bankCardBtn;
     private Button cashBtn;
     private Button settingsBtn;
+    private GPprinterManager gPprinterManager;
 
     @Override
     public View setInitView() {
@@ -54,6 +58,9 @@ public class MainActivity extends BaseActivity {
         cashBtn = rootView.findViewById(R.id.main_cash_btn);
         settingsBtn = rootView.findViewById(R.id.main_settings_btn);
 
+
+        gPprinterManager = new GPprinterManager(this);
+        gPprinterManager.openConnect();
 //        bankCardBtn.setOnClickListener(this);
         cashBtn.setOnClickListener(this);
         settingsBtn.setOnClickListener(this);
@@ -90,6 +97,12 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        gPprinterManager.closeConnect();
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()){
 //            case R.id.main_bank_card_btn:
@@ -98,6 +111,9 @@ public class MainActivity extends BaseActivity {
                 break;
             case R.id.main_settings_btn:
                 startDDMActivity(SettingsActivity.class, false);
+                break;
+            case R.id.main_clear_btn:
+                gPprinterManager.printTestPaper();
                 break;
         }
     }
@@ -115,6 +131,7 @@ public class MainActivity extends BaseActivity {
         startActivity(intent);
 
     }
+
 
     public void test(){
        RetrofitFactory.getInstance().API()
