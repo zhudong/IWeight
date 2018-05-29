@@ -60,7 +60,7 @@ public class MainActivity extends BaseActivity {
 
 
         gPprinterManager = new GPprinterManager(this);
-        gPprinterManager.openConnect();
+//        gPprinterManager.openConnect();
 //        bankCardBtn.setOnClickListener(this);
         cashBtn.setOnClickListener(this);
         settingsBtn.setOnClickListener(this);

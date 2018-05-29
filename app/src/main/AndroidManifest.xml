@@ -58,6 +58,8 @@
         <activity android:name=".ui.activity.OrderInvalidActivity" />
         <activity android:name=".ui.activity.DataSummaryActivity" />
         <activity android:name=".ui.activity.AbnormalOrderActivity" />
+        <activity android:name=".ui.activity.ServerTestActivity" android:theme="@style/dialog" />
+        <activity android:name=".ui.activity.CalibrationActivity" />
     </application>
 
 </manifest>

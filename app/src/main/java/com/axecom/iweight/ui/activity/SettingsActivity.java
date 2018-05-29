@@ -97,23 +97,31 @@ public class SettingsActivity extends BaseActivity {
         }
         settingsAdapter = new SettingsAdapter(this, settngsList);
         settingsGV.setAdapter(settingsAdapter);
-        settingsGV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position){
-                    case POSITION_REPORTS:
-                        startDDMActivity(DataSummaryActivity.class, false);
-                        break;
-                    case POSITION_INVALID:
-                        startDDMActivity(OrderInvalidActivity.class, false);
-                        break;
-                    case POSITION_ABNORMAL:
-                        startDDMActivity(AbnormalOrderActivity.class, false);
-                        break;
-                }
-            }
-        });
+        settingsGV.setOnItemClickListener(settingsOnItemClickListener);
     }
+
+    AdapterView.OnItemClickListener settingsOnItemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            switch (position) {
+                case POSITION_REPORTS:
+                    startDDMActivity(DataSummaryActivity.class, false);
+                    break;
+                case POSITION_INVALID:
+                    startDDMActivity(OrderInvalidActivity.class, false);
+                    break;
+                case POSITION_ABNORMAL:
+                    startDDMActivity(AbnormalOrderActivity.class, false);
+                    break;
+                case POSITION_SERVER:
+                    startDDMActivity(ServerTestActivity.class, false);
+                    break;
+                case POSITION_BD:
+                    startDDMActivity(CalibrationActivity.class , false);
+                    break;
+            }
+        }
+    };
 
     @Override
     public void onClick(View v) {
