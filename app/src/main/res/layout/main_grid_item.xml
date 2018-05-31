@@ -6,9 +6,9 @@
 
     <Button
         android:id="@+id/main_grid_item_btn"
-        android:layout_width="135dp"
-        android:layout_height="100dp"
-        android:textSize="25sp"
+        android:layout_width="115dp"
+        android:layout_height="85dp"
+        android:textSize="20sp"
         android:background="@drawable/shape_weight_display_bg"
         android:text="白菜白菜"/>
 </LinearLayout>
