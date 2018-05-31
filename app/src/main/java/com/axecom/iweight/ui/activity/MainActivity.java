@@ -113,7 +113,8 @@ public class MainActivity extends BaseActivity {
                 startDDMActivity(SettingsActivity.class, false);
                 break;
             case R.id.main_clear_btn:
-                gPprinterManager.printTestPaper();
+                gPprinterManager.openConnect();
+                gPprinterManager.printTest();
                 break;
         }
     }

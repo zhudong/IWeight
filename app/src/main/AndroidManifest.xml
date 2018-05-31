@@ -27,7 +27,6 @@
         android:allowBackup="true"
         android:icon="@drawable/load"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/load"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity

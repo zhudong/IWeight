@@ -172,7 +172,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginTop="10dp"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:paddingLeft="10dp"
@@ -189,7 +189,7 @@
                             android:layout_marginLeft="10dp"
                             android:text="086"
                             android:textColor="@color/green_3CB371"
-                            android:textSize="30sp"
+                            android:textSize="20sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
@@ -210,10 +210,10 @@
                         <TextView
                             android:id="@+id/home_card_number_tv"
                             android:gravity="center_vertical"
-                            android:textSize="20sp"
+                            android:textSize="18sp"
                             android:textColor="@color/black"
                             android:layout_width="match_parent"
-                            android:layout_height="55dp"
+                            android:layout_height="40dp"
                             android:layout_marginLeft="10dp"
                             android:background="@drawable/shape_edittext_bg"
                             android:hint="@string/string_home_user_hint_txt"
@@ -223,7 +223,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="35dp"
+                        android:layout_marginTop="20dp"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:paddingLeft="10dp"
@@ -237,10 +237,10 @@
                         <TextView
                             android:id="@+id/home_pwd_tv"
                             android:gravity="center_vertical"
-                            android:textSize="20sp"
+                            android:textSize="16sp"
                             android:textColor="@color/black"
                             android:layout_width="match_parent"
-                            android:layout_height="55dp"
+                            android:layout_height="40dp"
                             android:layout_marginLeft="10dp"
                             android:background="@drawable/shape_edittext_bg"
                             android:hint="@string/string_home_pwd_hint_txt"
@@ -251,7 +251,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="50dp"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginTop="10dp"
                         android:drawableLeft="?android:attr/listChoiceIndicatorMultiple"
                         android:gravity="center"
                         android:text="@string/string_home_remember_pwd_txt" />
@@ -259,14 +259,14 @@
                     <Button
                         android:id="@+id/home_confirm_btn"
                         android:layout_width="match_parent"
-                        android:layout_height="55dp"
+                        android:layout_height="40dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginTop="10dp"
                         android:background="@drawable/shape_btn_bg"
                         android:text="@string/string_confirm"
                         android:textColor="@color/white"
-                        android:textSize="30sp" />
+                        android:textSize="20sp" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

@@ -53,6 +53,8 @@ public class GPprinterManager {
                 mService.registerConnectCallback(new ConnectCallback());
                 mService.registerPrinterStatusCallback(new QueryPrinterRealStatus());
                 Log.d(TAG, "绑定服务成功了");
+                Toast.makeText(context, "绑定服务成功了", Toast.LENGTH_SHORT).show();;
+
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -61,6 +63,8 @@ public class GPprinterManager {
         @Override
         public void onServiceDisconnected(ComponentName name) {
             Log.d(TAG, "========onServiceDisconnected=======");
+            Toast.makeText(context, "onServiceDisconnected", Toast.LENGTH_SHORT).show();;
+
             mService = null;
         }
     };
@@ -122,6 +126,7 @@ public class GPprinterManager {
     }
 
     public void printTest(){
+        Toast.makeText(context, "printTest", Toast.LENGTH_SHORT).show();;
         ReceiptCommand esc = new ReceiptCommand();
         esc.addSelectJustification(ReceiptCommand.JUSTIFICATION.LEFT);//设置打印左对齐
         esc.addText("Print text\n"); // 打印文字
@@ -168,6 +173,7 @@ public class GPprinterManager {
     public void openConnect() {
         //id为打印服务操作的打印机的id，最大可以操作3台
         try {
+            Toast.makeText(context, "openConnect", Toast.LENGTH_SHORT).show();;
             mService.openPort(mPrinterId, PortParameter.USB, "/dev/bus/usb/001/003", 0);
         } catch (RemoteException e) {
             e.printStackTrace();
