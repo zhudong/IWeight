@@ -45,4 +45,5 @@ dependencies {
     compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
     compile files('libs/jbsdk.jar')
     compile files('libs/gprinter-2.1.jar')
+//    implementation files('libs/gprinter-2.1.jar')
 }
