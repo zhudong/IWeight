@@ -19,6 +19,7 @@ public class HomeActivity extends BaseActivity {
     private Button confirmBtn;
     private TextView cardNumberTv;
     private TextView pwdTv;
+    private TextView loginTv;
 
     @Override
     public View setInitView() {
@@ -26,8 +27,10 @@ public class HomeActivity extends BaseActivity {
         confirmBtn = rootView.findViewById(R.id.home_confirm_btn);
         cardNumberTv = rootView.findViewById(R.id.home_card_number_tv);
         pwdTv = rootView.findViewById(R.id.home_pwd_tv);
+        loginTv = rootView.findViewById(R.id.home_login_tv);
 
         pwdTv.setOnClickListener(this);
+        loginTv.setOnClickListener(this);
         cardNumberTv.setOnClickListener(this);
         confirmBtn.setOnClickListener(this);
         return rootView;
@@ -40,6 +43,7 @@ public class HomeActivity extends BaseActivity {
     @Override
     public void onClick(View v) {
         switch (v.getId()){
+            case R.id.home_login_tv:
             case R.id.home_confirm_btn:
                     startDDMActivity(MainActivity.class, false);
                 break;

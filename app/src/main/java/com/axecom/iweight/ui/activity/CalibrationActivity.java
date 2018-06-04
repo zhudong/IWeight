@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -33,6 +34,8 @@ public class CalibrationActivity extends BaseActivity {
     private Button nextStepBtn;
     private GridView digitalGridView;
     private KeyBoardAdapter keyBoardAdapter;
+    private LinearLayout firstLayout;
+    private LinearLayout secondLayout;
 
     @Override
     public View setInitView() {
@@ -42,6 +45,8 @@ public class CalibrationActivity extends BaseActivity {
         backBtn = rootView.findViewById(R.id.calibration_back_btn);
         nextStepBtn = rootView.findViewById(R.id.calibration_next_step_btn);
         digitalGridView = rootView.findViewById(R.id.calibration_digital_keys_grid_view);
+        firstLayout = rootView.findViewById(R.id.calibration_first_layout);
+        secondLayout = rootView.findViewById(R.id.calibration_second_layout);
 
         firstStepTv.setOnClickListener(this);
         secondStepTv.setOnClickListener(this);
@@ -66,16 +71,32 @@ public class CalibrationActivity extends BaseActivity {
         switch (v.getId()){
             case R.id.calibration_first_step_tv:
                 firstStepTv.setTextColor(ContextCompat.getColor(CalibrationActivity.this, R.color.white));
+                secondStepTv.setTextColor(ContextCompat.getColor(CalibrationActivity.this, R.color.black));
+                firstStepTv.setBackground(ContextCompat.getDrawable(CalibrationActivity.this, R.drawable.green_arrow_right));
+                secondStepTv.setBackground(ContextCompat.getDrawable(CalibrationActivity.this, R.drawable.white_arrow_right));
+                firstLayout.setVisibility(View.VISIBLE);
+                secondLayout.setVisibility(View.GONE);
                 break;
             case R.id.calibration_second_step_tv:
-                secondStepTv.setTextColor(ContextCompat.getColor(CalibrationActivity.this, R.color.black));
-
+                secondStepTv.setTextColor(ContextCompat.getColor(CalibrationActivity.this, R.color.white));
+                firstStepTv.setTextColor(ContextCompat.getColor(CalibrationActivity.this, R.color.black));
+                firstStepTv.setBackground(ContextCompat.getDrawable(CalibrationActivity.this, R.drawable.white_arrow_right));
+                secondStepTv.setBackground(ContextCompat.getDrawable(CalibrationActivity.this, R.drawable.green_arrow_right));
+                firstLayout.setVisibility(View.GONE);
+                secondLayout.setVisibility(View.VISIBLE);
                 break;
             case R.id.calibration_back_btn:
                 finish();
                 break;
             case R.id.calibration_next_step_btn:
+                secondStepTv.setTextColor(ContextCompat.getColor(CalibrationActivity.this, R.color.white));
+                firstStepTv.setTextColor(ContextCompat.getColor(CalibrationActivity.this, R.color.black));
+                firstStepTv.setBackground(ContextCompat.getDrawable(CalibrationActivity.this, R.drawable.white_arrow_right));
+                secondStepTv.setBackground(ContextCompat.getDrawable(CalibrationActivity.this, R.drawable.green_arrow_right));
+                firstLayout.setVisibility(View.GONE);
+                secondLayout.setVisibility(View.VISIBLE);
                 break;
+
         }
 
     }

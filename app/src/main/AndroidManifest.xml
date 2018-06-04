@@ -21,6 +21,7 @@
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <uses-permission android:name="android.hardware.usb.accessory" />
     <uses-feature android:name="android.hardware.usb.host" />
@@ -68,6 +69,9 @@
             android:name=".ui.activity.ServerTestActivity"
             android:theme="@style/dialog" />
         <activity android:name=".ui.activity.CalibrationActivity" />
+        <activity android:name=".ui.activity.WifiSettingsActivity" />
+
+
         <service
             android:name="com.gprinter.service.GpPrintService"
             android:label="GpPrintService"

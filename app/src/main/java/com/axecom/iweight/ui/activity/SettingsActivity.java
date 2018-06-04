@@ -119,6 +119,9 @@ public class SettingsActivity extends BaseActivity {
                 case POSITION_BD:
                     startDDMActivity(CalibrationActivity.class , false);
                     break;
+                case POSITION_WIFI:
+                    startDDMActivity(WifiSettingsActivity.class, false);
+                    break;
             }
         }
     };

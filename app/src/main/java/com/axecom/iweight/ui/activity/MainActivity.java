@@ -107,7 +107,8 @@ public class MainActivity extends BaseActivity {
         switch (v.getId()){
 //            case R.id.main_bank_card_btn:
             case R.id.main_cash_btn:
-                showDialog(v);
+                startDDMActivity(SettingsActivity.class, false);
+//                showDialog(v);
                 break;
             case R.id.main_settings_btn:
                 startDDMActivity(SettingsActivity.class, false);
