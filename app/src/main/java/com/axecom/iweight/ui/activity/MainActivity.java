@@ -20,6 +20,12 @@ import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.ui.adapter.DigitalAdapter;
 import com.axecom.iweight.ui.adapter.GridAdapter;
 import com.axecom.iweight.utils.LogUtils;
+import com.inuker.bluetooth.library.BluetoothClient;
+import com.inuker.bluetooth.library.beacon.Beacon;
+import com.inuker.bluetooth.library.search.SearchRequest;
+import com.inuker.bluetooth.library.search.SearchResult;
+import com.inuker.bluetooth.library.search.response.SearchResponse;
+import com.inuker.bluetooth.library.utils.BluetoothLog;
 import com.jb.sdk.command.ReceiptCommand;
 import com.jb.sdk.service.JbPrintService;
 
@@ -46,6 +52,7 @@ public class MainActivity extends BaseActivity {
     private Button cashBtn;
     private Button settingsBtn;
     private GPprinterManager gPprinterManager;
+    private BluetoothClient mClient = new BluetoothClient(this);
 
     @Override
     public View setInitView() {
@@ -57,7 +64,9 @@ public class MainActivity extends BaseActivity {
 //        bankCardBtn = rootView.findViewById(R.id.main_bank_card_btn);
         cashBtn = rootView.findViewById(R.id.main_cash_btn);
         settingsBtn = rootView.findViewById(R.id.main_settings_btn);
-
+        if(!mClient.isBluetoothOpened()){
+            mClient.openBluetooth();
+        }
 
         gPprinterManager = new GPprinterManager(this);
 //        gPprinterManager.openConnect();
@@ -92,7 +101,7 @@ public class MainActivity extends BaseActivity {
         }
         digitalAdapter = new DigitalAdapter(this, digitaList);
         digitalGridView.setAdapter(digitalAdapter);
-
+        scanBluetooth();
         test();
     }
 
@@ -118,6 +127,37 @@ public class MainActivity extends BaseActivity {
                 gPprinterManager.printTest();
                 break;
         }
+    }
+
+    public void scanBluetooth(){
+        SearchRequest request = new SearchRequest.Builder()
+                .searchBluetoothLeDevice(3000, 3)   // 先扫BLE设备3次，每次3s
+                .searchBluetoothClassicDevice(5000) // 再扫经典蓝牙5s
+                .searchBluetoothLeDevice(2000)      // 再扫BLE设备2s
+                .build();
+
+        mClient.search(request, new SearchResponse() {
+            @Override
+            public void onSearchStarted() {
+
+            }
+
+            @Override
+            public void onDeviceFounded(SearchResult device) {
+                Beacon beacon = new Beacon(device.scanRecord);
+                BluetoothLog.v(String.format("beacon for %s\n%s", device.getAddress(), beacon.toString()));
+            }
+
+            @Override
+            public void onSearchStopped() {
+
+            }
+
+            @Override
+            public void onSearchCanceled() {
+
+            }
+        });
     }
 
     public void showDialog(View v){

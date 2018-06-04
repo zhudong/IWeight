@@ -50,4 +50,7 @@ dependencies {
     compile files('libs/jbsdk.jar')
     //    implementation files('libs/gprinter-2.1.jar')
     compile files('libs/gprinter-2.1.jar')
+    
+
+    compile 'com.inuker.bluetooth:library:1.4.0'
 }
