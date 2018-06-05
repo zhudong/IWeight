@@ -107,18 +107,18 @@ public class MainActivity extends BaseActivity {
         }
 
 
-//        BluetoothDialog.Builder builder = new BluetoothDialog.Builder(this);
-//        builder.create(new BluetoothDialog.OnBtnClickListener() {
-//            @Override
-//            public void onConfirmed(String result) {
-//
-//            }
-//
-//            @Override
-//            public void onCanceled(String result) {
-//
-//            }
-//        }).show();
+        BluetoothDialog.Builder builder = new BluetoothDialog.Builder(this);
+        builder.create(new BluetoothDialog.OnBtnClickListener() {
+            @Override
+            public void onConfirmed(String result) {
+
+            }
+
+            @Override
+            public void onCanceled(String result) {
+
+            }
+        }).show();
         test();
     }
 

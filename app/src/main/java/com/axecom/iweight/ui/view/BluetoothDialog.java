@@ -111,8 +111,9 @@ public class BluetoothDialog extends Dialog {
 
         private void searchDevice() {
             SearchRequest request = new SearchRequest.Builder()
-                    .searchBluetoothLeDevice(5000, 2)
+                    .searchBluetoothLeDevice(5000, 3)   // 先扫BLE设备3次，每次3s
                     .searchBluetoothClassicDevice(5000) // 再扫经典蓝牙5s
+                    .searchBluetoothLeDevice(5000, 3)
                     .build();
 
             ClientManager.getClient().search(request, mSearchResponse);
@@ -131,9 +132,10 @@ public class BluetoothDialog extends Dialog {
             @Override
             public void onDeviceFounded(SearchResult device) {
 //            BluetoothLog.w("MainActivity.onDeviceFounded " + device.device.getAddress());
+                Toast.makeText(context, device.getAddress(), Toast.LENGTH_SHORT).show();
                 if (!mDevices.contains(device)) {
                     final BleAdvertisedData badata = BleUtil.parseAdertisedData(device.scanRecord);
-                    String s = BleUtil.bytesToHex(device.scanRecord);
+//                    String s = BleUtil.bytesToHex(device.scanRecord);
                     String name = device.getName();
                     mDevices.add(device);
                     mAdapter.setDataList(mDevices);
