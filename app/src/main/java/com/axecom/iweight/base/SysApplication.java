@@ -46,6 +46,7 @@ public class SysApplication extends MultiDexApplication {
     public static int mHeightPixels;
     private static DisplayImageOptions options02;
 
+
     //    当前发起付款的包裹
 //    public static String mCurrentPaingParcel = "";
 
@@ -74,6 +75,8 @@ public class SysApplication extends MultiDexApplication {
 
     @Override
     public void onCreate() {// 程序的入口方法
+
+        instance = this;
         //登录
 
         // 1.上下文
@@ -116,8 +119,8 @@ public class SysApplication extends MultiDexApplication {
         super.onCreate();
     }
 
-    public SysApplication getInstances() {
-        return this;
+    public static SysApplication getInstances() {
+        return instance;
     }
 
 

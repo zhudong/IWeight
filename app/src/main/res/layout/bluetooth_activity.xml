@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/bluetooth_title_tv"
+        android:layout_margin="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        />
+
+    <ProgressBar
+        android:layout_weight="1"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:id="@+id/bluetooth_pbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"/>
+    <ListView
+        android:id="@+id/bluetooth_listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginBottom="20dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:background="@drawable/shape_weight_display_bg"
+            android:layout_width="200dp"
+            android:layout_height="60dp"
+            android:text="@string/string_confirm"
+            android:textSize="20sp"/>
+
+        <Button
+            android:layout_marginLeft="100dp"
+            android:background="@drawable/shape_weight_display_bg"
+            android:layout_width="200dp"
+            android:layout_height="60dp"
+            android:text="@string/string_cancel_txt"
+            android:textSize="20sp"/>
+    </LinearLayout>
+</LinearLayout>
+</LinearLayout>

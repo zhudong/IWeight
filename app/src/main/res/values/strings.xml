@@ -59,6 +59,9 @@
     <!--<string name="string_payment_setting_txt">支付设置</string>-->
     <string name="string_weight_setting_txt">称重</string>
     <string name="string_confirm_invalid_txt">确认作废数据</string>
+    <string name="string_refreshing">扫描蓝牙中…</string>
+    <string name="devices">设备列表</string>
+    <string name="connecting">正在连接</string>
 
 
 </resources>
