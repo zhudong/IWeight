@@ -62,6 +62,7 @@
     <string name="string_refreshing">扫描蓝牙中…</string>
     <string name="devices">设备列表</string>
     <string name="connecting">正在连接</string>
-
+    <string name="scanning">扫描中...</string>
+    <string name="scan">扫描</string>
 
 </resources>

@@ -2,8 +2,10 @@ package com.axecom.iweight.ui.activity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +22,7 @@ import com.axecom.iweight.manager.GPprinterManager;
 import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.ui.adapter.DigitalAdapter;
 import com.axecom.iweight.ui.adapter.GridAdapter;
+import com.axecom.iweight.ui.view.BTHelperDialog;
 import com.axecom.iweight.ui.view.BluetoothDialog;
 import com.axecom.iweight.utils.LogUtils;
 import com.inuker.bluetooth.library.BluetoothClient;
@@ -37,8 +40,12 @@ import java.util.List;
 import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+import top.wuhaojie.bthelper.BtHelperClient;
+import top.wuhaojie.bthelper.OnSearchDeviceListener;
 
 public class MainActivity extends BaseActivity {
+
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final String[] DATA_DIGITAL = {"1","2","3","4","5","6","7","8","9","删除","0","."};
 
@@ -54,6 +61,7 @@ public class MainActivity extends BaseActivity {
     private Button cashBtn;
     private Button settingsBtn;
     private GPprinterManager gPprinterManager;
+
 
     @Override
     public View setInitView() {
@@ -107,8 +115,8 @@ public class MainActivity extends BaseActivity {
         }
 
 
-        BluetoothDialog.Builder builder = new BluetoothDialog.Builder(this);
-        builder.create(new BluetoothDialog.OnBtnClickListener() {
+        BTHelperDialog.Builder builder = new BTHelperDialog.Builder(this);
+        builder.create(new BTHelperDialog.OnBtnClickListener() {
             @Override
             public void onConfirmed(String result) {
 
@@ -119,8 +127,13 @@ public class MainActivity extends BaseActivity {
 
             }
         }).show();
+
+
         test();
     }
+
+
+
 
     @Override
     protected void onDestroy() {
