@@ -14,9 +14,11 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
@@ -548,6 +550,22 @@ public class BtHelperClient {
                 mOutputStream = mSocket.getOutputStream();
                 mCurrStatus = STATUS.CONNECTED;
                 Toast.makeText(mContext, "mCurrStatus " + mCurrStatus, Toast.LENGTH_LONG).show();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(mInputStream));
+                while (mReadable) {
+
+                    try {
+                        String s = reader.readLine();
+                        String s1 = s;
+                        if(mInputStream.available() == 0){
+                            break;
+                        }
+                    } catch (IOException e) {
+                        mCurrStatus = STATUS.FREE;
+                        break;
+                    }
+
+
+                }
             } catch (Exception e) {
                 if (listener != null)
                     listener.onError(e);
