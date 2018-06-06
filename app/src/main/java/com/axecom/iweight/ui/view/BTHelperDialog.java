@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.UUID;
 
 import top.wuhaojie.bthelper.BtHelperClient;
+import top.wuhaojie.bthelper.IErrorListener;
 import top.wuhaojie.bthelper.OnSearchDeviceListener;
 
 import static com.inuker.bluetooth.library.Constants.REQUEST_SUCCESS;
@@ -96,7 +97,7 @@ public class BTHelperDialog extends Dialog {
             mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    connectDevice((BluetoothDevice) parent.getAdapter().getItem(position));
+                    btHelperConnect((BluetoothDevice) parent.getAdapter().getItem(position));
                 }
             });
 
@@ -160,6 +161,15 @@ public class BTHelperDialog extends Dialog {
             });
         }
 
+        public void btHelperConnect(BluetoothDevice device){
+            btHelperClient.connectDevice(device.getAddress(), new IErrorListener() {
+                @Override
+                public void onError(Exception e) {
+
+                }
+            });
+        }
+
         private void connectDevice(final BluetoothDevice mDevice) {
             mTvTitle.setText(String.format("%s%s", context.getString(R.string.connecting), mDevice.getAddress()));
             mPbar.setVisibility(View.VISIBLE);
@@ -179,6 +189,7 @@ public class BTHelperDialog extends Dialog {
                     mTvTitle.setText(String.format("%s", mDevice.getAddress()));
                     mPbar.setVisibility(View.GONE);
                     mListView.setVisibility(View.VISIBLE);
+                    Toast.makeText(context, "code" + code, Toast.LENGTH_LONG).show();
 
                     if (code == REQUEST_SUCCESS) {
                         Toast.makeText(context, "chenggong", Toast.LENGTH_LONG).show();

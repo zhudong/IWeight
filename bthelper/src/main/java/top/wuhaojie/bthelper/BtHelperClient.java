@@ -12,6 +12,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -216,12 +217,13 @@ public class BtHelperClient {
 
     // ---------- NEED TO TEST AND FIX ----------
     // ---------- NOT WORK NOW ----------
-    private void receiveMessage(OnReceiveMessageListener listener) {
+    public void receiveMessage(OnReceiveMessageListener listener) {
         if (mBluetoothAdapter == null) {
             listener.onError(new RuntimeException(DEVICE_HAS_NOT_BLUETOOTH_MODULE));
             return;
         }
         ReadRunnable_ readRunnable = new ReadRunnable_(listener);
+        readRunnable.run();
         mExecutorService.submit(readRunnable);
     }
 
@@ -441,7 +443,7 @@ public class BtHelperClient {
 //
 //    }
 
-    private class ReadRunnable_ implements Runnable {
+    public class ReadRunnable_ implements Runnable {
 
         private OnReceiveMessageListener mListener;
 
@@ -504,13 +506,14 @@ public class BtHelperClient {
     }
 
 
-    private void connectDevice(String mac, IErrorListener listener) {
+    public void connectDevice(String mac, IErrorListener listener) {
         if (mac == null || TextUtils.isEmpty(mac))
             throw new IllegalArgumentException("mac address is null or empty!");
         if (!BluetoothAdapter.checkBluetoothAddress(mac))
             throw new IllegalArgumentException("mac address is not correct! make sure it's upper case!");
 
         ConnectDeviceRunnable connectDeviceRunnable = new ConnectDeviceRunnable(mac, listener);
+        connectDeviceRunnable.run();
         checkNotNull(mExecutorService);
 
         mExecutorService.submit(connectDeviceRunnable);
@@ -518,7 +521,7 @@ public class BtHelperClient {
     }
 
 
-    private class ConnectDeviceRunnable implements Runnable {
+    public class ConnectDeviceRunnable implements Runnable {
         private String mac;
         private IErrorListener listener;
 
@@ -539,10 +542,12 @@ public class BtHelperClient {
 //                BluetoothSocket socket =  (BluetoothSocket) remoteDevice.getClass().getMethod("createRfcommSocket", new Class[] {int.class}).invoke(remoteDevice,1);
                 mSocket = remoteDevice.createInsecureRfcommSocketToServiceRecord(UUID.fromString(Constants.STR_UUID));
 //                if(!socket.isConnected())
+
                 mSocket.connect();
                 mInputStream = mSocket.getInputStream();
                 mOutputStream = mSocket.getOutputStream();
                 mCurrStatus = STATUS.CONNECTED;
+                Toast.makeText(mContext, "mCurrStatus " + mCurrStatus, Toast.LENGTH_LONG).show();
             } catch (Exception e) {
                 if (listener != null)
                     listener.onError(e);
