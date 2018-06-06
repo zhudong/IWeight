@@ -78,7 +78,7 @@ public class BTHelperDialog extends Dialog {
         private TextView mTvTitle;
         private BluetoothAdapter mAdapter;
         private OnBtnClickListener onBtnClickListener;
-        private Context context;
+        private Context context; 
         private ProgressBar mPbar;
         private BleGattProfile mProfile;
         public Builder(final Context context) {
