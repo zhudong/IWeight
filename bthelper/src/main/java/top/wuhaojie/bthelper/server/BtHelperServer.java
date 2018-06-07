@@ -8,6 +8,7 @@ import android.content.Context;
 import java.io.IOException;
 import java.util.UUID;
 
+import top.wuhaojie.bthelper.BtHelperClient;
 import top.wuhaojie.bthelper.Constants;
 import top.wuhaojie.bthelper.OnReceiveMessageListener;
 
@@ -40,6 +41,12 @@ import top.wuhaojie.bthelper.OnReceiveMessageListener;
         public void onError(Exception e) {
 
         }
+
+        @Override
+        public void onConnected(BtHelperClient.STATUS mCurrStatus) {
+
+        }
+
     };
 
 
