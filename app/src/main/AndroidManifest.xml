@@ -71,6 +71,7 @@
             android:theme="@style/dialog" />
         <activity android:name=".ui.activity.CalibrationActivity" />
         <activity android:name=".ui.activity.WifiSettingsActivity" />
+        <activity android:name=".ui.activity.CommodityManagementActivity" />
 
         <service
             android:name="com.gprinter.service.GpPrintService"

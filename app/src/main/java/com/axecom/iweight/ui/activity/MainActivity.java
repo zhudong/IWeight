@@ -115,18 +115,18 @@ public class MainActivity extends BaseActivity {
         }
 
 
-        BTHelperDialog.Builder builder = new BTHelperDialog.Builder(this);
-        builder.create(new BTHelperDialog.OnBtnClickListener() {
-            @Override
-            public void onConfirmed(String result) {
-
-            }
-
-            @Override
-            public void onCanceled(String result) {
-
-            }
-        }).show();
+//        BTHelperDialog.Builder builder = new BTHelperDialog.Builder(this);
+//        builder.create(new BTHelperDialog.OnBtnClickListener() {
+//            @Override
+//            public void onConfirmed(String result) {
+//
+//            }
+//
+//            @Override
+//            public void onCanceled(String result) {
+//
+//            }
+//        }).show();
 
 
         test();

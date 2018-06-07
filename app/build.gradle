@@ -55,5 +55,5 @@ dependencies {
 //    compile 'com.github.a-voyager:BluetoothHelper:f71d40a98b'
     compile 'com.inuker.bluetooth:library:1.4.0'
     compile project(':bthelper')
-
+    compile 'com.android.support:recyclerview-v7:26.+'
 }
