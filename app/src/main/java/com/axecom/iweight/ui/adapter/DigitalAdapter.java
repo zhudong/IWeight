@@ -51,7 +51,7 @@ public class DigitalAdapter extends BaseAdapter{
         }
         holder.digitalBtn.setText(list.get(position));
         if(position == 9){
-            holder.digitalBtn.setTextSize(30);
+//            holder.digitalBtn.setTextSize(30);
         }
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override

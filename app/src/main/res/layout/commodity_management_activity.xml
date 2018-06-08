@@ -129,8 +129,11 @@
                     android:layout_margin="10dp"
                     android:background="@color/black"/>
                 <GridView
+                    android:id="@+id/commodity_management_class_gv"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:verticalSpacing="20dp"
+                    android:horizontalSpacing="2dp"
                     android:numColumns="5"/>
             </LinearLayout>
         </LinearLayout>

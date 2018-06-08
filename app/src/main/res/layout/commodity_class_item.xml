@@ -6,13 +6,10 @@
     android:gravity="center">
 
     <Button
-        android:id="@+id/main_digitial_btn"
-        android:layout_width="0dp"
-        android:layout_height="70dp"
-        android:layout_weight="1"
+        android:id="@+id/commodity_class_name_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:background="@drawable/shape_weight_display_bg"
         android:clickable="false"
-        android:text="1"
-        android:textSize="40sp"
-        android:textStyle="bold" />
+        android:text="白菜" />
 </LinearLayout>
