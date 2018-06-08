@@ -2,10 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:gravity="center"
+    android:descendantFocusability="blocksDescendants"
     android:layout_height="match_parent">
 
     <Button
         android:id="@+id/main_grid_item_btn"
+        android:clickable="false"
         android:layout_width="115dp"
         android:layout_height="85dp"
         android:textSize="20sp"

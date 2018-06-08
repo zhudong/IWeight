@@ -50,17 +50,17 @@ public class GridAdapter extends BaseAdapter{
             holder = (ViewHolder) convertView.getTag();
         }
         holder.commodityBtn.setText(list.get(position));
-        convertView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(position == list.size() - 1){
-//                    commoditysGridView.smoothScrollToPosition(5);
-                }
-                if(position == list.size() - 2){
-//                    commoditysGridView.smoothScrollToPosition(1);
-                }
-            }
-        });
+//        convertView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if(position == list.size() - 1){
+////                    commoditysGridView.smoothScrollToPosition(5);
+//                }
+//                if(position == list.size() - 2){
+////                    commoditysGridView.smoothScrollToPosition(1);
+//                }
+//            }
+//        });
 
         return convertView;
     }

@@ -5,4 +5,5 @@ package top.wuhaojie.bthelper;
  */
 public interface IErrorListener {
     void onError(Exception e);
+    void onConnected(BtHelperClient.STATUS mCurrStatus);
 }

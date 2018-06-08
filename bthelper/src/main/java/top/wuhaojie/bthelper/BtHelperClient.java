@@ -46,7 +46,7 @@ public class BtHelperClient {
     private Context mContext;
     private BluetoothSocket mSocket;
 
-    private enum STATUS {
+    public enum STATUS {
         DISCOVERING,
         CONNECTED,
         FREE
@@ -67,8 +67,8 @@ public class BtHelperClient {
     private static volatile BtHelperClient sBtHelperClient;
     private boolean mNeed2unRegister;
     private ExecutorService mExecutorService = Executors.newCachedThreadPool();
-    private InputStream mInputStream;
-    private OutputStream mOutputStream;
+    public InputStream mInputStream;
+    public OutputStream mOutputStream;
 //    private InputStream mAcceptInputStream;
 //    private OutputStream mAcceptOutputStream;
 
@@ -515,7 +515,7 @@ public class BtHelperClient {
             throw new IllegalArgumentException("mac address is not correct! make sure it's upper case!");
 
         ConnectDeviceRunnable connectDeviceRunnable = new ConnectDeviceRunnable(mac, listener);
-        connectDeviceRunnable.run();
+//        connectDeviceRunnable.run();
         checkNotNull(mExecutorService);
 
         mExecutorService.submit(connectDeviceRunnable);
@@ -549,33 +549,19 @@ public class BtHelperClient {
                 mInputStream = mSocket.getInputStream();
                 mOutputStream = mSocket.getOutputStream();
                 mCurrStatus = STATUS.CONNECTED;
-                Toast.makeText(mContext, "mCurrStatus " + mCurrStatus, Toast.LENGTH_LONG).show();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(mInputStream));
-                while (mReadable) {
-
-                    try {
-                        String s = reader.readLine();
-                        String s1 = s;
-                        if(mInputStream.available() == 0){
-                            break;
-                        }
-                    } catch (IOException e) {
-                        mCurrStatus = STATUS.FREE;
-                        break;
-                    }
-
-
-                }
+//                Toast.makeText(mContext, "mCurrStatus " + mCurrStatus, Toast.LENGTH_LONG).show();
+                listener.onConnected(mCurrStatus);
             } catch (Exception e) {
+                e.printStackTrace();
                 if (listener != null)
                     listener.onError(e);
-                try {
-                    mInputStream.close();
-                    mOutputStream.close();
-                } catch (IOException closeException) {
-                    closeException.printStackTrace();
-                }
-                mCurrStatus = STATUS.FREE;
+//                try {
+//                    mInputStream.close();
+//                    mOutputStream.close();
+//                } catch (IOException closeException) {
+//                    closeException.printStackTrace();
+//                }
+//                mCurrStatus = STATUS.FREE;
             }
         }
     }

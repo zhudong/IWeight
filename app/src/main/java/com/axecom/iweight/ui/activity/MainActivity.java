@@ -5,15 +5,18 @@ import android.app.Dialog;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
@@ -34,6 +37,10 @@ import com.inuker.bluetooth.library.utils.BluetoothLog;
 import com.jb.sdk.command.ReceiptCommand;
 import com.jb.sdk.service.JbPrintService;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +49,9 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import top.wuhaojie.bthelper.BtHelperClient;
 import top.wuhaojie.bthelper.OnSearchDeviceListener;
+
+import static com.axecom.iweight.base.SysApplication.mContext;
+import static com.nostra13.universalimageloader.utils.IoUtils.DEFAULT_BUFFER_SIZE;
 
 public class MainActivity extends BaseActivity {
 
@@ -100,6 +110,14 @@ public class MainActivity extends BaseActivity {
         list2.add("下翻");
         gridAdapter = new GridAdapter(this, list2);
         commoditysGridView.setAdapter(gridAdapter);
+        commoditysGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(!mThread.isAlive()){
+                    mThread.run();
+                }
+            }
+        });
 
         List<String> digitaList = new ArrayList<>();
 
@@ -115,24 +133,51 @@ public class MainActivity extends BaseActivity {
         }
 
 
-//        BTHelperDialog.Builder builder = new BTHelperDialog.Builder(this);
-//        builder.create(new BTHelperDialog.OnBtnClickListener() {
-//            @Override
-//            public void onConfirmed(String result) {
-//
-//            }
-//
-//            @Override
-//            public void onCanceled(String result) {
-//
-//            }
-//        }).show();
+        BTHelperDialog.Builder builder = new  BTHelperDialog.Builder(this);
+        builder.create(new BTHelperDialog.OnBtnClickListener() {
 
+            @Override
+            public void onConfirmed(BtHelperClient.STATUS mCurrStatus) {
+                mThread.run();
+
+            }
+
+            @Override
+            public void onCanceled(String result) {
+
+            }
+        }).show();
 
         test();
     }
 
+    private Thread mThread = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            InputStream inputStream = BtHelperClient.from(MainActivity.this).mInputStream;
+            if(inputStream != null){
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                while (true) {
 
+                    try {
+                        String s = reader.readLine();
+                        String s1 = s;
+                        Looper.prepare();
+                        Toast.makeText(mContext, "weight " + s1 + " mInputStream.available() " + inputStream.available(), Toast.LENGTH_LONG).show();
+//                        Thread.sleep(200);
+                        if(inputStream.available() == 0){
+                            break;
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        break;
+                    }
+
+
+                }
+            }
+        }
+    });
 
 
     @Override

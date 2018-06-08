@@ -3,6 +3,8 @@ package com.axecom.iweight.ui.view;
 import android.app.Dialog;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
@@ -61,13 +63,13 @@ public class BTHelperDialog extends Dialog {
     }
 
     public interface OnBtnClickListener {
-        void onConfirmed(String result);
+        void onConfirmed(BtHelperClient.STATUS mCurrStatus);
 
         void onCanceled(String result);
     }
 
     public static class Builder implements View.OnClickListener {
-        private static final String[] DATA_DIGITAL = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "删除", "0", "."};
+        private  final String[] DATA_DIGITAL = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "删除", "0", "."};
 
         private View contentView;
         private BTHelperDialog bluetoothDialog;
@@ -75,10 +77,11 @@ public class BTHelperDialog extends Dialog {
         private ListView mListView;
         private List<BluetoothDevice> mDevices;
         private Button scanBtn;
+        private Button confirmBtn;
         private TextView mTvTitle;
         private BluetoothAdapter mAdapter;
         private OnBtnClickListener onBtnClickListener;
-        private Context context; 
+        private Context context;
         private ProgressBar mPbar;
         private BleGattProfile mProfile;
         public Builder(final Context context) {
@@ -90,6 +93,7 @@ public class BTHelperDialog extends Dialog {
             mListView = view.findViewById(R.id.bluetooth_listview);
             mPbar = view.findViewById(R.id.bluetooth_pbar);
             scanBtn = view.findViewById(R.id.bluetooth_scan_btn);
+            confirmBtn = view.findViewById(R.id.bluetooth_confirm_btn);
 
             mDevices = new ArrayList<BluetoothDevice>();
             mAdapter = new BluetoothAdapter(context, mDevices);
@@ -107,9 +111,11 @@ public class BTHelperDialog extends Dialog {
             searchDevice();
 
             scanBtn.setOnClickListener(this);
+            confirmBtn.setOnClickListener(this);
         }
 
         public BTHelperDialog create(OnBtnClickListener onBtnClickListener) {
+            this.onBtnClickListener = onBtnClickListener;
             bluetoothDialog.setContentView(view);
             bluetoothDialog.setCancelable(true);     //用户可以点击手机Back键取消对话框显示
             bluetoothDialog.setCanceledOnTouchOutside(false);        //用户不能通过点击对话框之外的地方取消对话框显示
@@ -122,6 +128,10 @@ public class BTHelperDialog extends Dialog {
             switch (v.getId()){
                 case R.id.bluetooth_scan_btn:
                     searchDevice();
+                    break;
+                case R.id.bluetooth_confirm_btn:
+//                    onBtnClickListener.onConfirmed("close");
+
                     break;
             }
         }
@@ -158,6 +168,11 @@ public class BTHelperDialog extends Dialog {
                     mPbar.setVisibility(View.GONE);
                     e.printStackTrace();
                 }
+
+                @Override
+                public void onConnected(BtHelperClient.STATUS mCurrStatus) {
+
+                }
             });
         }
 
@@ -167,6 +182,14 @@ public class BTHelperDialog extends Dialog {
                 public void onError(Exception e) {
 
                 }
+
+                @Override
+                public void onConnected(BtHelperClient.STATUS mCurrStatus) {
+                    bluetoothDialog.dismiss();
+                    onBtnClickListener.onConfirmed(mCurrStatus);
+
+                }
+
             });
         }
 
@@ -237,7 +260,7 @@ public class BTHelperDialog extends Dialog {
     @Override
     protected void onStop() {
         super.onStop();
-        btHelperClient.close();
+//        btHelperClient.close();
     }
 
     static class BluetoothAdapter extends BaseAdapter{

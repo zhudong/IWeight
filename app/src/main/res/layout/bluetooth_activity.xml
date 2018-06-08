@@ -44,6 +44,7 @@
             android:orientation="horizontal">
 
             <Button
+                android:id="@+id/bluetooth_confirm_btn"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_weight="1"
