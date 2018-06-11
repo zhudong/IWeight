@@ -7,10 +7,11 @@ import java.io.Serializable;
  */
 
 public class BaseEntity<T> implements Serializable{
-    private static final int SUCCESS_CODE = 200;
+    private static final int SUCCESS_CODE = 0;
     private int ret;
     private String msg;
     private T data;
+    private int code;
 
     public boolean isSuccess(){
         return getRet() == SUCCESS_CODE;
@@ -38,5 +39,13 @@ public class BaseEntity<T> implements Serializable{
 
     public void setRet(int ret) {
         this.ret = ret;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
     }
 }

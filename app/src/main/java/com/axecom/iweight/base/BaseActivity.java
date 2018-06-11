@@ -29,6 +29,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import butterknife.ButterKnife;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.ObservableTransformer;
@@ -47,6 +48,7 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
     public int mHeightPixels;
 //    private SweetAlertDialog mSweetAlertDialog;
     private View mMenuRoot;
+    private SweetAlertDialog mSweetAlertDialog;
 
     @SuppressLint("InlinedApi")
     @Override
@@ -243,7 +245,19 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
         }
     }
 
+    public void showLoading(){
+        mSweetAlertDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        mSweetAlertDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+//        mSweetAlertDialog.setTitleText("Loading");
+        mSweetAlertDialog.setCancelable(true);
+        mSweetAlertDialog.show();
+    }
 
+    public void closeLoading(){
+        if (mSweetAlertDialog != null && mSweetAlertDialog.isShowing()) {
+            mSweetAlertDialog.dismissWithAnimation();
+        }
+    }
 
     public void setIsShowContentView(boolean isShow) {
         mIsShowContenttext = isShow;

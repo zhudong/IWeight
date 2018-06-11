@@ -8,6 +8,6 @@ import com.axecom.iweight.utils.LogUtils;
 
 public class Constants {
     public static final int DEBUGLEVEL = LogUtils.LEVEL_ALL;
-    public static final String URL = "http://112.74.109.205:9999/";
+    public static final String URL = "http://nong.yingzy.com/api/";
 
 }
