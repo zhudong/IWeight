@@ -3,42 +3,12 @@ package com.axecom.iweight.bean;
 public class CalibrationBean {
 
     private String token;
-    private String maxAnge;
-    private String calibrationValue;
-    private String dividingValue;
-    private String standardWeighing;
+    private String max_ange;
+    private String calibration_value;
+    private String dividing_value;
+    private String standard_weighing;
+    private String scales_id;
 
-    public String getStandardWeighing() {
-        return standardWeighing;
-    }
-
-    public void setStandardWeighing(String standardWeighing) {
-        this.standardWeighing = standardWeighing;
-    }
-
-    public String getDividingValue() {
-        return dividingValue;
-    }
-
-    public void setDividingValue(String dividingValue) {
-        this.dividingValue = dividingValue;
-    }
-
-    public String getCalibrationValue() {
-        return calibrationValue;
-    }
-
-    public void setCalibrationValue(String calibrationValue) {
-        this.calibrationValue = calibrationValue;
-    }
-
-    public String getMaxAnge() {
-        return maxAnge;
-    }
-
-    public void setMaxAnge(String maxAnge) {
-        this.maxAnge = maxAnge;
-    }
 
     public String getToken() {
         return token;
@@ -46,5 +16,45 @@ public class CalibrationBean {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getMax_ange() {
+        return max_ange;
+    }
+
+    public void setMax_ange(String max_ange) {
+        this.max_ange = max_ange;
+    }
+
+    public String getCalibration_value() {
+        return calibration_value;
+    }
+
+    public void setCalibration_value(String calibration_value) {
+        this.calibration_value = calibration_value;
+    }
+
+    public String getDividing_value() {
+        return dividing_value;
+    }
+
+    public void setDividing_value(String dividing_value) {
+        this.dividing_value = dividing_value;
+    }
+
+    public String getStandard_weighing() {
+        return standard_weighing;
+    }
+
+    public void setStandard_weighing(String standard_weighing) {
+        this.standard_weighing = standard_weighing;
+    }
+
+    public String getScales_id() {
+        return scales_id;
+    }
+
+    public void setScales_id(String scales_id) {
+        this.scales_id = scales_id;
     }
 }

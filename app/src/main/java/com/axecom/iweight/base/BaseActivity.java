@@ -8,7 +8,10 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +31,8 @@ import com.axecom.iweight.utils.LogUtils;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.lang.reflect.Method;
+
 import butterknife.ButterKnife;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import io.reactivex.Observable;
@@ -46,7 +51,7 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
     DisplayMetrics dm;
     public int mWidthPixels;
     public int mHeightPixels;
-//    private SweetAlertDialog mSweetAlertDialog;
+    //    private SweetAlertDialog mSweetAlertDialog;
     private View mMenuRoot;
     private SweetAlertDialog mSweetAlertDialog;
 
@@ -95,7 +100,6 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
     }
 
 
-
     /**
      * 初始化视图(例如一系列的注册控件之类的)的方法,重写它就可以了
      */
@@ -110,8 +114,6 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
         super.onActivityResult(requestCode, resultCode, data);
 
     }
-
-
 
 
     @Override
@@ -148,8 +150,8 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
         super.onPause();
     }
 
-   /* public String getMachineCode() {
-      *//*  final TelephonyManager tm = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
+    /* public String getMachineCode() {
+     *//*  final TelephonyManager tm = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
         final String tmDevice, tmSerial, tmPhone, androidId;
         tmDevice = "" + tm.getDeviceId();
         tmSerial = "" + tm.getSimSerialNumber();
@@ -245,7 +247,7 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
         }
     }
 
-    public void showLoading(){
+    public void showLoading() {
         mSweetAlertDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         mSweetAlertDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
 //        mSweetAlertDialog.setTitleText("Loading");
@@ -253,7 +255,15 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
         mSweetAlertDialog.show();
     }
 
-    public void closeLoading(){
+    public void showLoading(String titleText) {
+        SweetAlertDialog mSweetAlertDialog = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE);
+        mSweetAlertDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        mSweetAlertDialog.setTitleText(titleText);
+        mSweetAlertDialog.setCancelable(true);
+        mSweetAlertDialog.show();
+    }
+
+    public void closeLoading() {
         if (mSweetAlertDialog != null && mSweetAlertDialog.isShowing()) {
             mSweetAlertDialog.dismissWithAnimation();
         }
@@ -265,6 +275,45 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
 
     private boolean mIsShowContenttext = false;
 
+    public void disableShowInput(final EditText editText) {
+        if (android.os.Build.VERSION.SDK_INT <= 10) {
+            editText.setInputType(InputType.TYPE_NULL);
+        } else {
+            Class<EditText> cls = EditText.class;
+            Method method;
+            try {
+                method = cls.getMethod("setShowSoftInputOnFocus", boolean.class);
+                method.setAccessible(true);
+                method.invoke(editText, false);
+            } catch (Exception e) {//TODO: handle exception
+            }
+            try {
+                method = cls.getMethod("setSoftInputShownOnFocus", boolean.class);
+                method.setAccessible(true);
+                method.invoke(editText, false);
+            } catch (Exception e) {//TODO: handle exception
+            }
+        }
+
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before,
+                                      int count) {
+            }
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count,
+                                          int after) {
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                editText.setSelection(editText.length());
+            }
+        });
+    }
+
+    public void addTextChangedListener(final EditText editText){
+
+    }
 
     @Subscribe
     public void onEventMainThread(BusEvent event) {
@@ -364,7 +413,8 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
     protected void share() {
 
     }
-    public <T>ObservableTransformer<T, T> setThread(){
+
+    public <T> ObservableTransformer<T, T> setThread() {
         return new ObservableTransformer<T, T>() {
             @Override
             public ObservableSource<T> apply(Observable<T> upstream) {

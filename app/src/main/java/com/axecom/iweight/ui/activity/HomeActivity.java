@@ -10,6 +10,7 @@ import com.axecom.iweight.base.BaseActivity;
 import com.axecom.iweight.base.BaseEntity;
 import com.axecom.iweight.bean.LoginData;
 import com.axecom.iweight.bean.WeightBean;
+import com.axecom.iweight.manager.AccountManager;
 import com.axecom.iweight.manager.MacManager;
 import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.ui.view.SoftKeyborad;
@@ -51,22 +52,29 @@ public class HomeActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        getScalesIdByMac(MacManager.getInstace(HomeActivity.this).getMac());
+//        getScalesIdByMac(MacManager.getInstace(HomeActivity.this).getMac());
+        getScalesIdByMac("84:73:03:5b:ba:bb");
     }
 
     @Override
     public void onClick(View v) {
+        SoftKeyborad.Builder builder = new SoftKeyborad.Builder(HomeActivity.this);
         switch (v.getId()){
             case R.id.home_login_tv:
             case R.id.home_confirm_btn:
 //                getScalesIdByMac(MacManager.getInstace(HomeActivity.this).getMac());
                 clientLogin(weightId + "", cardNumberTv.getText().toString(), pwdTv.getText().toString());
+//                clientLogin("4", cardNumberTv.getText().toString(), pwdTv.getText().toString());
                 break;
             case R.id.home_card_number_tv:
-
+                builder.create(new SoftKeyborad.OnConfirmedListener() {
+                    @Override
+                    public void onConfirmed(String result) {
+                        cardNumberTv.setText(result);
+                    }
+                }).show();
                 break;
             case R.id.home_pwd_tv:
-                SoftKeyborad.Builder builder = new SoftKeyborad.Builder(HomeActivity.this);
                 builder.create(new SoftKeyborad.OnConfirmedListener() {
                     @Override
                     public void onConfirmed(String result) {
@@ -94,9 +102,10 @@ public class HomeActivity extends BaseActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    closeLoading();
                                     weightId = baseEntity.getData().getId();
                                     weightTv.setText(weightId + "");
+                                    AccountManager.getInstance().saveScalesId(weightId + "");
+                                    isOnline();
                                 }
                             });
                         }
@@ -130,9 +139,11 @@ public class HomeActivity extends BaseActivity {
                     @Override
                     public void onNext(BaseEntity<LoginData> loginDataBaseEntity) {
                         if(loginDataBaseEntity.isSuccess()){
+                            AccountManager.getInstance().saveToken(loginDataBaseEntity.getData().getToken());
                             startDDMActivity(MainActivity.class, false);
+                        }else {
+                            showLoading(loginDataBaseEntity.getMsg());
                         }
-                        closeLoading();
                     }
 
                     @Override
@@ -144,6 +155,35 @@ public class HomeActivity extends BaseActivity {
                     @Override
                     public void onComplete() {
                         closeLoading();
+
+                    }
+                });
+    }
+
+    public void isOnline(){
+        RetrofitFactory.getInstance().API()
+                .isOnline(AccountManager.getInstance().getScalesId())
+                .compose(this.<BaseEntity>setThread())
+                .subscribe(new Observer<BaseEntity>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(BaseEntity baseEntity) {
+                        if(baseEntity.isSuccess()){
+
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onComplete() {
 
                     }
                 });

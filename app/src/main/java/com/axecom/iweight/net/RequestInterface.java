@@ -38,19 +38,48 @@ public interface RequestInterface {
     @GET("test.php")
     Observable<String> test();
 
+    /**
+     *  获取设备Id
+     * @param mac 设备mac地址
+     * @return
+     */
     @POST("getScalesIdByMac")
     Observable<BaseEntity<WeightBean>> getScalesIdByMac(@Query("mac") String mac);
 
+    /**
+     * 用户登录
+     * @param scalesId
+     * @param serialNumber
+     * @param password
+     * @return
+     */
     @POST("clientLogin")
     Observable<BaseEntity<LoginData>> clientLogin(@Query("scales_id") String scalesId, @Query("serial_number") String serialNumber, @Query("password") String password);
 
+    /**
+     * 司磅员登录
+     * @param scalesId
+     * @param serialNumber
+     * @param password
+     * @return
+     */
     @POST("staffMemberLogin")
     Observable<BaseEntity<LoginData>> staffMemberLogin(@Query("scales_id") String scalesId, @Query("serial_number") String serialNumber, @Query("password") String password);
 
+    /**
+     * 标定记录
+     * @param calibrationBean
+     * @return
+     */
     @POST("storeCalibrationRecord")
     Observable<BaseEntity> storeCalibrationRecord(@Body CalibrationBean calibrationBean);
 
+    /**
+     * 上报服务器智能秤在线
+     * @param scalesId
+     * @return
+     */
     @POST("isOnline")
-    Observable<BaseEntity> isOnline(@Path("scales_id") String scalesId);
+    Observable<BaseEntity> isOnline(@Query("scales_id") String scalesId);
 
 }

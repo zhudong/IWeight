@@ -127,28 +127,28 @@ public class MainActivity extends BaseActivity {
         digitalAdapter = new DigitalAdapter(this, digitaList);
         digitalGridView.setAdapter(digitalAdapter);
 
-
-        if(!ClientManager.getClient().isBluetoothOpened()){
-            ClientManager.getClient().openBluetooth();
-        }
-
-
-        BTHelperDialog.Builder builder = new  BTHelperDialog.Builder(this);
-        builder.create(new BTHelperDialog.OnBtnClickListener() {
-
-            @Override
-            public void onConfirmed(BtHelperClient.STATUS mCurrStatus) {
-                mThread.run();
-
-            }
-
-            @Override
-            public void onCanceled(String result) {
-
-            }
-        }).show();
-
-        test();
+//
+//        if(!ClientManager.getClient().isBluetoothOpened()){
+//            ClientManager.getClient().openBluetooth();
+//        }
+//
+//
+//        BTHelperDialog.Builder builder = new  BTHelperDialog.Builder(this);
+//        builder.create(new BTHelperDialog.OnBtnClickListener() {
+//
+//            @Override
+//            public void onConfirmed(BtHelperClient.STATUS mCurrStatus) {
+//                mThread.run();
+//
+//            }
+//
+//            @Override
+//            public void onCanceled(String result) {
+//
+//            }
+//        }).show();
+//
+//        test();
     }
 
     private Thread mThread = new Thread(new Runnable() {

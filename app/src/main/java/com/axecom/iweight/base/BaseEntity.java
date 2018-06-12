@@ -14,7 +14,7 @@ public class BaseEntity<T> implements Serializable{
     private int code;
 
     public boolean isSuccess(){
-        return getRet() == SUCCESS_CODE;
+        return getCode() == SUCCESS_CODE;
     }
 
     public T getData() {
