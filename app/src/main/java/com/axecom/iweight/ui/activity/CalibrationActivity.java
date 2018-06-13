@@ -1,6 +1,7 @@
 package com.axecom.iweight.ui.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -54,6 +55,7 @@ public class CalibrationActivity extends BaseActivity {
     private LinearLayout secondLayout;
     private LinearLayout nextStepLayout;
     private ImageView nextStepLineIv;
+    private boolean isShowStaffLogin = true;
 
     @Override
     public View setInitView() {
@@ -68,6 +70,7 @@ public class CalibrationActivity extends BaseActivity {
         secondLayout = rootView.findViewById(R.id.calibration_second_layout);
         standardWeighingTv = rootView.findViewById(R.id.calibration_standard_weighing_tv);
         maxAngeEt = rootView.findViewById(R.id.calibration_max_ange_et);
+        maxAngeEt.requestFocus();
         dividingValueEt = rootView.findViewById(R.id.calibration_dividing_value_et);
         calibrationValueEt = rootView.findViewById(R.id.calibration_dcalibration_value_et);
         nextStepLineIv = rootView.findViewById(R.id.calibration_next_step_line_iv);
@@ -85,8 +88,33 @@ public class CalibrationActivity extends BaseActivity {
         return rootView;
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+//        if (isShowStaffLogin) {
+//            Intent intent = new Intent();
+//            intent.setClass(this, StaffMemberLoginActivity.class);
+//            startActivityForResult(intent, RESULT_OK);
+//        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            isShowStaffLogin = false;
+        }
+        if (resultCode == RESULT_CANCELED) {
+            finish();
+        }
+    }
+
     @Override
     public void initView() {
+        Intent intent = new Intent();
+        intent.setClass(this, StaffMemberLoginActivity.class);
+        startActivityForResult(intent, 101);
         List<String> digitaList = new ArrayList<>();
 
         for (int i = 0; i < DATA_DIGITAL.length; i++) {
@@ -115,13 +143,6 @@ public class CalibrationActivity extends BaseActivity {
         });
     }
 
-    public void setEditText(EditText editText, int position, String text) {
-        if (position == 9) {
-            editText.setText(editText.getText().subSequence(0, editText.getText().length() - 1));
-        } else {
-            editText.setText(editText.getText() + text);
-        }
-    }
 
     @Override
     public void onClick(View v) {

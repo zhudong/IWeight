@@ -11,8 +11,9 @@
 
         <TextView
             android:id="@+id/order_item_number_tv"
-            android:layout_width="260dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:gravity="center"
             android:text="ax0382018042716005"
             android:textColor="@color/black"
@@ -20,7 +21,8 @@
 
         <TextView
             android:id="@+id/order_item_dealTime_tv"
-            android:layout_width="160dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="2018-04-27"
@@ -29,7 +31,8 @@
 
         <TextView
             android:id="@+id/order_item_seller_tv"
-            android:layout_width="160dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="牛总"
@@ -38,7 +41,8 @@
 
         <TextView
             android:id="@+id/order_item_buyer_tv"
-            android:layout_width="160dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="默认买方"
@@ -47,7 +51,8 @@
 
         <TextView
             android:id="@+id/order_item_weight_tv"
-            android:layout_width="160dp"
+            android:layout_weight="1"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="127.80"
@@ -56,16 +61,18 @@
 
         <TextView
             android:id="@+id/order_item_income_tv"
-            android:layout_width="160dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:gravity="center"
             android:text="127.80"
             android:textColor="@color/black"
             android:textSize="20sp" />
 
         <TextView
+            android:layout_weight="1"
             android:id="@+id/order_item_billing_tv"
-            android:layout_width="160dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="微信支付"
@@ -74,8 +81,9 @@
 
         <TextView
             android:id="@+id/order_item_status_tv"
-            android:layout_width="160dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:gravity="center"
             android:text="已作废"
             android:textColor="@color/black"
@@ -83,9 +91,10 @@
 
         <Button
             android:id="@+id/order_item_invalid_btn"
-            android:layout_width="160dp"
+            android:layout_width="0dp"
             android:layout_height="30dp"
             android:background="@drawable/shape_weight_display_bg"
+            android:layout_weight="1"
             android:gravity="center"
             android:padding="0dp"
             android:text="作废"

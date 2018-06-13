@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -57,7 +58,7 @@ public class MainActivity extends BaseActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private static final String[] DATA_DIGITAL = {"1","2","3","4","5","6","7","8","9","删除","0","."};
+    private static final String[] DATA_DIGITAL = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "删除", "0", "."};
 
     private View rootView;
 
@@ -71,6 +72,9 @@ public class MainActivity extends BaseActivity {
     private Button cashBtn;
     private Button settingsBtn;
     private GPprinterManager gPprinterManager;
+    private EditText priceEt;
+    private Button clearBtn, addBtn;
+    private TextView commodityNameTv;
 
 
     @Override
@@ -81,15 +85,22 @@ public class MainActivity extends BaseActivity {
         digitalGridView = rootView.findViewById(R.id.main_digital_keys_grid_view);
         commoditysListView = rootView.findViewById(R.id.main_commoditys_list_view);
 //        bankCardBtn = rootView.findViewById(R.id.main_bank_card_btn);
+        commodityNameTv = rootView.findViewById(R.id.main_commodity_name_tv);
         cashBtn = rootView.findViewById(R.id.main_cash_btn);
         settingsBtn = rootView.findViewById(R.id.main_settings_btn);
-
+        clearBtn = rootView.findViewById(R.id.main_digital_clear_btn);
+        addBtn = rootView.findViewById(R.id.main_digital_add_btn);
+        priceEt = rootView.findViewById(R.id.main_commodity_price_et);
+        priceEt.requestFocus();
+        disableShowInput(priceEt);
 
         gPprinterManager = new GPprinterManager(this);
 //        gPprinterManager.openConnect();
 //        bankCardBtn.setOnClickListener(this);
         cashBtn.setOnClickListener(this);
         settingsBtn.setOnClickListener(this);
+        clearBtn.setOnClickListener(this);
+        addBtn.setOnClickListener(this);
         return rootView;
     }
 
@@ -113,9 +124,11 @@ public class MainActivity extends BaseActivity {
         commoditysGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(!mThread.isAlive()){
-                    mThread.run();
-                }
+//                if (!mThread.isAlive()) {
+//                    mThread.run();
+//                }
+                String name = parent.getAdapter().getItem(position).toString();
+                commodityNameTv.setText(name);
             }
         });
 
@@ -126,6 +139,13 @@ public class MainActivity extends BaseActivity {
         }
         digitalAdapter = new DigitalAdapter(this, digitaList);
         digitalGridView.setAdapter(digitalAdapter);
+        digitalGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String text = parent.getAdapter().getItem(position).toString();
+                setEditText(priceEt, position, text);
+            }
+        });
 
 //
 //        if(!ClientManager.getClient().isBluetoothOpened()){
@@ -155,7 +175,7 @@ public class MainActivity extends BaseActivity {
         @Override
         public void run() {
             InputStream inputStream = BtHelperClient.from(MainActivity.this).mInputStream;
-            if(inputStream != null){
+            if (inputStream != null) {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                 while (true) {
 
@@ -165,7 +185,7 @@ public class MainActivity extends BaseActivity {
                         Looper.prepare();
                         Toast.makeText(mContext, "weight " + s1 + " mInputStream.available() " + inputStream.available(), Toast.LENGTH_LONG).show();
 //                        Thread.sleep(200);
-                        if(inputStream.available() == 0){
+                        if (inputStream.available() == 0) {
                             break;
                         }
                     } catch (Exception e) {
@@ -188,25 +208,30 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
 //            case R.id.main_bank_card_btn:
             case R.id.main_cash_btn:
                 startDDMActivity(SettingsActivity.class, false);
 //                showDialog(v);
                 break;
             case R.id.main_settings_btn:
-                startDDMActivity(SettingsActivity.class, false);
+                startDDMActivity(StaffMemberLoginActivity.class, false);
                 break;
             case R.id.main_clear_btn:
                 gPprinterManager.openConnect();
                 gPprinterManager.printTest();
                 break;
+            case R.id.main_digital_clear_btn:
+                priceEt.setText("");
+                break;
+            case R.id.main_digital_add_btn:
+                break;
         }
     }
 
-    public void showDialog(View v){
+    public void showDialog(View v) {
         Intent intent = new Intent();
-        switch (v.getId()){
+        switch (v.getId()) {
 //            case R.id.main_bank_card_btn:
 //                intent.setClass(this, UseBankCardActivity.class);
 //                break;
@@ -219,38 +244,38 @@ public class MainActivity extends BaseActivity {
     }
 
 
-    public void test(){
-       RetrofitFactory.getInstance().API()
-               .test()
-               .compose(this.<String>setThread())
-               .subscribe(new Observer<String>() {
-                   @Override
-                   public void onSubscribe(@NonNull Disposable d) {
+    public void test() {
+        RetrofitFactory.getInstance().API()
+                .test()
+                .compose(this.<String>setThread())
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
 
-                   }
+                    }
 
-                   @Override
-                   public void onNext(@NonNull String s) {
-                       LogUtils.d(s);
-                   }
+                    @Override
+                    public void onNext(@NonNull String s) {
+                        LogUtils.d(s);
+                    }
 
-                   @Override
-                   public void onError(@NonNull Throwable e) {
+                    @Override
+                    public void onError(@NonNull Throwable e) {
 
-                   }
+                    }
 
-                   @Override
-                   public void onComplete() {
+                    @Override
+                    public void onComplete() {
 
-                   }
-               });
+                    }
+                });
     }
 
-    class CommodityAdapter extends BaseAdapter{
+    class CommodityAdapter extends BaseAdapter {
         private Context context;
         private List<String> list;
 
-        public CommodityAdapter(Context context, List<String> list){
+        public CommodityAdapter(Context context, List<String> list) {
             this.context = context;
             this.list = list;
         }
@@ -272,8 +297,8 @@ public class MainActivity extends BaseActivity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder=null;
-            if(convertView == null){
+            ViewHolder holder = null;
+            if (convertView == null) {
                 convertView = LayoutInflater.from(context).inflate(R.layout.commodity_item, null);
                 holder = new ViewHolder();
                 holder.nameTv = convertView.findViewById(R.id.commodity_name_tv);
@@ -283,7 +308,7 @@ public class MainActivity extends BaseActivity {
                 holder.subtotalTv = convertView.findViewById(R.id.commodity_subtotal_tv);
                 holder.deleteBtn = convertView.findViewById(R.id.commodity_delete_btn);
                 convertView.setTag(holder);
-            }else {
+            } else {
                 holder = (ViewHolder) convertView.getTag();
             }
 
@@ -291,10 +316,10 @@ public class MainActivity extends BaseActivity {
             return convertView;
         }
 
-        class ViewHolder{
+        class ViewHolder {
             TextView nameTv;
             TextView priceTv;
-//            TextView countTv;
+            //            TextView countTv;
             TextView weightTv;
             TextView subtotalTv;
             Button deleteBtn;

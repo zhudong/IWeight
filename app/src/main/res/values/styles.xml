@@ -32,6 +32,10 @@
         <!--模糊-->
     </style>
 
+    <style name="dialog_close_outside" parent="dialog">
+        <item name="android:windowCloseOnTouchOutside">false</item>
+    </style>
+
     <style name="MyEditText" parent="Theme.AppCompat.Light">
         <item name="colorControlNormal">@color/green_3CB371</item>
         <item name="colorControlActivated">@color/green_3CB371</item>

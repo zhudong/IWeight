@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,6 +79,7 @@ public class SoftKeyborad extends Dialog {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     if(position == 9){
+                        if(!TextUtils.isEmpty(inputTv.getText()))
                         inputTv.setText(inputTv.getText().subSequence(0, inputTv.getText().length() - 1));
                     }else {
                         inputTv.setText(inputTv.getText() + DATA_DIGITAL[position]);

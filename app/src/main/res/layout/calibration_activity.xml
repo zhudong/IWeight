@@ -220,7 +220,6 @@
                         android:gravity="center"
                         android:hint="0.000"
                         android:textColor="@color/black"
-                        android:textColorHint="@color/black"
                         android:textSize="30sp"
                         android:theme="@style/MyEditText" />
 
@@ -244,7 +243,6 @@
 
 
                     <EditText
-
                         android:id="@+id/calibration_dividing_value_et"
                         android:layout_width="180dp"
                         android:layout_height="wrap_content"
@@ -253,7 +251,6 @@
                         android:gravity="center"
                         android:hint="0.000"
                         android:textColor="@color/black"
-                        android:textColorHint="@color/black"
                         android:textSize="30sp"
                         android:theme="@style/MyEditText" />
 
@@ -293,7 +290,6 @@
                         android:gravity="center"
                         android:hint="0.000"
                         android:textColor="@color/black"
-                        android:textColorHint="@color/black"
                         android:textSize="30sp"
                         android:theme="@style/MyEditText" />
 

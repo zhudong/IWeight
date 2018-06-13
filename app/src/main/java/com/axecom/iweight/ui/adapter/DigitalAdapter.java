@@ -53,12 +53,12 @@ public class DigitalAdapter extends BaseAdapter{
         if(position == 9){
 //            holder.digitalBtn.setTextSize(30);
         }
-        convertView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
+//        convertView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//            }
+//        });
 
         return convertView;
     }

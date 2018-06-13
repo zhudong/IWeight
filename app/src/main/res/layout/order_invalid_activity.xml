@@ -29,72 +29,81 @@
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="260dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:text="订单号"
                 android:textColor="@color/black"
                 android:textSize="20sp" />
 
             <TextView
-                android:layout_width="160dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:text="交易时间"
                 android:textColor="@color/black"
                 android:textSize="20sp" />
 
             <TextView
-                android:layout_width="160dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:text="卖方"
                 android:textColor="@color/black"
                 android:textSize="20sp" />
 
             <TextView
-                android:layout_width="160dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:text="买方"
                 android:textColor="@color/black"
                 android:textSize="20sp" />
 
             <TextView
-                android:layout_width="160dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:text="总净重"
                 android:textColor="@color/black"
                 android:textSize="20sp" />
 
             <TextView
-                android:layout_width="160dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:text="实收(元)"
                 android:textColor="@color/black"
                 android:textSize="20sp" />
 
             <TextView
-                android:layout_width="160dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:text="结算方式"
                 android:textColor="@color/black"
                 android:textSize="20sp" />
 
             <TextView
-                android:layout_width="160dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:text="订单状态"
                 android:textColor="@color/black"
                 android:textSize="20sp" />
 
             <TextView
-                android:layout_width="160dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:text="操作"
                 android:textColor="@color/black"
@@ -102,19 +111,23 @@
 
 
         </LinearLayout>
+
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/black"/>
+            android:background="@color/black" />
+
         <ListView
             android:id="@+id/order_invalid_listview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1" />
+
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/black"/>
+            android:background="@color/black" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

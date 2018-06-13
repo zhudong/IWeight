@@ -311,8 +311,13 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
         });
     }
 
-    public void addTextChangedListener(final EditText editText){
-
+    public void setEditText(EditText editText, int position, String text) {
+        if (position == 9) {
+            if(!TextUtils.isEmpty(editText.getText()))
+            editText.setText(editText.getText().subSequence(0, editText.getText().length() - 1));
+        } else {
+            editText.setText(editText.getText() + text);
+        }
     }
 
     @Subscribe
