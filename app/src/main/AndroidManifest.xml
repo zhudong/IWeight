@@ -84,7 +84,7 @@
             android:name=".ui.activity.StaffMemberLoginActivity"
             android:theme="@style/dialog"
             android:windowSoftInputMode="stateHidden|stateAlwaysHidden" />
-
+        <activity android:name=".ui.activity.LocalSettingsActivity" />
 
         <service
             android:name="com.gprinter.service.GpPrintService"

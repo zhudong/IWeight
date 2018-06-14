@@ -92,29 +92,13 @@ public class CalibrationActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-//        if (isShowStaffLogin) {
-//            Intent intent = new Intent();
-//            intent.setClass(this, StaffMemberLoginActivity.class);
-//            startActivityForResult(intent, RESULT_OK);
-//        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            isShowStaffLogin = false;
-        }
-        if (resultCode == RESULT_CANCELED) {
-            finish();
-        }
     }
 
     @Override
     public void initView() {
-        Intent intent = new Intent();
-        intent.setClass(this, StaffMemberLoginActivity.class);
-        startActivityForResult(intent, 101);
+//        Intent intent = new Intent();
+//        intent.setClass(this, StaffMemberLoginActivity.class);
+//        startActivityForResult(intent, 101);
         List<String> digitaList = new ArrayList<>();
 
         for (int i = 0; i < DATA_DIGITAL.length; i++) {

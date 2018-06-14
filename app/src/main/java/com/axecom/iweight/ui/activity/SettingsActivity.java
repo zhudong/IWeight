@@ -125,6 +125,9 @@ public class SettingsActivity extends BaseActivity {
                 case POSITION_COMMODITY:
                     startDDMActivity(CommodityManagementActivity.class, false);
                     break;
+                case POSITION_LOCAL:
+                    startDDMActivity(LocalSettingsActivity.class, false);
+                    break;
             }
         }
     };
