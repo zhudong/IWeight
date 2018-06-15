@@ -128,6 +128,12 @@ public class SettingsActivity extends BaseActivity {
                 case POSITION_LOCAL:
                     startDDMActivity(LocalSettingsActivity.class, false);
                     break;
+                case POSITION_SYSTEM:
+                    startDDMActivity(SystemSettingsActivity.class, false);
+                    break;
+                case POSITION_RE_BOOT:
+                    startDDMActivity(HomeActivity.class, false);
+                    break;
             }
         }
     };

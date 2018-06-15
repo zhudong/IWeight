@@ -21,7 +21,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.hardware.usb.accessory" />
-
+    <uses-permission android:name = "android.permission.DISABLE_KEYGUARD"/>
     <uses-feature android:name="android.hardware.usb.host" />
 
     <uses-feature
@@ -85,7 +85,7 @@
             android:theme="@style/dialog"
             android:windowSoftInputMode="stateHidden|stateAlwaysHidden" />
         <activity android:name=".ui.activity.LocalSettingsActivity" />
-
+        <activity android:name=".ui.activity.SystemSettingsActivity" />
         <service
             android:name="com.gprinter.service.GpPrintService"
             android:enabled="true"

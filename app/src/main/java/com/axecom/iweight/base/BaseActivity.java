@@ -13,6 +13,7 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -24,6 +25,7 @@ import android.widget.Toast;
 
 import com.axecom.iweight.R;
 import com.axecom.iweight.manager.ActivityController;
+import com.axecom.iweight.ui.activity.HomeActivity;
 import com.axecom.iweight.ui.activity.MainActivity;
 import com.axecom.iweight.ui.uiutils.ViewUtils;
 import com.axecom.iweight.utils.LogUtils;
@@ -47,7 +49,7 @@ import io.reactivex.schedulers.Schedulers;
  */
 public abstract class BaseActivity extends FragmentActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
     public ViewUtils mViewUtils = null;
-
+    public static final int FLAG_HOMEKEY_DISPATCHED = 0x80000000; //需要自己定义标志
     DisplayMetrics dm;
     public int mWidthPixels;
     public int mHeightPixels;
@@ -60,6 +62,7 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
     protected void onCreate(Bundle savedInstanceState) {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         super.onCreate(savedInstanceState);
+        this.getWindow().setFlags(FLAG_HOMEKEY_DISPATCHED, FLAG_HOMEKEY_DISPATCHED);//关键代码
         //注册EventBus
         EventBus.getDefault().register(this);
         //沉浸式标题栏
@@ -107,6 +110,13 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
 
     }
 
+    @Override
+    public boolean onKeyDown( int keyCode, KeyEvent event) {
+        if (keyCode == event. KEYCODE_HOME) {
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -317,6 +327,12 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
             editText.setText(editText.getText().subSequence(0, editText.getText().length() - 1));
         } else {
             editText.setText(editText.getText() + text);
+        }
+    }
+
+    public void reBootApp(){
+        if(!(this instanceof HomeActivity)){
+            finish();
         }
     }
 

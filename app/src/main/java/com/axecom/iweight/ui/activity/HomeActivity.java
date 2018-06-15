@@ -188,4 +188,10 @@ public class HomeActivity extends BaseActivity {
                     }
                 });
     }
+
+    @Override
+    public void onBackPressed() {
+    }
+
+
 }

@@ -207,6 +207,10 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
+    public void onBackPressed() {
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
 //            case R.id.main_bank_card_btn:
