@@ -4,6 +4,10 @@ package com.axecom.iweight.net;
 import com.axecom.iweight.base.BaseEntity;
 import com.axecom.iweight.bean.CalibrationBean;
 import com.axecom.iweight.bean.LoginData;
+import com.axecom.iweight.bean.ScalesCategoryGoods;
+import com.axecom.iweight.bean.SettingDataBean;
+import com.axecom.iweight.bean.SubOrderBean;
+import com.axecom.iweight.bean.SubOrderReqBean;
 import com.axecom.iweight.bean.WeightBean;
 
 import io.reactivex.Observable;
@@ -82,4 +86,35 @@ public interface RequestInterface {
     @POST("isOnline")
     Observable<BaseEntity> isOnline(@Query("scales_id") String scalesId);
 
+    /**
+     * 测试连接服务器
+     * @return
+     */
+    @GET("testConnection")
+    Observable<BaseEntity> testConnection();
+
+    /**
+     * 获取商品
+     * @param token
+     * @param mac
+     * @return
+     */
+    @POST("getScalesCategoryGoods")
+    Observable<BaseEntity<ScalesCategoryGoods>> getScalesCategoryGoods(@Query("token") String token, @Query("mac") String mac);
+
+    /**
+     * 提交订单
+     * @param subOrderReqBean
+     * @return
+     */
+    @POST("submitOrder")
+    Observable<BaseEntity<SubOrderBean>> submitOrder(@Body SubOrderReqBean subOrderReqBean);
+
+    /**
+     *  获取系统设置数据
+     * @param mac
+     * @return
+     */
+    @POST("getSettingData")
+    Observable<BaseEntity<SettingDataBean>> getSettingData(@Query("mac") String mac);
 }

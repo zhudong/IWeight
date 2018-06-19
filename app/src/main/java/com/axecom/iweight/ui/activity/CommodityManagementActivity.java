@@ -19,13 +19,21 @@ import android.widget.TextView;
 
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
+import com.axecom.iweight.base.BaseEntity;
 import com.axecom.iweight.bean.CommodityBean;
+import com.axecom.iweight.bean.ScalesCategoryGoods;
 import com.axecom.iweight.impl.ItemDragHelperCallback;
 import com.axecom.iweight.impl.OnDragVHListener;
 import com.axecom.iweight.impl.OnItemMoveListener;
+import com.axecom.iweight.manager.AccountManager;
+import com.axecom.iweight.manager.MacManager;
+import com.axecom.iweight.net.RetrofitFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
 public class CommodityManagementActivity extends BaseActivity {
 
@@ -46,6 +54,7 @@ public class CommodityManagementActivity extends BaseActivity {
 
     @Override
     public void initView() {
+        getScalesCategoryGoods();
         final List<CommodityBean> list = new ArrayList<>();
         CommodityBean commodityBean;
         for (int i = 0; i < 30; i++) {
@@ -105,6 +114,40 @@ public class CommodityManagementActivity extends BaseActivity {
     @Override
     public void onClick(View v) {
 
+    }
+
+    public void getScalesCategoryGoods(){
+        showLoading();
+        RetrofitFactory.getInstance().API()
+//                .getScalesCategoryGoods(AccountManager.getInstance().getToken(), MacManager.getInstace(this).getMac())
+                .getScalesCategoryGoods(AccountManager.getInstance().getToken(), "84:73:03:5b:ba:bb")
+                .compose(this.<BaseEntity<ScalesCategoryGoods>>setThread())
+                .subscribe(new Observer<BaseEntity<ScalesCategoryGoods>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(BaseEntity<ScalesCategoryGoods> scalesCategoryGoodsBaseEntity) {
+                        if(scalesCategoryGoodsBaseEntity.isSuccess()){
+                            closeLoading();
+
+                        }else {
+                            showLoading(scalesCategoryGoodsBaseEntity.getMsg());
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
     class ClassAdapter extends BaseAdapter{

@@ -9,12 +9,19 @@ import android.widget.TextView;
 
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
+import com.axecom.iweight.base.BaseEntity;
 import com.axecom.iweight.bean.ChooseBean;
+import com.axecom.iweight.bean.SettingDataBean;
+import com.axecom.iweight.manager.MacManager;
+import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.ui.view.ChooseDialog;
 import com.axecom.iweight.ui.view.SoftKeyborad;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
 public class SystemSettingsActivity extends BaseActivity {
 
@@ -91,6 +98,7 @@ public class SystemSettingsActivity extends BaseActivity {
 
     @Override
     public void initView() {
+        getSettingData();
         list = new ArrayList<>();
         ChooseBean bean;
         for (int i = 0; i < 4; i++) {
@@ -216,5 +224,42 @@ public class SystemSettingsActivity extends BaseActivity {
                 boolean notClear = notClearPriceCtv.isChecked();
                 break;
         }
+    }
+
+    public void getSettingData(){
+        showLoading();
+        RetrofitFactory.getInstance().API()
+                .getSettingData("84:73:03:5b:ba:bb")
+                .compose(this.<BaseEntity<SettingDataBean>>setThread())
+                .subscribe(new Observer<BaseEntity<SettingDataBean>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(BaseEntity<SettingDataBean> settingDataBeanBaseEntity) {
+                        closeLoading();
+                        boolean isSu = settingDataBeanBaseEntity.isSuccess();
+                        if (settingDataBeanBaseEntity.isSuccess()) {
+
+                        }else {
+                            showLoading(settingDataBeanBaseEntity.getMsg());
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        closeLoading();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+//                .getSettingData(MacManager.getInstace(this).getMac())
+
     }
 }

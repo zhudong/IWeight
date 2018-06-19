@@ -1,5 +1,6 @@
 package com.axecom.iweight.ui.activity;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -7,6 +8,11 @@ import android.widget.TextView;
 
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
+import com.axecom.iweight.base.BaseEntity;
+import com.axecom.iweight.net.RetrofitFactory;
+
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
 /**
  * Created by Administrator on 2018-5-29.
@@ -24,6 +30,7 @@ public class ServerTestActivity extends BaseActivity {
         cancelBtn = rootView.findViewById(R.id.server_test_cancel_btn);
         titleTv = rootView.findViewById(R.id.server_test_title_tv);
 
+        testConnection();
         cancelBtn.setOnClickListener(this);
         return rootView;
     }
@@ -35,5 +42,38 @@ public class ServerTestActivity extends BaseActivity {
                 finish();
                 break;
         }
+    }
+
+    public void testConnection(){
+        RetrofitFactory.getInstance().API()
+                .testConnection()
+                .compose(this.<BaseEntity>setThread())
+                .subscribe(new Observer<BaseEntity>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(BaseEntity baseEntity) {
+                            titleTv.setText(baseEntity.getMsg());
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    finish();
+                                }
+                            }, 1000);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 }

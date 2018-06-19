@@ -21,8 +21,13 @@ import android.widget.Toast;
 
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
+import com.axecom.iweight.base.BaseEntity;
+import com.axecom.iweight.bean.SubOrderBean;
+import com.axecom.iweight.bean.SubOrderReqBean;
+import com.axecom.iweight.manager.AccountManager;
 import com.axecom.iweight.manager.ClientManager;
 import com.axecom.iweight.manager.GPprinterManager;
+import com.axecom.iweight.manager.MacManager;
 import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.ui.adapter.DigitalAdapter;
 import com.axecom.iweight.ui.adapter.GridAdapter;
@@ -42,7 +47,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.Observer;
@@ -71,6 +78,7 @@ public class MainActivity extends BaseActivity {
     private Button bankCardBtn;
     private Button cashBtn;
     private Button settingsBtn;
+    private Button mainClearBtn;
     private GPprinterManager gPprinterManager;
     private EditText priceEt;
     private Button clearBtn, addBtn;
@@ -88,6 +96,7 @@ public class MainActivity extends BaseActivity {
         commodityNameTv = rootView.findViewById(R.id.main_commodity_name_tv);
         cashBtn = rootView.findViewById(R.id.main_cash_btn);
         settingsBtn = rootView.findViewById(R.id.main_settings_btn);
+        mainClearBtn = rootView.findViewById(R.id.main_clear_btn);
         clearBtn = rootView.findViewById(R.id.main_digital_clear_btn);
         addBtn = rootView.findViewById(R.id.main_digital_add_btn);
         priceEt = rootView.findViewById(R.id.main_commodity_price_et);
@@ -97,6 +106,7 @@ public class MainActivity extends BaseActivity {
         gPprinterManager = new GPprinterManager(this);
 //        gPprinterManager.openConnect();
 //        bankCardBtn.setOnClickListener(this);
+        mainClearBtn.setOnClickListener(this);
         cashBtn.setOnClickListener(this);
         settingsBtn.setOnClickListener(this);
         clearBtn.setOnClickListener(this);
@@ -199,6 +209,39 @@ public class MainActivity extends BaseActivity {
         }
     });
 
+    public void submitOrder(SubOrderReqBean subOrderReqBean) {
+        showLoading();
+        RetrofitFactory.getInstance().API()
+                .submitOrder(subOrderReqBean)
+                .compose(this.<BaseEntity<SubOrderBean>>setThread())
+                .subscribe(new Observer<BaseEntity<SubOrderBean>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(BaseEntity<SubOrderBean> subOrderBeanBaseEntity) {
+                        closeLoading();
+                        if (subOrderBeanBaseEntity.isSuccess()) {
+                        } else {
+                            showLoading(subOrderBeanBaseEntity.getMsg());
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        closeLoading();
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
 
     @Override
     protected void onDestroy() {
@@ -222,8 +265,29 @@ public class MainActivity extends BaseActivity {
                 startDDMActivity(StaffMemberLoginActivity.class, false);
                 break;
             case R.id.main_clear_btn:
-                gPprinterManager.openConnect();
-                gPprinterManager.printTest();
+//                gPprinterManager.openConnect();
+//                gPprinterManager.printTest();
+                SubOrderReqBean subOrderReqBean = new SubOrderReqBean();
+                SubOrderReqBean.Goods good;
+                List<SubOrderReqBean.Goods> goodsList = new ArrayList<>();
+                for (int i = 0; i < 5; i++) {
+                    good = new SubOrderReqBean.Goods();
+                    good.setGoods_id("1");
+                    good.setGoods_name("白菜" + i);
+                    good.setGoods_price("12.60");
+                    good.setGoods_number("2");
+                    good.setGoods_amount("25.20");
+                    goodsList.add(good);
+                }
+                subOrderReqBean.setToken(AccountManager.getInstance().getToken());
+//                subOrderReqBean.setMac(MacManager.getInstace(this).getMac());
+                subOrderReqBean.setMac("84:73:03:5b:ba:bb");
+                subOrderReqBean.setTotal_amount("123");
+                subOrderReqBean.setTotal_weight("1kg");
+                subOrderReqBean.setPayment_id("1");
+                subOrderReqBean.setCreate_time(getCurrentTime());
+                subOrderReqBean.setGoods(goodsList);
+                submitOrder(subOrderReqBean);
                 break;
             case R.id.main_digital_clear_btn:
                 priceEt.setText("");
