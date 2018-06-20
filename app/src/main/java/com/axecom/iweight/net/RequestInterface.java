@@ -4,6 +4,7 @@ package com.axecom.iweight.net;
 import com.axecom.iweight.base.BaseEntity;
 import com.axecom.iweight.bean.CalibrationBean;
 import com.axecom.iweight.bean.LoginData;
+import com.axecom.iweight.bean.ReportResultBean;
 import com.axecom.iweight.bean.ScalesCategoryGoods;
 import com.axecom.iweight.bean.SettingDataBean;
 import com.axecom.iweight.bean.SubOrderBean;
@@ -103,6 +104,15 @@ public interface RequestInterface {
     Observable<BaseEntity<ScalesCategoryGoods>> getScalesCategoryGoods(@Query("token") String token, @Query("mac") String mac);
 
     /**
+     * 获取商品
+     * @param token
+     * @param mac
+     * @return
+     */
+    @POST("getGoodsData")
+    Observable<BaseEntity<ScalesCategoryGoods>> getGoodsData(@Query("token") String token, @Query("mac") String mac);
+
+    /**
      * 提交订单
      * @param subOrderReqBean
      * @return
@@ -116,5 +126,17 @@ public interface RequestInterface {
      * @return
      */
     @POST("getSettingData")
-    Observable<BaseEntity<SettingDataBean>> getSettingData(@Query("mac") String mac);
+    Observable<BaseEntity> getSettingData(@Query("mac") String mac);
+
+    /**
+     * 日报表与月报表
+     * @param mac
+     * @param dateVal
+     * @param typeVal
+     * @param page
+     * @param pageNum
+     * @return
+     */
+    @POST("getReportsList")
+    Observable<BaseEntity<ReportResultBean>> getReportsList(@Query("mac") String mac, @Query("dateVal") String dateVal, @Query("typeVal") String typeVal, @Query("page") String page, @Query("pageNum") String pageNum);
 }

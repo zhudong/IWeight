@@ -74,7 +74,7 @@ public class SubOrderReqBean {
         private String goods_name;
         private String goods_price;
         private String goods_number;
-        private String goods_amount;
+        private String amount;
 
         public String getGoods_id() {
             return goods_id;
@@ -109,11 +109,11 @@ public class SubOrderReqBean {
         }
 
         public String getGoods_amount() {
-            return goods_amount;
+            return amount;
         }
 
         public void setGoods_amount(String goods_amount) {
-            this.goods_amount = goods_amount;
+            this.amount = goods_amount;
         }
     }
 }

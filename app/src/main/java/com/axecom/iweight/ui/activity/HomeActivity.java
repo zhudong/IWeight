@@ -10,6 +10,7 @@ import com.axecom.iweight.base.BaseActivity;
 import com.axecom.iweight.base.BaseEntity;
 import com.axecom.iweight.bean.LoginData;
 import com.axecom.iweight.bean.WeightBean;
+import com.axecom.iweight.conf.Constants;
 import com.axecom.iweight.manager.AccountManager;
 import com.axecom.iweight.manager.MacManager;
 import com.axecom.iweight.net.RetrofitFactory;
@@ -53,7 +54,7 @@ public class HomeActivity extends BaseActivity {
     @Override
     public void initView() {
 //        getScalesIdByMac(MacManager.getInstace(HomeActivity.this).getMac());
-        getScalesIdByMac("84:73:03:5b:ba:bb");
+        getScalesIdByMac(Constants.MAC_TEST);
     }
 
     @Override

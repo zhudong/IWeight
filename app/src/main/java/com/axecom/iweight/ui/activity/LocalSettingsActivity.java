@@ -93,49 +93,49 @@ public class LocalSettingsActivity extends BaseActivity {
         SoftKeyborad.Builder softBuilder = new SoftKeyborad.Builder(this);
         switch (v.getId()) {
             case R.id.local_settings_weight_port_choose_btn:
-                chooseBuilder.create(list,weightPos, new ChooseDialog.OnSelectedListener() {
-                    @Override
-                    public void onSelected(AdapterView<?> parent, View view, int position, long id) {
-                        weightPos = position;
-                        weightPortChooseTv.setText(((ChooseBean)parent.getAdapter().getItem(position)).getChooseItem());
-                    }
-                }).show();
+//                chooseBuilder.create(list,weightPos, new ChooseDialog.OnSelectedListener() {
+//                    @Override
+//                    public void onSelected(AdapterView<?> parent, View view, int position, long id) {
+//                        weightPos = position;
+//                        weightPortChooseTv.setText(((ChooseBean)parent.getAdapter().getItem(position)).getChooseItem());
+//                    }
+//                }).show();
                 break;
             case R.id.local_settings_printer_port_choose_btn:
-                chooseBuilder.create(list, printerPos, new ChooseDialog.OnSelectedListener() {
-                    @Override
-                    public void onSelected(AdapterView<?> parent, View view, int position, long id) {
-                        printerPos = position;
-                        printerPortChooseTv.setText(((ChooseBean)parent.getAdapter().getItem(position)).getChooseItem());
-                    }
-                }).show();
+//                chooseBuilder.create(list, printerPos, new ChooseDialog.OnSelectedListener() {
+//                    @Override
+//                    public void onSelected(AdapterView<?> parent, View view, int position, long id) {
+//                        printerPos = position;
+//                        printerPortChooseTv.setText(((ChooseBean)parent.getAdapter().getItem(position)).getChooseItem());
+//                    }
+//                }).show();
                 break;
             case R.id.local_settings_led_port_choose_btn:
-                chooseBuilder.create(list, ledPos, new ChooseDialog.OnSelectedListener() {
-                    @Override
-                    public void onSelected(AdapterView<?> parent, View view, int position, long id) {
-                        ledPos = position;
-                        ledPortChooseTv.setText(((ChooseBean)parent.getAdapter().getItem(position)).getChooseItem());
-                    }
-                }).show();
+//                chooseBuilder.create(list, ledPos, new ChooseDialog.OnSelectedListener() {
+//                    @Override
+//                    public void onSelected(AdapterView<?> parent, View view, int position, long id) {
+//                        ledPos = position;
+//                        ledPortChooseTv.setText(((ChooseBean)parent.getAdapter().getItem(position)).getChooseItem());
+//                    }
+//                }).show();
                 break;
             case R.id.local_settings_read_card_port_choose_btn:
-                chooseBuilder.create(list, readCardPortPos, new ChooseDialog.OnSelectedListener() {
-                    @Override
-                    public void onSelected(AdapterView<?> parent, View view, int position, long id) {
-                        readCardPortPos = position;
-                        readCardPortChooseTv.setText(((ChooseBean)parent.getAdapter().getItem(position)).getChooseItem());
-                    }
-                }).show();
+//                chooseBuilder.create(list, readCardPortPos, new ChooseDialog.OnSelectedListener() {
+//                    @Override
+//                    public void onSelected(AdapterView<?> parent, View view, int position, long id) {
+//                        readCardPortPos = position;
+//                        readCardPortChooseTv.setText(((ChooseBean)parent.getAdapter().getItem(position)).getChooseItem());
+//                    }
+//                }).show();
                 break;
             case R.id.local_settings_read_card_type_choose_btn:
-                chooseBuilder.create(list, readCardTypePos, new ChooseDialog.OnSelectedListener() {
-                    @Override
-                    public void onSelected(AdapterView<?> parent, View view, int position, long id) {
-                        readCardTypePos = position;
-                        readCardTypeChooseTv.setText(((ChooseBean)parent.getAdapter().getItem(position)).getChooseItem());
-                    }
-                }).show();
+//                chooseBuilder.create(list, readCardTypePos, new ChooseDialog.OnSelectedListener() {
+//                    @Override
+//                    public void onSelected(AdapterView<?> parent, View view, int position, long id) {
+//                        readCardTypePos = position;
+//                        readCardTypeChooseTv.setText(((ChooseBean)parent.getAdapter().getItem(position)).getChooseItem());
+//                    }
+//                }).show();
                 break;
             case R.id.local_settings_save_btn:
                 break;

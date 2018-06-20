@@ -1,45 +1,44 @@
 package com.axecom.iweight.bean;
 
+import com.axecom.iweight.base.BaseEntity;
+
 import java.util.List;
 
-public class ScalesCategoryGoods {
-    private List<Parent> parentList;
+public class ScalesCategoryGoods<T> extends BaseEntity {
+    private List<T> hotKeyGoods;
+    private List<T> allGoods;
+    private List<T> categoryGoods;
 
-    public List<Parent> getParentList() {
-        return parentList;
+    class hotKeyGoods<T>{
+        int id;
+        String name;
+        int cid;
+        int traceable_code;
+        String price;
+        int id_default;
     }
 
-    public void setParentList(List<Parent> parentList) {
-        this.parentList = parentList;
+    class allGoods<T>{
+        int id;
+        String name;
+        int cid;
+        int traceable_code;
+        String price;
+        int id_default;
     }
 
+    class categoryGoods<T>{
+        int id;
+        String name;
+        List<T> child;
 
-    class Parent{
-        private int id;
-        private String name;
-        private List<Child> childList;
-
-        public List<Child> getChildList() {
-            return childList;
-        }
-
-        public void setChildList(List<Child> childList) {
-            this.childList = childList;
-        }
-
-        class Child{
-            private int id;
-            private int cid;
-            private String name;
-
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public void setId(int id) {
-            this.id = id;
+        class child<T> extends categoryGoods{
+            int id;
+            String name;
+            int cid;
+            int traceable_code;
+            String price;
+            int id_default;
         }
     }
 }

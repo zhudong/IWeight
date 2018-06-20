@@ -115,7 +115,8 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="245dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:text="时间"
@@ -123,7 +124,8 @@
                         android:textSize="20sp" />
 
                     <TextView
-                        android:layout_width="245dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:text="笔数"
@@ -131,7 +133,8 @@
                         android:textSize="20sp" />
 
                     <TextView
-                        android:layout_width="245dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:text="重量(kg)"
@@ -139,7 +142,8 @@
                         android:textSize="20sp" />
 
                     <TextView
-                        android:layout_width="245dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:text="小计(元)"
@@ -147,7 +151,8 @@
                         android:textSize="20sp" />
 
                     <TextView
-                        android:layout_width="245dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:text="实收(元)"
@@ -272,7 +277,8 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="245dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:text="总计"
@@ -281,7 +287,9 @@
                         android:textStyle="bold" />
 
                     <TextView
-                        android:layout_width="245dp"
+                        android:id="@+id/data_summary_reports_count_total_tv"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:text="495"
@@ -290,7 +298,9 @@
                         android:textStyle="bold" />
 
                     <TextView
-                        android:layout_width="245dp"
+                        android:id="@+id/data_summary_reports_weight_total_tv"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:text="49.32"
@@ -299,7 +309,9 @@
                         android:textStyle="bold" />
 
                     <TextView
-                        android:layout_width="245dp"
+                        android:id="@+id/data_summary_reports_grand_total_tv"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:text="1150.32"
@@ -308,7 +320,9 @@
                         android:textStyle="bold" />
 
                     <TextView
-                        android:layout_width="245dp"
+                        android:id="@+id/data_summary_reports_amount_total_tv"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:text="1150.32"
@@ -329,6 +343,7 @@
                     android:padding="5dp">
 
                     <Button
+                        android:id="@+id/data_summary_reports_prev_page_btn"
                         android:layout_width="200dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="50dp"
@@ -339,6 +354,7 @@
                         android:textSize="20sp" />
 
                     <Button
+                        android:id="@+id/data_summary_reports_next_page_btn"
                         android:layout_width="200dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
@@ -349,6 +365,7 @@
                         android:textSize="20sp" />
 
                     <Button
+                        android:id="@+id/data_summary_reports_prev_month_btn"
                         android:layout_width="200dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="50dp"
@@ -359,6 +376,7 @@
                         android:textSize="20sp" />
 
                     <Button
+                        android:id="@+id/data_summary_reports_next_month_btn"
                         android:layout_width="200dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"

@@ -1,85 +1,97 @@
 package com.axecom.iweight.bean;
 
+import com.axecom.iweight.base.BaseEntity;
+
 import java.util.List;
 import java.util.Map;
 
-public class SettingDataBean {
-    private List<Map<Integer, String>> default_login_type;
-    private List<Map<Integer, String>> default_pricing_model;
-    private List<Map<Integer, String>> printer_configuration;
-    private List<Map<Integer, String>> rounding_weight;
-    private List<Map<Integer, String>> screen_unit_display;
-    private List<Map<Integer, String>> balance_rounding;
+public class SettingDataBean<T> extends BaseEntity{
+    public List<T> default_login_type;
+    public List<T> default_pricing_model;
+    public List<T> printer_configuration;
+    public List<T> rounding_weight;
+    public List<T> screen_unit_display;
+    public List<T> balance_rounding;
+    public Value value;
 
-    public List<Map<Integer, String>> getDefault_login_type() {
+    public List<T> getDefault_login_type() {
         return default_login_type;
     }
 
-    public void setDefault_login_type(List<Map<Integer, String>> default_login_type) {
+    public void setDefault_login_type(List<T> default_login_type) {
         this.default_login_type = default_login_type;
     }
 
-    public List<Map<Integer, String>> getDefault_pricing_model() {
+
+    public Value getValue() {
+        return value;
+    }
+
+    public void setValue(Value value) {
+        this.value = value;
+    }
+
+    public List<T> getDefault_pricing_model() {
         return default_pricing_model;
     }
 
-    public void setDefault_pricing_model(List<Map<Integer, String>> default_pricing_model) {
+    public void setDefault_pricing_model(List<T> default_pricing_model) {
         this.default_pricing_model = default_pricing_model;
     }
 
-    public List<Map<Integer, String>> getPrinter_configuration() {
+    public List<T> getPrinter_configuration() {
         return printer_configuration;
     }
 
-    public void setPrinter_configuration(List<Map<Integer, String>> printer_configuration) {
+    public void setPrinter_configuration(List<T> printer_configuration) {
         this.printer_configuration = printer_configuration;
     }
 
-    public List<Map<Integer, String>> getRounding_weight() {
+    public List<T> getRounding_weight() {
         return rounding_weight;
     }
 
-    public void setRounding_weight(List<Map<Integer, String>> rounding_weight) {
+    public void setRounding_weight(List<T> rounding_weight) {
         this.rounding_weight = rounding_weight;
     }
 
-    public List<Map<Integer, String>> getScreen_unit_display() {
+    public List<T> getScreen_unit_display() {
         return screen_unit_display;
     }
 
-    public void setScreen_unit_display(List<Map<Integer, String>> screen_unit_display) {
+    public void setScreen_unit_display(List<T> screen_unit_display) {
         this.screen_unit_display = screen_unit_display;
     }
 
-    public List<Map<Integer, String>> getBalance_rounding() {
+    public List<T> getBalance_rounding() {
         return balance_rounding;
     }
 
-    public void setBalance_rounding(List<Map<Integer, String>> balance_rounding) {
+    public void setBalance_rounding(List<T> balance_rounding) {
         this.balance_rounding = balance_rounding;
     }
 
-    class Value{
-        private DefaultLoginType default_login_type;
-        private DefaultPricingModel default_pricing_model;
-        private PrinterConfiguration printer_configuration;
-        private RoundingWeight rounding_weight;
-        private DefaultVariety default_variety;
-        private ScreenUnitDisplay screen_unit_display;
-        private DefaultBuyerNumber default_buyer_number;
-        private DefaultSellerNumber default_seller_number;
-        private BalanceRounding balance_rounding;
-        private PriceAfterSaving price_after_saving;
-        private ConfirmThePreservation confirm_the_preservation;
-        private BuyersAndSellersByDefault buyers_and_sellers_by_default;
-        private OnlineSettlement online_settlement;
-        private BuyersAndSellersAfterWeighing buyers_and_sellers_after_weighing;
-        private CardSettlement card_settlement;
-        private DisablePrinting disable_printing;
-        private AllowBatchlessSettlement allow_batchless_settlement;
-        private TakeaUnitPrice take_a_unit_price;
-        private CashChangeRounding cash_change_rounding;
-        private DisableCashMode disable_cash_mode;
+    class Value<T>{
+        public DefaultLoginType default_login_type;
+        public DefaultPricingModel default_pricing_model;
+        public PrinterConfiguration printer_configuration;
+        public RoundingWeight rounding_weight;
+        public DefaultVariety default_variety;
+        public ScreenUnitDisplay screen_unit_display;
+        public DefaultBuyerNumber default_buyer_number;
+        public DefaultSellerNumber default_seller_number;
+        public BalanceRounding balance_rounding;
+        public PriceAfterSaving price_after_saving;
+        public ConfirmThePreservation confirm_the_preservation;
+        public BuyersAndSellersByDefault buyers_and_sellers_by_default;
+        public OnlineSettlement online_settlement;
+        public BuyersAndSellersAfterWeighing buyers_and_sellers_after_weighing;
+        public CardSettlement card_settlement;
+        public DisablePrinting disable_printing;
+        public AllowBatchlessSettlement allow_batchless_settlement;
+        public TakeaUnitPrice take_a_unit_price;
+        public CashChangeRounding cash_change_rounding;
+        public DisableCashMode disable_cash_mode;
 
         public DefaultLoginType getDefault_login_type() {
             return default_login_type;

@@ -6,15 +6,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
+import com.axecom.iweight.base.BaseEntity;
+import com.axecom.iweight.bean.ReportResultBean;
+import com.axecom.iweight.conf.Constants;
+import com.axecom.iweight.net.RetrofitFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
 
 /**
  * Created by Administrator on 2018-5-24.
@@ -35,7 +44,13 @@ public class DataSummaryActivity extends BaseActivity {
     private TextView monthReportTv;
     private TextView salesDetailsReportTv;
     private TextView backTv;
+    private List<ReportResultBean.list> dataList;
 
+    private TextView countTotalTv, weightTotalTv, grandTotalTv, amountTotalTv;
+    private Button prevPageBtn, nextPageBtn, prevMonthBtn, nextMonthBtn;
+    private int currentPage = 1;
+    private int typeVal = 1;
+    private int pageNum = 10;
 
     @Override
     public View setInitView() {
@@ -50,25 +65,39 @@ public class DataSummaryActivity extends BaseActivity {
         monthReportTv = rootView.findViewById(R.id.data_summary_month_report_tv);
         salesDetailsReportTv = rootView.findViewById(R.id.data_summary_sales_details_report_tv);
         backTv = rootView.findViewById(R.id.data_summary_back_tv);
+        countTotalTv = rootView.findViewById(R.id.data_summary_reports_count_total_tv);
+        weightTotalTv = rootView.findViewById(R.id.data_summary_reports_weight_total_tv);
+        grandTotalTv = rootView.findViewById(R.id.data_summary_reports_grand_total_tv);
+        amountTotalTv = rootView.findViewById(R.id.data_summary_reports_amount_total_tv);
+        prevPageBtn = rootView.findViewById(R.id.data_summary_reports_prev_page_btn);
+        nextPageBtn = rootView.findViewById(R.id.data_summary_reports_next_page_btn);
+        prevMonthBtn = rootView.findViewById(R.id.data_summary_reports_prev_month_btn);
+        nextMonthBtn = rootView.findViewById(R.id.data_summary_reports_next_month_btn);
 
 
         dayReportTv.setOnClickListener(this);
         monthReportTv.setOnClickListener(this);
         salesDetailsReportTv.setOnClickListener(this);
         backTv.setOnClickListener(this);
+        countTotalTv.setOnClickListener(this);
+        weightTotalTv.setOnClickListener(this);
+        grandTotalTv.setOnClickListener(this);
+        amountTotalTv.setOnClickListener(this);
+        prevPageBtn.setOnClickListener(this);
+        nextPageBtn.setOnClickListener(this);
+        prevMonthBtn.setOnClickListener(this);
+        nextMonthBtn.setOnClickListener(this);
         return rootView;
     }
 
     @Override
     public void initView() {
-        List<String> list = new ArrayList<>();
-        for (int i = 0; i < 50; i++) {
-            list.add(i + "点");
-        }
-        dataAdapter = new DataAdapter(this, list);
+        getReportsList(0, getCurrentTime("yyyy-MM"), typeVal + "", currentPage + "", pageNum + "");
+        dataList = new ArrayList<>();
+        dataAdapter = new DataAdapter(this, dataList);
         dataListView.setAdapter(dataAdapter);
 
-         List<String> list2 = new ArrayList<>();
+        List<String> list2 = new ArrayList<>();
         for (int i = 0; i < 50; i++) {
             list2.add(i + " XXAsd123156461331015");
         }
@@ -78,10 +107,53 @@ public class DataSummaryActivity extends BaseActivity {
 
     }
 
+    public void getReportsList(final int type, String dateVal, String typeVal, String page, final String pNum) {
+        showLoading();
+        RetrofitFactory.getInstance().API()
+                .getReportsList(Constants.MAC_TEST, dateVal, typeVal, page, pNum)
+                .compose(this.<BaseEntity<ReportResultBean>>setThread())
+                .subscribe(new Observer<BaseEntity<ReportResultBean>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(BaseEntity<ReportResultBean> reportResultBeanBaseEntity) {
+                        if (reportResultBeanBaseEntity.isSuccess()) {
+                            dataList.addAll(reportResultBeanBaseEntity.getData().list);
+                            dataAdapter.notifyDataSetChanged();
+//                            if (type == 1)
+//                                scrollTo(dataListView, dataListView.getFirstVisiblePosition() - pageNum <= 0 ? 0 : dataListView.getFirstVisiblePosition() - pageNum);
+                            if (type == 2){
+                                scrollTo(dataListView, dataListView.getFirstVisiblePosition() + pageNum);
+                            }
+                        } else {
+                            showLoading(reportResultBeanBaseEntity.getMsg());
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        closeLoading();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        closeLoading();
+                    }
+                });
+    }
+
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.data_summary_day_report_tv:
+                dataList.clear();
+                currentPage = 1;
+                typeVal = 1;
+                getReportsList(0, getCurrentTime("yyyy-MM"), typeVal + "", currentPage + "", pageNum + "");
                 reportTitleLayout.setVisibility(View.VISIBLE);
                 reportTotalLayout.setVisibility(View.VISIBLE);
                 dataListView.setVisibility(View.VISIBLE);
@@ -96,6 +168,10 @@ public class DataSummaryActivity extends BaseActivity {
 //                salesDetailsReportTv.getPaint().setFakeBoldText(false);
                 break;
             case R.id.data_summary_month_report_tv:
+                dataList.clear();
+                currentPage = 1;
+                typeVal = 2;
+                getReportsList(0, getCurrentTime("yyyy-MM"), typeVal + "", currentPage + "", pageNum + "");
                 reportTitleLayout.setVisibility(View.VISIBLE);
                 reportTotalLayout.setVisibility(View.VISIBLE);
                 dataListView.setVisibility(View.VISIBLE);
@@ -126,15 +202,33 @@ public class DataSummaryActivity extends BaseActivity {
             case R.id.data_summary_back_tv:
                 finish();
                 break;
+            case R.id.data_summary_reports_prev_page_btn:
+//                if (currentPage == 1)
+//                    return;
+                scrollTo(dataListView, dataListView.getFirstVisiblePosition() - pageNum <= 0 ? 0 : dataListView.getFirstVisiblePosition() - pageNum);
 
+//                getReportsList(1, getCurrentTime("yyyy-MM"), typeVal + "", (--currentPage == 1 ? 1 : --currentPage) + "", pageNum + "");
+                break;
+            case R.id.data_summary_reports_next_page_btn:
+                getReportsList(2, getCurrentTime("yyyy-MM"), typeVal + "", ++currentPage + "", pageNum + "");
+                break;
+            case R.id.data_summary_reports_prev_month_btn:
+                currentPage = 1;
+                getReportsList(0, getCurrentTime("yyyy-MM", 1), typeVal + "", currentPage + "", pageNum + "");
+                break;
+            case R.id.data_summary_reports_next_month_btn:
+                currentPage = 1;
+                getReportsList(0, getCurrentTime("yyyy-MM", 2), typeVal + "", currentPage + "", pageNum + "");
+                break;
         }
     }
 
-    class DataAdapter extends BaseAdapter{
-        private Context context;
-        private List<String> list;
 
-        public DataAdapter(Context context, List<String> list){
+    class DataAdapter extends BaseAdapter {
+        private Context context;
+        private List<ReportResultBean.list> list;
+
+        public DataAdapter(Context context, List<ReportResultBean.list> list) {
             this.context = context;
             this.list = list;
         }
@@ -157,7 +251,7 @@ public class DataSummaryActivity extends BaseActivity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder holder;
-            if(convertView == null){
+            if (convertView == null) {
                 convertView = LayoutInflater.from(context).inflate(R.layout.data_summary_item, null);
                 holder = new ViewHolder();
                 holder.timeTv = convertView.findViewById(R.id.data_item_time_tv);
@@ -166,15 +260,19 @@ public class DataSummaryActivity extends BaseActivity {
                 holder.grandTotalTv = convertView.findViewById(R.id.data_item_grand_total_tv);
                 holder.incomeTv = convertView.findViewById(R.id.data_item_income_tv);
                 convertView.setTag(holder);
-            }else {
+            } else {
                 holder = (ViewHolder) convertView.getTag();
-
-                holder.timeTv.setText(list.get(position));
+                Map item = (Map) list.get(position);
+                holder.timeTv.setText(item.get("times").toString());
+                holder.countTv.setText(item.get("all_num").toString());
+                holder.incomeTv.setText(item.get("total_amount").toString());
+                holder.grandTotalTv.setText(item.get("total_amount").toString());
+                holder.weightTv.setText(item.get("total_weight").toString());
             }
             return convertView;
         }
 
-        class ViewHolder{
+        class ViewHolder {
             TextView timeTv;
             TextView countTv;
             TextView weightTv;
@@ -183,13 +281,13 @@ public class DataSummaryActivity extends BaseActivity {
         }
     }
 
-    class SalesAdapter extends BaseAdapter{
+    class SalesAdapter extends BaseAdapter {
 
         private Context context;
         private List<String> list;
 
 
-        public SalesAdapter(Context context, List<String> list){
+        public SalesAdapter(Context context, List<String> list) {
             this.context = context;
             this.list = list;
         }
@@ -212,7 +310,7 @@ public class DataSummaryActivity extends BaseActivity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder holder = null;
-            if(convertView == null){
+            if (convertView == null) {
                 convertView = LayoutInflater.from(context).inflate(R.layout.sales_data_item, null);
                 holder = new ViewHolder();
                 holder.orderNumberTv = convertView.findViewById(R.id.sales_data_item_order_number_tv);
@@ -222,7 +320,7 @@ public class DataSummaryActivity extends BaseActivity {
                 holder.incomeTv = convertView.findViewById(R.id.sales_data_item_income_tv);
                 holder.payTypeTv = convertView.findViewById(R.id.sales_data_item_pay_type_tv);
                 convertView.setTag(holder);
-            }else {
+            } else {
                 holder = (ViewHolder) convertView.getTag();
             }
 
@@ -230,7 +328,7 @@ public class DataSummaryActivity extends BaseActivity {
             return convertView;
         }
 
-        class ViewHolder{
+        class ViewHolder {
             TextView orderNumberTv;
             TextView timeTv;
             TextView weightTv;

@@ -15,6 +15,7 @@ import com.axecom.iweight.R;
 import com.axecom.iweight.bean.ChooseBean;
 
 import java.util.List;
+import java.util.Map;
 
 public class ChooseDialog extends Dialog {
     public ChooseDialog(@NonNull Context context, int themeResId) {
@@ -47,7 +48,7 @@ public class ChooseDialog extends Dialog {
             chooseListView = view.findViewById(R.id.choose_dialog_listview);
         }
 
-        public ChooseDialog create(List<ChooseBean> list, int checkedPos, OnSelectedListener onSelectedListener) {
+        public ChooseDialog create(List<Map<String, String>> list, int checkedPos, OnSelectedListener onSelectedListener) {
             this.onSelectedListener = onSelectedListener;
             chooseDialog.setContentView(view);
             chooseDialog.setCancelable(true);
@@ -68,10 +69,10 @@ public class ChooseDialog extends Dialog {
 
 
         class ChooseAdapter extends BaseAdapter {
-            private List<ChooseBean> list;
+            private List<Map<String, String>> list;
             private int pos;
 
-            public ChooseAdapter(List<ChooseBean> list) {
+            public ChooseAdapter(List<Map<String, String>> list) {
                 this.list = list;
             }
 
@@ -90,7 +91,7 @@ public class ChooseDialog extends Dialog {
                 return position;
             }
 
-            public void setCheckedAtPosition(int position){
+            public void setCheckedAtPosition(int position) {
                 this.pos = position;
             }
 
@@ -106,14 +107,15 @@ public class ChooseDialog extends Dialog {
                     holder = (ViewHolder) convertView.getTag();
                 }
 
-                ChooseBean item = list.get(position);
-                holder.chooseCtv.setText(item.getChooseItem());
-                if(pos== position){
-                holder.chooseCtv.setChecked(true);
-
-                }else {
+                Map<String, String> map = list.get(position);
+                for (String key : map.keySet()) {
+                    String value = map.get(key);
+                    holder.chooseCtv.setText(value);
+                }
+                if (pos == position) {
+                    holder.chooseCtv.setChecked(true);
+                } else {
                     holder.chooseCtv.setChecked(false);
-
                 }
 
                 return convertView;

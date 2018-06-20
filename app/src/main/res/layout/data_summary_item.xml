@@ -10,7 +10,8 @@
 
         <TextView
             android:id="@+id/data_item_time_tv"
-            android:layout_width="245dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="00点"
@@ -19,7 +20,8 @@
 
         <TextView
             android:id="@+id/data_item_count_tv"
-            android:layout_width="245dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="55"
@@ -28,7 +30,8 @@
 
         <TextView
             android:id="@+id/data_item_weight_tv"
-            android:layout_width="245dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="5.48"
@@ -37,7 +40,8 @@
 
         <TextView
             android:id="@+id/data_item_grand_total_tv"
-            android:layout_width="245dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="127.80"
@@ -46,7 +50,8 @@
 
         <TextView
             android:id="@+id/data_item_income_tv"
-            android:layout_width="245dp"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="127.80"

@@ -22,6 +22,7 @@ import com.axecom.iweight.base.BaseActivity;
 import com.axecom.iweight.base.BaseEntity;
 import com.axecom.iweight.bean.CommodityBean;
 import com.axecom.iweight.bean.ScalesCategoryGoods;
+import com.axecom.iweight.conf.Constants;
 import com.axecom.iweight.impl.ItemDragHelperCallback;
 import com.axecom.iweight.impl.OnDragVHListener;
 import com.axecom.iweight.impl.OnItemMoveListener;
@@ -54,7 +55,7 @@ public class CommodityManagementActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        getScalesCategoryGoods();
+        getGoodsData();
         final List<CommodityBean> list = new ArrayList<>();
         CommodityBean commodityBean;
         for (int i = 0; i < 30; i++) {
@@ -116,11 +117,10 @@ public class CommodityManagementActivity extends BaseActivity {
 
     }
 
-    public void getScalesCategoryGoods(){
+    public void getGoodsData(){
         showLoading();
         RetrofitFactory.getInstance().API()
-//                .getScalesCategoryGoods(AccountManager.getInstance().getToken(), MacManager.getInstace(this).getMac())
-                .getScalesCategoryGoods(AccountManager.getInstance().getToken(), "84:73:03:5b:ba:bb")
+                .getGoodsData(AccountManager.getInstance().getToken(), Constants.MAC_TEST)
                 .compose(this.<BaseEntity<ScalesCategoryGoods>>setThread())
                 .subscribe(new Observer<BaseEntity<ScalesCategoryGoods>>() {
                     @Override
@@ -130,8 +130,8 @@ public class CommodityManagementActivity extends BaseActivity {
 
                     @Override
                     public void onNext(BaseEntity<ScalesCategoryGoods> scalesCategoryGoodsBaseEntity) {
+                        closeLoading();
                         if(scalesCategoryGoodsBaseEntity.isSuccess()){
-                            closeLoading();
 
                         }else {
                             showLoading(scalesCategoryGoodsBaseEntity.getMsg());
@@ -140,7 +140,8 @@ public class CommodityManagementActivity extends BaseActivity {
 
                     @Override
                     public void onError(Throwable e) {
-
+                        e.printStackTrace();
+                        closeLoading();
                     }
 
                     @Override

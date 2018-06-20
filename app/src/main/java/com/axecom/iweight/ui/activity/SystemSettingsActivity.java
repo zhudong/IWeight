@@ -12,13 +12,17 @@ import com.axecom.iweight.base.BaseActivity;
 import com.axecom.iweight.base.BaseEntity;
 import com.axecom.iweight.bean.ChooseBean;
 import com.axecom.iweight.bean.SettingDataBean;
+import com.axecom.iweight.conf.Constants;
 import com.axecom.iweight.manager.MacManager;
 import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.ui.view.ChooseDialog;
 import com.axecom.iweight.ui.view.SoftKeyborad;
+import com.google.gson.internal.LinkedTreeMap;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -34,6 +38,12 @@ public class SystemSettingsActivity extends BaseActivity {
 
 
     private List<ChooseBean> list;
+    List<Map<String, String>> loginTypeList = new ArrayList<>();
+    List<Map<String, String>> pricingModelList = new ArrayList<>();
+    List<Map<String, String>> printerList = new ArrayList<>();
+    List<Map<String, String>> roundingWeightList = new ArrayList<>();
+    List<Map<String, String>> screenUnitList = new ArrayList<>();
+    List<Map<String, String>> balanceRoundingList = new ArrayList<>();
     private int loginTypePos = 0,printerPos = 0,balanceRoundingPos = 0,priceingMethodPos = 0,weightRoundingPos = 0,weightUnitPos = 0;
 
     @Override
@@ -115,56 +125,56 @@ public class SystemSettingsActivity extends BaseActivity {
         SoftKeyborad.Builder softBuilder = new SoftKeyborad.Builder(this);
         switch (v.getId()) {
             case R.id.system_settings_login_type_btn:
-                chooseBuilder.create(list, loginTypePos, new ChooseDialog.OnSelectedListener() {
+                chooseBuilder.create(loginTypeList, loginTypePos, new ChooseDialog.OnSelectedListener() {
                     @Override
                     public void onSelected(AdapterView<?> parent, View view, int position, long id) {
                          loginTypePos = position;
-                         loginTypeTv.setText(((ChooseBean)parent.getAdapter().getItem(position)).getChooseItem());
+                         loginTypeTv.setText(((Map<String,String>)parent.getAdapter().getItem(position)).get(position + 1 +""));
                     }
                 }).show();
                 break;
             case R.id.system_settings_printer_btn:
-                chooseBuilder.create(list, printerPos, new ChooseDialog.OnSelectedListener() {
+                chooseBuilder.create(printerList, printerPos, new ChooseDialog.OnSelectedListener() {
                     @Override
                     public void onSelected(AdapterView<?> parent, View view, int position, long id) {
                         printerPos = position;
-                        printerTv.setText(((ChooseBean)parent.getAdapter().getItem(position)).getChooseItem());
+                        printerTv.setText(((Map<String,String>)parent.getAdapter().getItem(position)).get(position + 1 +""));
                     }
                 }).show();
                 break;
             case R.id.system_settings_balance_rounding_btn:
-                chooseBuilder.create(list, balanceRoundingPos, new ChooseDialog.OnSelectedListener() {
+                chooseBuilder.create(balanceRoundingList, balanceRoundingPos, new ChooseDialog.OnSelectedListener() {
                     @Override
                     public void onSelected(AdapterView<?> parent, View view, int position, long id) {
                         balanceRoundingPos = position;
-                        balanceRoundingTv.setText(((ChooseBean)parent.getAdapter().getItem(position)).getChooseItem());
+                        balanceRoundingTv.setText(((Map<String,String>)parent.getAdapter().getItem(position)).get(position + 1 +""));
                     }
                 }).show();
                 break;
             case R.id.system_settings_default_priceing_method_btn:
-                chooseBuilder.create(list, priceingMethodPos, new ChooseDialog.OnSelectedListener() {
+                chooseBuilder.create(pricingModelList, priceingMethodPos, new ChooseDialog.OnSelectedListener() {
                     @Override
                     public void onSelected(AdapterView<?> parent, View view, int position, long id) {
                         priceingMethodPos = position;
-                        priceingMethodTv.setText(((ChooseBean)parent.getAdapter().getItem(position)).getChooseItem());
+                        priceingMethodTv.setText(((Map<String,String>)parent.getAdapter().getItem(position)).get(position + 1 +""));
                     }
                 }).show();
                 break;
             case R.id.system_settings_weight_rounding_btn:
-                chooseBuilder.create(list, weightRoundingPos, new ChooseDialog.OnSelectedListener() {
+                chooseBuilder.create(roundingWeightList, weightRoundingPos, new ChooseDialog.OnSelectedListener() {
                     @Override
                     public void onSelected(AdapterView<?> parent, View view, int position, long id) {
                         weightRoundingPos = position;
-                        weightRoundingTv.setText(((ChooseBean)parent.getAdapter().getItem(position)).getChooseItem());
+                        weightRoundingTv.setText(((Map<String,String>)parent.getAdapter().getItem(position)).get(position + 1 +""));
                     }
                 }).show();
                 break;
             case R.id.system_settings_weight_unit_btn:
-                chooseBuilder.create(list, weightUnitPos, new ChooseDialog.OnSelectedListener() {
+                chooseBuilder.create(screenUnitList, weightUnitPos, new ChooseDialog.OnSelectedListener() {
                     @Override
                     public void onSelected(AdapterView<?> parent, View view, int position, long id) {
                         weightUnitPos = position;
-                        weightRoundingTv.setText(((ChooseBean)parent.getAdapter().getItem(position)).getChooseItem());
+                        weightUnitTv.setText(((Map<String,String>)parent.getAdapter().getItem(position)).get(position + 1 +""));
                     }
                 }).show();
                 break;
@@ -229,19 +239,52 @@ public class SystemSettingsActivity extends BaseActivity {
     public void getSettingData(){
         showLoading();
         RetrofitFactory.getInstance().API()
-                .getSettingData("84:73:03:5b:ba:bb")
-                .compose(this.<BaseEntity<SettingDataBean>>setThread())
-                .subscribe(new Observer<BaseEntity<SettingDataBean>>() {
+                .getSettingData(Constants.MAC_TEST)
+                .compose(this.<BaseEntity>setThread())
+                .subscribe(new Observer<BaseEntity>() {
                     @Override
                     public void onSubscribe(Disposable d) {
 
                     }
 
                     @Override
-                    public void onNext(BaseEntity<SettingDataBean> settingDataBeanBaseEntity) {
+                    public void onNext(BaseEntity settingDataBeanBaseEntity) {
                         closeLoading();
                         boolean isSu = settingDataBeanBaseEntity.isSuccess();
                         if (settingDataBeanBaseEntity.isSuccess()) {
+                            LinkedTreeMap map = (LinkedTreeMap) settingDataBeanBaseEntity.getData();
+
+                            loginTypeList.addAll((Collection<? extends Map<String, String>>) map.get("default_login_type"));
+                            pricingModelList.addAll((Collection<? extends Map<String, String>>) map.get("default_pricing_model"));
+                            printerList.addAll((Collection<? extends Map<String, String>>) map.get("printer_configuration"));
+                            roundingWeightList.addAll((Collection<? extends Map<String, String>>) map.get("rounding_weight"));
+                            screenUnitList.addAll((Collection<? extends Map<String, String>>) map.get("screen_unit_display"));
+                            balanceRoundingList.addAll((Collection<? extends Map<String, String>>) map.get("balance_rounding"));
+
+                            loginTypeTv.setText(loginTypeList.get(0).get("1"));
+                            printerTv.setText(printerList.get(0).get("1"));
+                            balanceRoundingTv.setText(balanceRoundingList.get(0).get("1"));
+                            priceingMethodTv.setText(pricingModelList.get(0).get("1"));
+                            weightRoundingTv.setText(roundingWeightList.get(0).get("1"));
+                            weightUnitTv.setText(screenUnitList.get(0).get("1"));
+
+
+                            LinkedTreeMap valueMap = (LinkedTreeMap) ((LinkedTreeMap) settingDataBeanBaseEntity.getData()).get("value");
+                            LinkedTreeMap priceAfterSaving = (LinkedTreeMap) valueMap.get("price_after_saving");
+                            notClearPriceCtv.setChecked((Boolean) priceAfterSaving.get("val"));
+                            saveWeightCtv.setChecked((Boolean) ((LinkedTreeMap) valueMap.get("confirm_the_preservation")).get("val"));
+                            autoObtainCtv.setChecked((Boolean) ((LinkedTreeMap) valueMap.get("buyers_and_sellers_by_default")).get("val"));
+                            cashEttlementCtv.setChecked((Boolean) ((LinkedTreeMap) valueMap.get("online_settlement")).get("val"));
+                            distinguishCtv.setChecked((Boolean) ((LinkedTreeMap) valueMap.get("buyers_and_sellers_after_weighing")).get("val"));
+                            icCardSettlementCtv.setChecked((Boolean) ((LinkedTreeMap) valueMap.get("card_settlement")).get("val"));
+                            stopPrintCtv.setChecked((Boolean) ((LinkedTreeMap) valueMap.get("disable_printing")).get("val"));
+                            noPatchSettlementCtv.setChecked((Boolean) ((LinkedTreeMap) valueMap.get("allow_batchless_settlement")).get("val"));
+                            autoPrevCtv.setChecked((Boolean) ((LinkedTreeMap) valueMap.get("take_a_unit_price")).get("val"));
+                            cashRoundingCtv.setChecked((Boolean) ((LinkedTreeMap) valueMap.get("cash_change_rounding")).get("val"));
+                            stopCashCtv.setChecked((Boolean) ((LinkedTreeMap) valueMap.get("disable_cash_mode")).get("val"));
+
+                            buyerNumberTv.setText(((LinkedTreeMap)valueMap.get("default_buyer_number")).get("val") != null? ((LinkedTreeMap)valueMap.get("default_buyer_number")).get("val").toString() : "");
+                            sellerNumberTv.setText(((LinkedTreeMap)valueMap.get("default_seller_number")).get("val") != null ? ((LinkedTreeMap)valueMap.get("default_seller_number")).get("val").toString():"");
 
                         }else {
                             showLoading(settingDataBeanBaseEntity.getMsg());

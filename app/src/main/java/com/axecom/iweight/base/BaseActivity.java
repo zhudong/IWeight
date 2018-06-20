@@ -20,6 +20,7 @@ import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
@@ -35,6 +36,7 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import butterknife.ButterKnife;
@@ -342,6 +344,31 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");// HH:mm:ss
         Date date = new Date(System.currentTimeMillis());
         return simpleDateFormat.format(date);
+    }
+    public String getCurrentTime(String format){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);// HH:mm:ss
+        Date date = new Date(System.currentTimeMillis());
+        return simpleDateFormat.format(date);
+    }
+    public String getCurrentTime(String format, int type){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);// HH:mm:ss
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        if(type == 1)
+        c.add(Calendar.MONTH, -1);
+        if(type == 2)
+        c.add(Calendar.MONTH, +1);
+        Date m = c.getTime();
+        return simpleDateFormat.format(m);
+    }
+
+    public void scrollTo(final ListView listView, final int position){
+        listView.post(new Runnable() {
+            @Override
+            public void run() {
+                listView.smoothScrollToPosition(position);
+            }
+        });
     }
 
     @Subscribe

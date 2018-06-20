@@ -24,6 +24,7 @@ import com.axecom.iweight.base.BaseActivity;
 import com.axecom.iweight.base.BaseEntity;
 import com.axecom.iweight.bean.SubOrderBean;
 import com.axecom.iweight.bean.SubOrderReqBean;
+import com.axecom.iweight.conf.Constants;
 import com.axecom.iweight.manager.AccountManager;
 import com.axecom.iweight.manager.ClientManager;
 import com.axecom.iweight.manager.GPprinterManager;
@@ -274,15 +275,15 @@ public class MainActivity extends BaseActivity {
                     good = new SubOrderReqBean.Goods();
                     good.setGoods_id("1");
                     good.setGoods_name("白菜" + i);
-                    good.setGoods_price("12.60");
+                    good.setGoods_price("0.50");
                     good.setGoods_number("2");
-                    good.setGoods_amount("25.20");
+                    good.setGoods_amount("1.00");
                     goodsList.add(good);
                 }
                 subOrderReqBean.setToken(AccountManager.getInstance().getToken());
 //                subOrderReqBean.setMac(MacManager.getInstace(this).getMac());
-                subOrderReqBean.setMac("84:73:03:5b:ba:bb");
-                subOrderReqBean.setTotal_amount("123");
+                subOrderReqBean.setMac(Constants.MAC_TEST);
+                subOrderReqBean.setTotal_amount("1");
                 subOrderReqBean.setTotal_weight("1kg");
                 subOrderReqBean.setPayment_id("1");
                 subOrderReqBean.setCreate_time(getCurrentTime());
