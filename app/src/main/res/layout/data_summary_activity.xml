@@ -261,11 +261,11 @@
                         android:textStyle="bold" />
 
                     <TextView
-                       android:layout_marginLeft="20dp"
+                        android:id="@+id/data_summary_order_amount_total_tv"
+                        android:layout_marginLeft="20dp"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:text="1150.32"
                         android:textColor="@color/green_3CB371"
                         android:textSize="25sp"
                         android:textStyle="bold" />
@@ -292,7 +292,6 @@
                         android:layout_weight="1"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:text="495"
                         android:textColor="@color/green_3CB371"
                         android:textSize="25sp"
                         android:textStyle="bold" />
@@ -303,7 +302,6 @@
                         android:layout_weight="1"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:text="49.32"
                         android:textColor="@color/green_3CB371"
                         android:textSize="25sp"
                         android:textStyle="bold" />
@@ -314,7 +312,6 @@
                         android:layout_weight="1"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:text="1150.32"
                         android:textColor="@color/green_3CB371"
                         android:textSize="25sp"
                         android:textStyle="bold" />
@@ -325,7 +322,6 @@
                         android:layout_weight="1"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:text="1150.32"
                         android:textColor="@color/green_3CB371"
                         android:textSize="25sp"
                         android:textStyle="bold" />
@@ -365,6 +361,7 @@
                         android:textSize="20sp" />
 
                     <Button
+                        android:visibility="gone"
                         android:id="@+id/data_summary_reports_prev_month_btn"
                         android:layout_width="200dp"
                         android:layout_height="wrap_content"
@@ -376,6 +373,7 @@
                         android:textSize="20sp" />
 
                     <Button
+                        android:visibility="gone"
                         android:id="@+id/data_summary_reports_next_month_btn"
                         android:layout_width="200dp"
                         android:layout_height="wrap_content"

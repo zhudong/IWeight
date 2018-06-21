@@ -14,7 +14,6 @@
             android:layout_weight="1"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="00点"
             android:textColor="@color/black"
             android:textSize="20sp" />
 
@@ -24,7 +23,6 @@
             android:layout_weight="1"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="55"
             android:textColor="@color/black"
             android:textSize="20sp" />
 
@@ -34,7 +32,6 @@
             android:layout_weight="1"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="5.48"
             android:textColor="@color/black"
             android:textSize="20sp" />
 
@@ -44,7 +41,6 @@
             android:layout_weight="1"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="127.80"
             android:textColor="@color/black"
             android:textSize="20sp" />
 
@@ -54,7 +50,6 @@
             android:layout_weight="1"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="127.80"
             android:textColor="@color/black"
             android:textSize="20sp" />
     </LinearLayout>

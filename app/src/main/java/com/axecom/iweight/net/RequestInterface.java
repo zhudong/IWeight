@@ -4,6 +4,7 @@ package com.axecom.iweight.net;
 import com.axecom.iweight.base.BaseEntity;
 import com.axecom.iweight.bean.CalibrationBean;
 import com.axecom.iweight.bean.LoginData;
+import com.axecom.iweight.bean.OrderListResultBean;
 import com.axecom.iweight.bean.ReportResultBean;
 import com.axecom.iweight.bean.ScalesCategoryGoods;
 import com.axecom.iweight.bean.SettingDataBean;
@@ -44,7 +45,8 @@ public interface RequestInterface {
     Observable<String> test();
 
     /**
-     *  获取设备Id
+     * 获取设备Id
+     *
      * @param mac 设备mac地址
      * @return
      */
@@ -53,6 +55,7 @@ public interface RequestInterface {
 
     /**
      * 用户登录
+     *
      * @param scalesId
      * @param serialNumber
      * @param password
@@ -63,6 +66,7 @@ public interface RequestInterface {
 
     /**
      * 司磅员登录
+     *
      * @param scalesId
      * @param serialNumber
      * @param password
@@ -73,6 +77,7 @@ public interface RequestInterface {
 
     /**
      * 标定记录
+     *
      * @param calibrationBean
      * @return
      */
@@ -81,6 +86,7 @@ public interface RequestInterface {
 
     /**
      * 上报服务器智能秤在线
+     *
      * @param scalesId
      * @return
      */
@@ -89,6 +95,7 @@ public interface RequestInterface {
 
     /**
      * 测试连接服务器
+     *
      * @return
      */
     @GET("testConnection")
@@ -96,6 +103,7 @@ public interface RequestInterface {
 
     /**
      * 获取商品
+     *
      * @param token
      * @param mac
      * @return
@@ -105,6 +113,7 @@ public interface RequestInterface {
 
     /**
      * 获取商品
+     *
      * @param token
      * @param mac
      * @return
@@ -114,6 +123,7 @@ public interface RequestInterface {
 
     /**
      * 提交订单
+     *
      * @param subOrderReqBean
      * @return
      */
@@ -121,7 +131,8 @@ public interface RequestInterface {
     Observable<BaseEntity<SubOrderBean>> submitOrder(@Body SubOrderReqBean subOrderReqBean);
 
     /**
-     *  获取系统设置数据
+     * 获取系统设置数据
+     *
      * @param mac
      * @return
      */
@@ -130,6 +141,7 @@ public interface RequestInterface {
 
     /**
      * 日报表与月报表
+     *
      * @param mac
      * @param dateVal
      * @param typeVal
@@ -139,4 +151,15 @@ public interface RequestInterface {
      */
     @POST("getReportsList")
     Observable<BaseEntity<ReportResultBean>> getReportsList(@Query("mac") String mac, @Query("dateVal") String dateVal, @Query("typeVal") String typeVal, @Query("page") String page, @Query("pageNum") String pageNum);
+
+    /**
+     * 数据汇总 / 销售明细
+     * @param mac
+     * @param dateVal
+     * @param page
+     * @param pageNum
+     * @return
+     */
+    @POST("getOrderList")
+    Observable<BaseEntity<OrderListResultBean>> getOrderList(@Query("mac") String mac, @Query("dateVal") String dateVal, @Query("page") String page, @Query("pageNum") String pageNum);
 }

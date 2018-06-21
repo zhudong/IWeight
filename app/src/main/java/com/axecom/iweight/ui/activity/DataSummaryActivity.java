@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
 import com.axecom.iweight.base.BaseEntity;
+import com.axecom.iweight.bean.OrderListResultBean;
 import com.axecom.iweight.bean.ReportResultBean;
 import com.axecom.iweight.conf.Constants;
 import com.axecom.iweight.net.RetrofitFactory;
@@ -24,6 +25,7 @@ import java.util.Map;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import retrofit2.http.Query;
 
 /**
  * Created by Administrator on 2018-5-24.
@@ -45,8 +47,10 @@ public class DataSummaryActivity extends BaseActivity {
     private TextView salesDetailsReportTv;
     private TextView backTv;
     private List<ReportResultBean.list> dataList;
+    private List<OrderListResultBean.list> orderList;
 
     private TextView countTotalTv, weightTotalTv, grandTotalTv, amountTotalTv;
+    private TextView orderAmountTv;
     private Button prevPageBtn, nextPageBtn, prevMonthBtn, nextMonthBtn;
     private int currentPage = 1;
     private int typeVal = 1;
@@ -66,6 +70,7 @@ public class DataSummaryActivity extends BaseActivity {
         salesDetailsReportTv = rootView.findViewById(R.id.data_summary_sales_details_report_tv);
         backTv = rootView.findViewById(R.id.data_summary_back_tv);
         countTotalTv = rootView.findViewById(R.id.data_summary_reports_count_total_tv);
+        orderAmountTv = rootView.findViewById(R.id.data_summary_order_amount_total_tv);
         weightTotalTv = rootView.findViewById(R.id.data_summary_reports_weight_total_tv);
         grandTotalTv = rootView.findViewById(R.id.data_summary_reports_grand_total_tv);
         amountTotalTv = rootView.findViewById(R.id.data_summary_reports_amount_total_tv);
@@ -79,10 +84,6 @@ public class DataSummaryActivity extends BaseActivity {
         monthReportTv.setOnClickListener(this);
         salesDetailsReportTv.setOnClickListener(this);
         backTv.setOnClickListener(this);
-        countTotalTv.setOnClickListener(this);
-        weightTotalTv.setOnClickListener(this);
-        grandTotalTv.setOnClickListener(this);
-        amountTotalTv.setOnClickListener(this);
         prevPageBtn.setOnClickListener(this);
         nextPageBtn.setOnClickListener(this);
         prevMonthBtn.setOnClickListener(this);
@@ -97,11 +98,8 @@ public class DataSummaryActivity extends BaseActivity {
         dataAdapter = new DataAdapter(this, dataList);
         dataListView.setAdapter(dataAdapter);
 
-        List<String> list2 = new ArrayList<>();
-        for (int i = 0; i < 50; i++) {
-            list2.add(i + " XXAsd123156461331015");
-        }
-        salesAdapter = new SalesAdapter(this, list2);
+        orderList = new ArrayList<>();
+        salesAdapter = new SalesAdapter(this, orderList);
         salesDetailsListView.setAdapter(salesAdapter);
 
 
@@ -128,8 +126,47 @@ public class DataSummaryActivity extends BaseActivity {
                             if (type == 2){
                                 scrollTo(dataListView, dataListView.getFirstVisiblePosition() + pageNum);
                             }
+                            countTotalTv.setText(reportResultBeanBaseEntity.getData().total_num + "");
+                            weightTotalTv.setText(reportResultBeanBaseEntity.getData().total_weight);
+                            grandTotalTv.setText(reportResultBeanBaseEntity.getData().total_amount);
+                            amountTotalTv.setText(reportResultBeanBaseEntity.getData().total_amount);
                         } else {
                             showLoading(reportResultBeanBaseEntity.getMsg());
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        closeLoading();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        closeLoading();
+                    }
+                });
+    }
+
+    public void getOrderList(String dateVal,  String page, String pageNum){
+        showLoading();
+        RetrofitFactory.getInstance().API()
+                .getOrderList(Constants.MAC_TEST, dateVal, page, pageNum)
+                .compose(this.<BaseEntity<OrderListResultBean>>setThread())
+                .subscribe(new Observer<BaseEntity<OrderListResultBean>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(BaseEntity<OrderListResultBean> orderListResultBeanBaseEntity) {
+                        if(orderListResultBeanBaseEntity.isSuccess()){
+                            orderAmountTv.setText(orderListResultBeanBaseEntity.getData().total_amount);
+                            orderList.addAll(orderListResultBeanBaseEntity.getData().list);
+                            salesAdapter.notifyDataSetChanged();
+                        }else {
+                            showLoading(orderListResultBeanBaseEntity.getMsg());
                         }
                     }
 
@@ -163,6 +200,10 @@ public class DataSummaryActivity extends BaseActivity {
                 dayReportTv.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_gray_btn_bg));
                 monthReportTv.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_white_btn_bg));
                 salesDetailsReportTv.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_white_btn_bg));
+                nextMonthBtn.setVisibility(View.GONE);
+                prevMonthBtn.setVisibility(View.GONE);
+                prevPageBtn.setVisibility(View.VISIBLE);
+                nextPageBtn.setVisibility(View.VISIBLE);
 //                dayReportTv.getPaint().setFakeBoldText(true);
 //                monthReportTv.getPaint().setFakeBoldText(false);
 //                salesDetailsReportTv.getPaint().setFakeBoldText(false);
@@ -181,6 +222,10 @@ public class DataSummaryActivity extends BaseActivity {
                 dayReportTv.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_white_btn_bg));
                 monthReportTv.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_gray_btn_bg));
                 salesDetailsReportTv.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_white_btn_bg));
+                nextMonthBtn.setVisibility(View.VISIBLE);
+                prevMonthBtn.setVisibility(View.VISIBLE);
+                prevPageBtn.setVisibility(View.GONE);
+                nextPageBtn.setVisibility(View.GONE);
 //                dayReportTv.getPaint().setFakeBoldText(false);
 //                monthReportTv.getPaint().setFakeBoldText(true);
 //                salesDetailsReportTv.getPaint().setFakeBoldText(false);
@@ -195,6 +240,7 @@ public class DataSummaryActivity extends BaseActivity {
                 dayReportTv.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_white_btn_bg));
                 monthReportTv.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_white_btn_bg));
                 salesDetailsReportTv.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_gray_btn_bg));
+                getOrderList(getCurrentTime("yyyy-MM"), "1", "10");
 //                dayReportTv.getPaint().setFakeBoldText(false);
 //                monthReportTv.getPaint().setFakeBoldText(false);
 //                salesDetailsReportTv.getPaint().setFakeBoldText(true);
@@ -262,12 +308,12 @@ public class DataSummaryActivity extends BaseActivity {
                 convertView.setTag(holder);
             } else {
                 holder = (ViewHolder) convertView.getTag();
-                Map item = (Map) list.get(position);
-                holder.timeTv.setText(item.get("times").toString());
-                holder.countTv.setText(item.get("all_num").toString());
-                holder.incomeTv.setText(item.get("total_amount").toString());
-                holder.grandTotalTv.setText(item.get("total_amount").toString());
-                holder.weightTv.setText(item.get("total_weight").toString());
+                ReportResultBean.list item = list.get(position);
+                holder.timeTv.setText(item.times);
+                holder.countTv.setText(item.all_num + "");
+                holder.incomeTv.setText(item.total_amount);
+                holder.grandTotalTv.setText(item.total_amount);
+                holder.weightTv.setText(item.total_weight);
             }
             return convertView;
         }
@@ -284,10 +330,10 @@ public class DataSummaryActivity extends BaseActivity {
     class SalesAdapter extends BaseAdapter {
 
         private Context context;
-        private List<String> list;
+        private List<OrderListResultBean.list> list;
 
 
-        public SalesAdapter(Context context, List<String> list) {
+        public SalesAdapter(Context context, List<OrderListResultBean.list> list) {
             this.context = context;
             this.list = list;
         }
@@ -324,7 +370,14 @@ public class DataSummaryActivity extends BaseActivity {
                 holder = (ViewHolder) convertView.getTag();
             }
 
-            holder.orderNumberTv.setText(list.get(position));
+            OrderListResultBean.list item = list.get(position);
+            holder.orderNumberTv.setText(item.order_no);
+            holder.timeTv.setText(item.times);
+            holder.weightTv.setText(item.total_weight);
+            holder.grandTotalTv.setText(item.total_amount);
+            holder.incomeTv.setText(item.total_amount);
+            holder.payTypeTv.setText(item.payment_type);
+
             return convertView;
         }
 

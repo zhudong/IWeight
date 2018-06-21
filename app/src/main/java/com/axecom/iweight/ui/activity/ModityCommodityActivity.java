@@ -35,7 +35,7 @@ public class ModityCommodityActivity extends BaseActivity {
     public void initView() {
         Intent intent = getIntent();
         CommodityBean bean = (CommodityBean) intent.getExtras().getSerializable("commodityBean");
-        nameTv.setText(bean.getName());
+        nameTv.setText(bean.getHotKeyGoods().name);
     }
 
     @Override

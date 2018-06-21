@@ -6,6 +6,7 @@
     android:gravity="center">
 
     <Button
+        android:padding="5dp"
         android:id="@+id/commodity_class_name_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

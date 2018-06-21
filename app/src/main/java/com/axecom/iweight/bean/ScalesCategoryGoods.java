@@ -2,43 +2,44 @@ package com.axecom.iweight.bean;
 
 import com.axecom.iweight.base.BaseEntity;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class ScalesCategoryGoods<T> extends BaseEntity {
-    private List<T> hotKeyGoods;
-    private List<T> allGoods;
-    private List<T> categoryGoods;
+    public List<HotKeyGoods> hotKeyGoods;
+    public List<allGoods> allGoods;
+    public List<categoryGoods> categoryGoods;
 
-    class hotKeyGoods<T>{
-        int id;
-        String name;
-        int cid;
-        int traceable_code;
-        String price;
-        int id_default;
+    public static class HotKeyGoods implements Serializable{
+        public int id;
+        public String name;
+        public int cid;
+        public int traceable_code;
+        public String price;
+        public int id_default;
     }
 
-    class allGoods<T>{
-        int id;
-        String name;
-        int cid;
-        int traceable_code;
-        String price;
-        int id_default;
+    public class allGoods{
+        public int id;
+        public String name;
+        public int cid;
+        public int traceable_code;
+        public String price;
+        public int id_default;
     }
 
-    class categoryGoods<T>{
-        int id;
-        String name;
-        List<T> child;
+    public class categoryGoods{
+        public int id;
+        public String name;
+        public List<child> child;
 
-        class child<T> extends categoryGoods{
-            int id;
-            String name;
-            int cid;
-            int traceable_code;
-            String price;
-            int id_default;
+        public class child  {
+            public int id;
+            public String name;
+            public int cid;
+            public int traceable_code;
+            public String price;
+            public int id_default;
         }
     }
 }
