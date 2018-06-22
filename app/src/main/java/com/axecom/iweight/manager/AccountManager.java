@@ -35,4 +35,20 @@ public class AccountManager {
     public String getScalesId(){
         return SPUtils.getString(mCtx, Constants.UserInfo.USER_SCALES_ID, null);
     }
+
+    public void savePwd(String serialNumber, String pwd){
+        SPUtils.putString(mCtx, serialNumber, pwd);
+    }
+
+    public String getPwdBySerialNumber(String serialNumber){
+        return SPUtils.getString(mCtx, serialNumber, null);
+    }
+
+    public void savePwdChecked(String serialNumber, boolean isChecked){
+        SPUtils.put(mCtx, serialNumber, isChecked);
+    }
+
+    public Boolean getPwdChecked(String serialNumber){
+        return (Boolean) SPUtils.get(mCtx, serialNumber, null);
+    }
 }

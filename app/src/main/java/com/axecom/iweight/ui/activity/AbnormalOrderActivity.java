@@ -11,9 +11,17 @@ import android.widget.TextView;
 
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
+import com.axecom.iweight.base.BaseEntity;
+import com.axecom.iweight.bean.UnusualOrdersBean;
+import com.axecom.iweight.conf.Constants;
+import com.axecom.iweight.net.RetrofitFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+import retrofit2.http.Query;
 
 /**
  * Created by Administrator on 2018-5-25.
@@ -44,12 +52,45 @@ public class AbnormalOrderActivity extends BaseActivity {
 
     @Override
     public void initView() {
+        getUnusualOrders("1", "10", "1");
         List<String> list = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             list.add("ddddddddddddd" + i);
         }
         orderAdapter = new OrderAdapter(this, list);
         orderListView.setAdapter(orderAdapter);
+    }
+
+    public void getUnusualOrders(@Query("page") String page, @Query("pageNum") String pageNum, @Query("typeVal") String typeVal){
+        RetrofitFactory.getInstance().API()
+                .getUnusualOrders(Constants.MAC_TEST, page, pageNum, typeVal)
+                .compose(this.<BaseEntity<UnusualOrdersBean>>setThread())
+                .subscribe(new Observer<BaseEntity<UnusualOrdersBean>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        showLoading();
+                    }
+
+                    @Override
+                    public void onNext(BaseEntity<UnusualOrdersBean> unusualOrdersBeanBaseEntity) {
+                        if(unusualOrdersBeanBaseEntity.isSuccess()){
+
+                        }else {
+                            showLoading(unusualOrdersBeanBaseEntity.getMsg());
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        closeLoading();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        closeLoading();
+                    }
+                });
     }
 
     @Override

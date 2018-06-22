@@ -19,6 +19,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
@@ -34,6 +35,7 @@ import com.axecom.iweight.manager.MacManager;
 import com.axecom.iweight.net.RetrofitFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import io.reactivex.Observer;
@@ -68,6 +70,8 @@ public class CommodityManagementActivity extends BaseActivity {
         getGoodsData();
 
         allTitleTv.setOnClickListener(this);
+        saveBtn.setOnClickListener(this);
+        backBtn.setOnClickListener(this);
         return rootView;
     }
 
@@ -104,44 +108,8 @@ public class CommodityManagementActivity extends BaseActivity {
             }
         });
 
-//        List<CommodityBean> list2 = new ArrayList<>();
-//        CommodityBean commodityBean2;
-//        for (int i = 0; i < 30; i++) {
-//            commodityBean2 = new CommodityBean();
-////            commodityBean2.setName("白菜" + i);
-//            commodityBean2.setShow(false);
-//            list2.add(commodityBean2);
-//        }
         classAdapter = new ClassAdapter(this, allGoodsList);
         classGv.setAdapter(classAdapter);
-//        classGv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                CommodityBean bean = (CommodityBean) classAdapter.getItem(position);
-//                bean.setShow(isShowDelTv);
-//                ScalesCategoryGoods.HotKeyGoods hotKeyGoods = new ScalesCategoryGoods.HotKeyGoods();
-//                if (bean.getAllGoods() != null) {
-//                    hotKeyGoods.id = bean.getAllGoods().id;
-//                    hotKeyGoods.cid = bean.getAllGoods().cid;
-//                    hotKeyGoods.name = bean.getAllGoods().name;
-//                    hotKeyGoods.price = bean.getAllGoods().price;
-//                    hotKeyGoods.traceable_code = bean.getAllGoods().traceable_code;
-//                    hotKeyGoods.id_default = bean.getAllGoods().id_default;
-//                }
-//                if(bean.getCategoryChilds() != null){
-//                    hotKeyGoods.id = bean.getAllGoods().id;
-//                    hotKeyGoods.cid = bean.getAllGoods().cid;
-//                    hotKeyGoods.name = bean.getAllGoods().name;
-//                    hotKeyGoods.price = bean.getAllGoods().price;
-//                    hotKeyGoods.traceable_code = bean.getAllGoods().traceable_code;
-//                    hotKeyGoods.id_default = bean.getAllGoods().id_default;
-//                }
-//                CommodityBean hotKeyBean = new CommodityBean();
-//                hotKeyBean.setHotKeyGoods(hotKeyGoods);
-//                hotKeyList.add(hotKeyBean);
-//                adapter.notifyDataSetChanged();
-//            }
-//        });
     }
 
     @Override
@@ -152,6 +120,19 @@ public class CommodityManagementActivity extends BaseActivity {
                 classGv.setAdapter(classAdapter);
                 break;
             case R.id.commodity_management_save_btn:
+                List<ScalesCategoryGoods.Goods> goodsList = new ArrayList<>();
+                ScalesCategoryGoods.Goods good;
+                for (int i = 0; i < hotKeyList.size(); i++) {
+                    good = new ScalesCategoryGoods.Goods();
+                    good.id = hotKeyList.get(i).getHotKeyGoods().id;
+                    good.cid = hotKeyList.get(i).getHotKeyGoods().cid;
+                    good.id_default = hotKeyList.get(i).getHotKeyGoods().id_default;
+                    good.name = hotKeyList.get(i).getHotKeyGoods().name;
+                    good.price = hotKeyList.get(i).getHotKeyGoods().price;
+                    good.traceable_code = hotKeyList.get(i).getHotKeyGoods().traceable_code;
+                    goodsList.add(good);
+                }
+                storeGoodsData(goodsList);
                 break;
             case R.id.commodity_management_back_btn:
                 finish();
@@ -159,20 +140,49 @@ public class CommodityManagementActivity extends BaseActivity {
         }
     }
 
+    public void storeGoodsData(List<ScalesCategoryGoods.Goods> goods){
+        RetrofitFactory.getInstance().API()
+                .storeGoodsData(Constants.MAC_TEST, goods)
+                .compose(this.<BaseEntity>setThread())
+                .subscribe(new Observer<BaseEntity>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        showLoading();
+                    }
+
+                    @Override
+                    public void onNext(BaseEntity baseEntity) {
+                        if(baseEntity.isSuccess()){
+                            Toast.makeText(CommodityManagementActivity.this, baseEntity.getMsg(), Toast.LENGTH_SHORT).show();
+                        }else {
+                            showLoading(baseEntity.getMsg());
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        closeLoading();
+                    }
+                });
+    }
+
     public void getGoodsData() {
-        showLoading();
         RetrofitFactory.getInstance().API()
                 .getGoodsData(AccountManager.getInstance().getToken(), Constants.MAC_TEST)
                 .compose(this.<BaseEntity<ScalesCategoryGoods>>setThread())
                 .subscribe(new Observer<BaseEntity<ScalesCategoryGoods>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-
+                        showLoading();
                     }
 
                     @Override
                     public void onNext(final BaseEntity<ScalesCategoryGoods> scalesCategoryGoodsBaseEntity) {
-                        closeLoading();
                         if (scalesCategoryGoodsBaseEntity.isSuccess()) {
                             CommodityBean commodityBean = null;
                             for (int i = 0; i < scalesCategoryGoodsBaseEntity.getData().hotKeyGoods.size(); i++) {
@@ -196,7 +206,7 @@ public class CommodityManagementActivity extends BaseActivity {
                                 titleTv.setText(categoryBean.getCategoryGoods().name);
                                 titleTv.setTextSize(20);
                                 titleTv.setTextColor(ContextCompat.getColor(CommodityManagementActivity.this, R.color.black));
-                                titleTv.setLayoutParams(new LinearLayout.LayoutParams(100, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f));
+                                titleTv.setLayoutParams(new LinearLayout.LayoutParams(100, LinearLayout.LayoutParams.WRAP_CONTENT));
                                 titleTv.setGravity(Gravity.CENTER);
                                 classTitleLayout.addView(titleTv);
                                 final int finalI = i;
@@ -242,7 +252,7 @@ public class CommodityManagementActivity extends BaseActivity {
 
                     @Override
                     public void onComplete() {
-
+                        closeLoading();
                     }
                 });
     }

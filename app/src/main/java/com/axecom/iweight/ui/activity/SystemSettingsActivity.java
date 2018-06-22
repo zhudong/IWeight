@@ -37,7 +37,6 @@ public class SystemSettingsActivity extends BaseActivity {
     private CheckedTextView notClearPriceCtv, saveWeightCtv, autoObtainCtv, cashEttlementCtv, distinguishCtv, icCardSettlementCtv, stopPrintCtv, noPatchSettlementCtv, autoPrevCtv, cashRoundingCtv, stopCashCtv;
 
 
-    private List<ChooseBean> list;
     List<Map<String, String>> loginTypeList = new ArrayList<>();
     List<Map<String, String>> pricingModelList = new ArrayList<>();
     List<Map<String, String>> printerList = new ArrayList<>();
@@ -109,14 +108,6 @@ public class SystemSettingsActivity extends BaseActivity {
     @Override
     public void initView() {
         getSettingData();
-        list = new ArrayList<>();
-        ChooseBean bean;
-        for (int i = 0; i < 4; i++) {
-            bean= new ChooseBean();
-            bean.setChecked(false);
-            bean.setChooseItem("测试数据 " + i);
-            list.add(bean);
-        }
     }
 
     @Override
@@ -237,19 +228,18 @@ public class SystemSettingsActivity extends BaseActivity {
     }
 
     public void getSettingData(){
-        showLoading();
         RetrofitFactory.getInstance().API()
                 .getSettingData(Constants.MAC_TEST)
                 .compose(this.<BaseEntity>setThread())
                 .subscribe(new Observer<BaseEntity>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        showLoading();
 
                     }
 
                     @Override
                     public void onNext(BaseEntity settingDataBeanBaseEntity) {
-                        closeLoading();
                         boolean isSu = settingDataBeanBaseEntity.isSuccess();
                         if (settingDataBeanBaseEntity.isSuccess()) {
                             LinkedTreeMap map = (LinkedTreeMap) settingDataBeanBaseEntity.getData();
@@ -298,7 +288,7 @@ public class SystemSettingsActivity extends BaseActivity {
 
                     @Override
                     public void onComplete() {
-
+                        closeLoading();
                     }
                 });
 

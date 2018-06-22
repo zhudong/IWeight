@@ -179,13 +179,13 @@ public class CalibrationActivity extends BaseActivity {
     }
 
     public void storeCalibrationRecord(CalibrationBean calibrationBean) {
-        showLoading();
         RetrofitFactory.getInstance().API()
                 .storeCalibrationRecord(calibrationBean)
                 .compose(this.<BaseEntity>setThread())
                 .subscribe(new Observer<BaseEntity>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        showLoading();
 
                     }
 
@@ -193,8 +193,8 @@ public class CalibrationActivity extends BaseActivity {
                     public void onNext(BaseEntity baseEntity) {
                         if (baseEntity.isSuccess()) {
                         } else {
-                        }
                         showLoading(baseEntity.getMsg());
+                        }
                     }
 
                     @Override

@@ -9,6 +9,16 @@ public class ScalesCategoryGoods<T> extends BaseEntity {
     public List<HotKeyGoods> hotKeyGoods;
     public List<allGoods> allGoods;
     public List<categoryGoods> categoryGoods;
+    public List<Goods> goodsList;
+
+    public static class Goods{
+        public int id;
+        public String name;
+        public int cid;
+        public int traceable_code;
+        public String price;
+        public int id_default;
+    }
 
     public static class HotKeyGoods implements Serializable{
         public int id;

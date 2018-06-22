@@ -35,6 +35,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import java.lang.reflect.Method;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -115,8 +116,8 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
     }
 
     @Override
-    public boolean onKeyDown( int keyCode, KeyEvent event) {
-        if (keyCode == event. KEYCODE_HOME) {
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == event.KEYCODE_HOME) {
             return true;
         }
         return super.onKeyDown(keyCode, event);
@@ -314,10 +315,12 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
             public void onTextChanged(CharSequence s, int start, int before,
                                       int count) {
             }
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count,
                                           int after) {
             }
+
             @Override
             public void afterTextChanged(Editable s) {
                 editText.setSelection(editText.length());
@@ -327,42 +330,70 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
 
     public void setEditText(EditText editText, int position, String text) {
         if (position == 9) {
-            if(!TextUtils.isEmpty(editText.getText()))
-            editText.setText(editText.getText().subSequence(0, editText.getText().length() - 1));
+            if (!TextUtils.isEmpty(editText.getText()))
+                editText.setText(editText.getText().subSequence(0, editText.getText().length() - 1));
         } else {
             editText.setText(editText.getText() + text);
         }
     }
 
-    public void reBootApp(){
-        if(!(this instanceof HomeActivity)){
+    public void reBootApp() {
+        if (!(this instanceof HomeActivity)) {
             finish();
         }
     }
 
-    public String getCurrentTime(){
+    public String getCurrentTime() {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");// HH:mm:ss
         Date date = new Date(System.currentTimeMillis());
         return simpleDateFormat.format(date);
     }
-    public String getCurrentTime(String format){
+
+    public String getCurrentTime(String format) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);// HH:mm:ss
         Date date = new Date(System.currentTimeMillis());
         return simpleDateFormat.format(date);
     }
-    public String getCurrentTime(String format, int type){
+
+    public String getCurrentTime(String format, int type) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);// HH:mm:ss
         Calendar c = Calendar.getInstance();
         c.setTime(new Date());
-        if(type == 1)
-        c.add(Calendar.MONTH, -1);
-        if(type == 2)
-        c.add(Calendar.MONTH, +1);
+        if (type == 1)
+            c.add(Calendar.MONTH, -1);
+        if (type == 2)
+            c.add(Calendar.MONTH, +1);
+        if (type == 3)
+            c.add(Calendar.DAY_OF_MONTH, -1);
+        if (type == 4)
+            c.add(Calendar.DAY_OF_MONTH, +1);
+        Date m = c.getTime();
+        return simpleDateFormat.format(m);
+    }
+    public String getCurrentTime(String specifiedDay, String format, int type) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);// HH:mm:ss
+        Calendar c = Calendar.getInstance();
+        Date date = null;
+        try {
+            date = new SimpleDateFormat("yy-MM-dd").parse(specifiedDay);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        c.setTime(date);
+        if (type == 1)
+            c.add(Calendar.MONTH, -1);
+        if (type == 2)
+            c.add(Calendar.MONTH, +1);
+        if (type == 3)
+            c.add(Calendar.DAY_OF_MONTH, -1);
+        if (type == 4)
+            c.add(Calendar.DAY_OF_MONTH, +1);
         Date m = c.getTime();
         return simpleDateFormat.format(m);
     }
 
-    public void scrollTo(final ListView listView, final int position){
+    public void scrollTo(final ListView listView, final int position) {
         listView.post(new Runnable() {
             @Override
             public void run() {

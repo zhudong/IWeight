@@ -3,6 +3,7 @@ package com.axecom.iweight.ui.activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckedTextView;
 import android.widget.TextView;
 
 import com.axecom.iweight.R;
@@ -34,6 +35,7 @@ public class HomeActivity extends BaseActivity {
     private TextView loginTv;
     private TextView weightTv;
     private int weightId;
+    private CheckedTextView savePwdCtv;
 
     @Override
     public View setInitView() {
@@ -43,11 +45,13 @@ public class HomeActivity extends BaseActivity {
         pwdTv = rootView.findViewById(R.id.home_pwd_tv);
         loginTv = rootView.findViewById(R.id.home_login_tv);
         weightTv = rootView.findViewById(R.id.home_weight_number_tv);
+        savePwdCtv = rootView.findViewById(R.id.home_save_pwd_ctv);
 
         pwdTv.setOnClickListener(this);
         loginTv.setOnClickListener(this);
         cardNumberTv.setOnClickListener(this);
         confirmBtn.setOnClickListener(this);
+        savePwdCtv.setOnClickListener(this);
         return rootView;
     }
 
@@ -60,7 +64,7 @@ public class HomeActivity extends BaseActivity {
     @Override
     public void onClick(View v) {
         SoftKeyborad.Builder builder = new SoftKeyborad.Builder(HomeActivity.this);
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.home_login_tv:
             case R.id.home_confirm_btn:
 //                getScalesIdByMac(MacManager.getInstace(HomeActivity.this).getMac());
@@ -72,6 +76,12 @@ public class HomeActivity extends BaseActivity {
                     @Override
                     public void onConfirmed(String result) {
                         cardNumberTv.setText(result);
+                        if (AccountManager.getInstance().getPwdBySerialNumber(result) != null){
+                            pwdTv.setText(AccountManager.getInstance().getPwdBySerialNumber(result));
+                            savePwdCtv.setChecked(true);
+                        }else {
+                            savePwdCtv.setChecked(false);
+                        }
                     }
                 }).show();
                 break;
@@ -83,23 +93,25 @@ public class HomeActivity extends BaseActivity {
                     }
                 }).show();
                 break;
+            case R.id.home_save_pwd_ctv:
+                savePwdCtv.setChecked(!savePwdCtv.isChecked());
+                break;
         }
     }
 
-    public void getScalesIdByMac(String mac){
-        showLoading();
+    public void getScalesIdByMac(String mac) {
         RetrofitFactory.getInstance().API()
                 .getScalesIdByMac(mac)
                 .compose(this.<BaseEntity<WeightBean>>setThread())
                 .subscribe(new Observer<BaseEntity<WeightBean>>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
-
+                        showLoading();
                     }
 
                     @Override
                     public void onNext(final BaseEntity<WeightBean> baseEntity) {
-                        if(baseEntity.isSuccess()){
+                        if (baseEntity.isSuccess()) {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -126,23 +138,29 @@ public class HomeActivity extends BaseActivity {
                 });
     }
 
-    public void clientLogin(String scalesId, String serialNumber, String password){
-        showLoading();
+    public void clientLogin(String scalesId, final String serialNumber, final String password) {
         RetrofitFactory.getInstance().API()
                 .clientLogin(scalesId, serialNumber, password)
                 .compose(this.<BaseEntity<LoginData>>setThread())
                 .subscribe(new Observer<BaseEntity<LoginData>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        showLoading();
 
                     }
 
                     @Override
                     public void onNext(BaseEntity<LoginData> loginDataBaseEntity) {
-                        if(loginDataBaseEntity.isSuccess()){
+                        if (loginDataBaseEntity.isSuccess()) {
                             AccountManager.getInstance().saveToken(loginDataBaseEntity.getData().getToken());
+                            if (savePwdCtv.isChecked()) {
+                                AccountManager.getInstance().savePwd(serialNumber, password);
+                            } else {
+                                AccountManager.getInstance().savePwd(serialNumber, null);
+                            }
+//                            AccountManager.getInstance().savePwdChecked(serialNumber, savePwdCtv.isChecked());
                             startDDMActivity(MainActivity.class, false);
-                        }else {
+                        } else {
                             showLoading(loginDataBaseEntity.getMsg());
                         }
                     }
@@ -161,19 +179,19 @@ public class HomeActivity extends BaseActivity {
                 });
     }
 
-    public void isOnline(){
+    public void isOnline() {
         RetrofitFactory.getInstance().API()
                 .isOnline(AccountManager.getInstance().getScalesId())
                 .compose(this.<BaseEntity>setThread())
                 .subscribe(new Observer<BaseEntity>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-
+                        showLoading();
                     }
 
                     @Override
                     public void onNext(BaseEntity baseEntity) {
-                        if(baseEntity.isSuccess()){
+                        if (baseEntity.isSuccess()) {
 
                         }
                     }
@@ -185,7 +203,7 @@ public class HomeActivity extends BaseActivity {
 
                     @Override
                     public void onComplete() {
-
+                        closeLoading();
                     }
                 });
     }

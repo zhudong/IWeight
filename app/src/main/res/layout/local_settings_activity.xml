@@ -58,7 +58,6 @@
                         android:layout_weight="1"
                         android:drawableBottom="@drawable/shape_black_line"
                         android:gravity="center_vertical"
-                        android:text="111111"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
 
@@ -79,7 +78,6 @@
                         android:background="@drawable/shape_white_btn_bg"
                         android:gravity="center_vertical"
                         android:padding="5dp"
-                        android:text="9600"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
                 </LinearLayout>
@@ -107,7 +105,6 @@
                         android:layout_weight="1"
                         android:drawableBottom="@drawable/shape_black_line"
                         android:gravity="center_vertical"
-                        android:text="111111"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
 
@@ -128,7 +125,6 @@
                         android:background="@drawable/shape_white_btn_bg"
                         android:gravity="center_vertical"
                         android:padding="5dp"
-                        android:text="115200"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
                 </LinearLayout>
@@ -159,7 +155,6 @@
                         android:background="@drawable/shape_white_btn_bg"
                         android:gravity="center_vertical"
                         android:padding="5dp"
-                        android:text="1"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
                 </LinearLayout>
@@ -190,7 +185,6 @@
                         android:background="@drawable/shape_white_btn_bg"
                         android:gravity="center_vertical"
                         android:padding="5dp"
-                        android:text="1"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
                 </LinearLayout>
@@ -221,7 +215,6 @@
                         android:background="@drawable/shape_white_btn_bg"
                         android:gravity="center_vertical"
                         android:padding="5dp"
-                        android:text="1"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
                 </LinearLayout>
@@ -253,7 +246,6 @@
                         android:background="@drawable/shape_white_btn_bg"
                         android:gravity="center_vertical"
                         android:padding="5dp"
-                        android:text="1"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
                 </LinearLayout>
@@ -292,7 +284,6 @@
                         android:layout_weight="1"
                         android:drawableBottom="@drawable/shape_black_line"
                         android:gravity="center_vertical"
-                        android:text="111111"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
 
@@ -331,7 +322,6 @@
                         android:paddingLeft="5dp"
                         android:drawableBottom="@drawable/shape_black_line"
                         android:gravity="center_vertical"
-                        android:text="111111"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
 
@@ -391,7 +381,6 @@
                         android:background="@drawable/shape_white_btn_bg"
                         android:gravity="center_vertical"
                         android:padding="5dp"
-                        android:text="1"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
                 </LinearLayout>
@@ -422,7 +411,6 @@
                         android:background="@drawable/shape_white_btn_bg"
                         android:gravity="center_vertical"
                         android:padding="5dp"
-                        android:text="1"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
                 </LinearLayout>
@@ -451,7 +439,6 @@
                         android:layout_weight="1"
                         android:drawableBottom="@drawable/shape_black_line"
                         android:gravity="center_vertical"
-                        android:text="IC卡"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
 
@@ -492,7 +479,6 @@
                         android:background="@drawable/shape_white_btn_bg"
                         android:gravity="center_vertical"
                         android:padding="5dp"
-                        android:text="1"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
                 </LinearLayout>

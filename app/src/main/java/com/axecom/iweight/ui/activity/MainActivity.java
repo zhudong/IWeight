@@ -211,19 +211,18 @@ public class MainActivity extends BaseActivity {
     });
 
     public void submitOrder(SubOrderReqBean subOrderReqBean) {
-        showLoading();
         RetrofitFactory.getInstance().API()
                 .submitOrder(subOrderReqBean)
                 .compose(this.<BaseEntity<SubOrderBean>>setThread())
                 .subscribe(new Observer<BaseEntity<SubOrderBean>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        showLoading();
 
                     }
 
                     @Override
                     public void onNext(BaseEntity<SubOrderBean> subOrderBeanBaseEntity) {
-                        closeLoading();
                         if (subOrderBeanBaseEntity.isSuccess()) {
                         } else {
                             showLoading(subOrderBeanBaseEntity.getMsg());
@@ -238,6 +237,7 @@ public class MainActivity extends BaseActivity {
 
                     @Override
                     public void onComplete() {
+                        closeLoading();
 
                     }
                 });

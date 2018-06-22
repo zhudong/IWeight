@@ -80,13 +80,13 @@ public class StaffMemberLoginActivity extends BaseActivity {
     }
 
     public void staffMemberLogin(String scalesId, String serialNumber, String password){
-        showLoading();
         RetrofitFactory.getInstance().API()
                 .staffMemberLogin(scalesId, serialNumber, password)
                 .compose(this.<BaseEntity<LoginData>>setThread())
                 .subscribe(new Observer<BaseEntity<LoginData>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
+                        showLoading();
 
                     }
 

@@ -3,6 +3,7 @@ package com.axecom.iweight.net;
 
 import com.axecom.iweight.base.BaseEntity;
 import com.axecom.iweight.bean.CalibrationBean;
+import com.axecom.iweight.bean.LocalSettingsBean;
 import com.axecom.iweight.bean.LoginData;
 import com.axecom.iweight.bean.OrderListResultBean;
 import com.axecom.iweight.bean.ReportResultBean;
@@ -10,7 +11,10 @@ import com.axecom.iweight.bean.ScalesCategoryGoods;
 import com.axecom.iweight.bean.SettingDataBean;
 import com.axecom.iweight.bean.SubOrderBean;
 import com.axecom.iweight.bean.SubOrderReqBean;
+import com.axecom.iweight.bean.UnusualOrdersBean;
 import com.axecom.iweight.bean.WeightBean;
+
+import java.util.List;
 
 import io.reactivex.Observable;
 import retrofit2.Call;
@@ -162,4 +166,13 @@ public interface RequestInterface {
      */
     @POST("getOrderList")
     Observable<BaseEntity<OrderListResultBean>> getOrderList(@Query("mac") String mac, @Query("dateVal") String dateVal, @Query("page") String page, @Query("pageNum") String pageNum);
+
+    @POST("getScalesSettingData")
+    Observable<BaseEntity<LocalSettingsBean>> getScalesSettingData(@Query("mac") String mac);
+
+    @POST("getUnusualOrders")
+    Observable<BaseEntity<UnusualOrdersBean>> getUnusualOrders(@Query("mac") String mac, @Query("page") String page, @Query("pageNum") String pageNum, @Query("typeVal") String typeVal);
+
+    @POST("storeGoodsData")
+    Observable<BaseEntity> storeGoodsData(@Query("mac") String mac, @Body List<ScalesCategoryGoods.Goods> goods);
 }
