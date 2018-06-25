@@ -95,7 +95,7 @@ public interface RequestInterface {
      * @return
      */
     @POST("isOnline")
-    Observable<BaseEntity> isOnline(@Query("scales_id") String scalesId);
+    Observable<BaseEntity> isOnline(@Query("token") String token, @Query("scales_id") String scalesId);
 
     /**
      * 测试连接服务器
@@ -141,7 +141,7 @@ public interface RequestInterface {
      * @return
      */
     @POST("getSettingData")
-    Observable<BaseEntity> getSettingData(@Query("mac") String mac);
+    Observable<BaseEntity> getSettingData(@Query("token") String token, @Query("mac") String mac);
 
     /**
      * 日报表与月报表
@@ -154,10 +154,11 @@ public interface RequestInterface {
      * @return
      */
     @POST("getReportsList")
-    Observable<BaseEntity<ReportResultBean>> getReportsList(@Query("mac") String mac, @Query("dateVal") String dateVal, @Query("typeVal") String typeVal, @Query("page") String page, @Query("pageNum") String pageNum);
+    Observable<BaseEntity<ReportResultBean>> getReportsList(@Query("token") String token, @Query("mac") String mac, @Query("dateVal") String dateVal, @Query("typeVal") String typeVal, @Query("page") String page, @Query("pageNum") String pageNum);
 
     /**
      * 数据汇总 / 销售明细
+     *
      * @param mac
      * @param dateVal
      * @param page
@@ -165,14 +166,17 @@ public interface RequestInterface {
      * @return
      */
     @POST("getOrderList")
-    Observable<BaseEntity<OrderListResultBean>> getOrderList(@Query("mac") String mac, @Query("dateVal") String dateVal, @Query("page") String page, @Query("pageNum") String pageNum);
+    Observable<BaseEntity<OrderListResultBean>> getOrderList(@Query("token") String token, @Query("mac") String mac, @Query("dateVal") String dateVal, @Query("page") String page, @Query("pageNum") String pageNum);
 
     @POST("getScalesSettingData")
-    Observable<BaseEntity<LocalSettingsBean>> getScalesSettingData(@Query("mac") String mac);
+    Observable<BaseEntity<LocalSettingsBean>> getScalesSettingData(@Query("token") String token, @Query("mac") String mac);
 
-    @POST("getUnusualOrders")
-    Observable<BaseEntity<UnusualOrdersBean>> getUnusualOrders(@Query("mac") String mac, @Query("page") String page, @Query("pageNum") String pageNum, @Query("typeVal") String typeVal);
+    @POST("getOrders")
+    Observable<BaseEntity<UnusualOrdersBean>> getOrders(@Query("token") String token, @Query("mac") String mac, @Query("page") String page, @Query("pageNum") String pageNum, @Query("typeVal") String typeVal);
 
     @POST("storeGoodsData")
-    Observable<BaseEntity> storeGoodsData(@Query("mac") String mac, @Body List<ScalesCategoryGoods.Goods> goods);
+    Observable<BaseEntity> storeGoodsData(@Query("token") String token, @Query("mac") String mac, @Body List<ScalesCategoryGoods.Goods> goods);
+
+    @POST("invalidOrders")
+    Observable<BaseEntity> invalidOrders(@Query("token") String token, @Query("mac") String mac, @Query("orderNo") String orderNo);
 }

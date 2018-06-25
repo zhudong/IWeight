@@ -10,6 +10,7 @@ public class AccountManager {
     private static AccountManager accountManager = new AccountManager();
 
     private String token;
+    private String adminToken;
     private String scalesId;
     private static Context mCtx;
 
@@ -50,5 +51,13 @@ public class AccountManager {
 
     public Boolean getPwdChecked(String serialNumber){
         return (Boolean) SPUtils.get(mCtx, serialNumber, null);
+    }
+
+    public String getAdminToken() {
+        return adminToken;
+    }
+
+    public void setAdminToken(String adminToken) {
+        this.adminToken = adminToken;
     }
 }

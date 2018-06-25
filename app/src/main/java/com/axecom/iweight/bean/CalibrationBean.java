@@ -2,7 +2,7 @@ package com.axecom.iweight.bean;
 
 public class CalibrationBean {
 
-    private String token;
+    private String adminToken;
     private String max_ange;
     private String calibration_value;
     private String dividing_value;
@@ -10,12 +10,12 @@ public class CalibrationBean {
     private String scales_id;
 
 
-    public String getToken() {
-        return token;
+    public String getAdminToken() {
+        return adminToken;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setAdminToken(String token) {
+        this.adminToken = token;
     }
 
     public String getMax_ange() {

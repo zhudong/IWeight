@@ -1,5 +1,7 @@
 package com.axecom.iweight.ui.activity;
 
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -61,6 +63,31 @@ public class HomeActivity extends BaseActivity {
         getScalesIdByMac(Constants.MAC_TEST);
     }
 
+    private Handler mHanlder = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 1:
+                    isOnline();
+                    break;
+                default:
+                    break;
+            }
+            super.handleMessage(msg);
+        }
+    };
+
+    private Runnable task = new Runnable() {
+        @Override
+        public void run() {
+            /**
+             * 此处执行任务
+             * */
+            mHanlder.sendEmptyMessage(1);
+            mHanlder.postDelayed(this, 60 * 1000 * 5);//延迟5秒,再次执行task本身,实现了循环的效果
+        }
+    };
+
     @Override
     public void onClick(View v) {
         SoftKeyborad.Builder builder = new SoftKeyborad.Builder(HomeActivity.this);
@@ -118,7 +145,6 @@ public class HomeActivity extends BaseActivity {
                                     weightId = baseEntity.getData().getId();
                                     weightTv.setText(weightId + "");
                                     AccountManager.getInstance().saveScalesId(weightId + "");
-                                    isOnline();
                                 }
                             });
                         }
@@ -158,6 +184,7 @@ public class HomeActivity extends BaseActivity {
                             } else {
                                 AccountManager.getInstance().savePwd(serialNumber, null);
                             }
+                            mHanlder.postDelayed(task, 1000);
 //                            AccountManager.getInstance().savePwdChecked(serialNumber, savePwdCtv.isChecked());
                             startDDMActivity(MainActivity.class, false);
                         } else {
@@ -181,7 +208,7 @@ public class HomeActivity extends BaseActivity {
 
     public void isOnline() {
         RetrofitFactory.getInstance().API()
-                .isOnline(AccountManager.getInstance().getScalesId())
+                .isOnline(AccountManager.getInstance().getToken(), AccountManager.getInstance().getScalesId())
                 .compose(this.<BaseEntity>setThread())
                 .subscribe(new Observer<BaseEntity>() {
                     @Override
@@ -199,6 +226,7 @@ public class HomeActivity extends BaseActivity {
                     @Override
                     public void onError(Throwable e) {
                         e.printStackTrace();
+                        closeLoading();
                     }
 
                     @Override

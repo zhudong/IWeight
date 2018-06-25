@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import cn.jpush.android.api.JPushInterface;
+
 /**
  * Created by Longer on 2016/10/26.
  */
@@ -106,6 +108,10 @@ public class SysApplication extends MultiDexApplication {
 
         mImageLoader.init(ImageLoaderConfiguration.createDefault(mContext));
         mSerachHistoryList = new ArrayList<>();
+        //极光推送
+//        JPushInterface.setDebugMode(true);
+//        JPushInterface.init(this);
+
         //集成友盟统计
         //MobclickAgent.startWithConfigure(new MobclickAgent.UMAnalyticsConfig(this, "57ce5fea67e58ebf39000507", getChanl()));
         //    NetEngine.setmChannelName(getChanl());

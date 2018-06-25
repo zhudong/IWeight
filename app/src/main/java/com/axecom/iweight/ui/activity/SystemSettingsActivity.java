@@ -13,6 +13,7 @@ import com.axecom.iweight.base.BaseEntity;
 import com.axecom.iweight.bean.ChooseBean;
 import com.axecom.iweight.bean.SettingDataBean;
 import com.axecom.iweight.conf.Constants;
+import com.axecom.iweight.manager.AccountManager;
 import com.axecom.iweight.manager.MacManager;
 import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.ui.view.ChooseDialog;
@@ -229,7 +230,7 @@ public class SystemSettingsActivity extends BaseActivity {
 
     public void getSettingData(){
         RetrofitFactory.getInstance().API()
-                .getSettingData(Constants.MAC_TEST)
+                .getSettingData(AccountManager.getInstance().getToken(), Constants.MAC_TEST)
                 .compose(this.<BaseEntity>setThread())
                 .subscribe(new Observer<BaseEntity>() {
                     @Override

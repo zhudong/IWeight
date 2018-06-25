@@ -142,7 +142,7 @@ public class CommodityManagementActivity extends BaseActivity {
 
     public void storeGoodsData(List<ScalesCategoryGoods.Goods> goods){
         RetrofitFactory.getInstance().API()
-                .storeGoodsData(Constants.MAC_TEST, goods)
+                .storeGoodsData(AccountManager.getInstance().getToken(), Constants.MAC_TEST, goods)
                 .compose(this.<BaseEntity>setThread())
                 .subscribe(new Observer<BaseEntity>() {
                     @Override

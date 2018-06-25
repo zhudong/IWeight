@@ -166,7 +166,7 @@ public class CalibrationActivity extends BaseActivity {
                 break;
             case R.id.calibration_done_btn:
                 CalibrationBean bean = new CalibrationBean();
-                bean.setToken(AccountManager.getInstance().getToken());
+                bean.setAdminToken(AccountManager.getInstance().getAdminToken());
                 bean.setMax_ange(maxAngeEt.getText().toString());
                 bean.setCalibration_value(calibrationValueEt.getText().toString());
                 bean.setDividing_value(dividingValueEt.getText().toString());

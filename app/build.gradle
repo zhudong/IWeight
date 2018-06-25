@@ -7,11 +7,22 @@ android {
     aaptOptions.useNewCruncher = false
     defaultConfig {
         applicationId "com.axecom.iweight"
-        minSdkVersion 18
+        minSdkVersion 19
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            //选择要添加的对应cpu类型的.so库。
+            abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a'
+            // 还可以添加 'x86', 'x86_64', 'mips', 'mips64'
+        }
+        manifestPlaceholders = [
+                JPUSH_PKGNAME : applicationId,
+                JPUSH_APPKEY : "b032faec40fdd8fd898aaef0",//JPush上注册的包名对应的appkey.
+                JPUSH_CHANNEL : "developer-default", //暂时填写默认值即可.
+        ]
     }
     buildTypes {
         release {
@@ -19,13 +30,18 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         sourceSets {
-            main { jni.srcDirs = [] }
+            main {
+                jni.srcDirs = ['jniLibs']
+                jniLibs.srcDirs = ['libs']
+
+            }
         }
     }
     packagingOptions {
         exclude 'esc.txt'
         exclude 'tsc.txt'
     }
+
 }
 
 dependencies {
@@ -52,9 +68,13 @@ dependencies {
     compile files('libs/jbsdk.jar')
     //    implementation files('libs/gprinter-2.1.jar')
     compile files('libs/gprinter-2.1.jar')
-//    compile 'com.github.a-voyager:BluetoothHelper:f71d40a98b'
+    //    compile 'com.github.a-voyager:BluetoothHelper:f71d40a98b'
     compile 'com.inuker.bluetooth:library:1.4.0'
     compile project(':bthelper')
     compile 'com.android.support:recyclerview-v7:26.+'
     compile 'com.github.f0ris.sweetalert:library:1.5.1'
+    compile files('libs/jcore-android-1.2.1.jar')
+    compile files('libs/jpush-android-3.1.3.jar')
+//    compile 'cn.jiguang.sdk:jpush:3.1.1'  // 此处以JPush 3.1.1 版本为例。
+//    compile 'cn.jiguang.sdk:jcore:1.1.9'  // 此处以JCore 1.1.9 版本为例。
 }

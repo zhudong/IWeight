@@ -12,6 +12,7 @@ import com.axecom.iweight.base.BaseEntity;
 import com.axecom.iweight.bean.ChooseBean;
 import com.axecom.iweight.bean.LocalSettingsBean;
 import com.axecom.iweight.conf.Constants;
+import com.axecom.iweight.manager.AccountManager;
 import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.ui.view.ChooseDialog;
 import com.axecom.iweight.ui.view.ChooseDialog2;
@@ -106,7 +107,7 @@ public class LocalSettingsActivity extends BaseActivity {
 
     public void getScalesSettingData() {
         RetrofitFactory.getInstance().API()
-                .getScalesSettingData(Constants.MAC_TEST)
+                .getScalesSettingData(AccountManager.getInstance().getToken(), Constants.MAC_TEST)
                 .compose(this.<BaseEntity<LocalSettingsBean>>setThread())
                 .subscribe(new Observer<BaseEntity<LocalSettingsBean>>() {
                     @Override

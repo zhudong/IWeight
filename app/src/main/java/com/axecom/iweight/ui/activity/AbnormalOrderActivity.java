@@ -14,6 +14,7 @@ import com.axecom.iweight.base.BaseActivity;
 import com.axecom.iweight.base.BaseEntity;
 import com.axecom.iweight.bean.UnusualOrdersBean;
 import com.axecom.iweight.conf.Constants;
+import com.axecom.iweight.manager.AccountManager;
 import com.axecom.iweight.net.RetrofitFactory;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class AbnormalOrderActivity extends BaseActivity {
     private ListView orderListView;
     private OrderAdapter orderAdapter;
     private Button previousBtn, nextBtn, backBtn;
+    private List<UnusualOrdersBean.Order> orderList;
 
     @Override
     public View setInitView() {
@@ -52,18 +54,15 @@ public class AbnormalOrderActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        getUnusualOrders("1", "10", "1");
-        List<String> list = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            list.add("ddddddddddddd" + i);
-        }
-        orderAdapter = new OrderAdapter(this, list);
+        getOrders("1", "10", "2");
+        orderList = new ArrayList<>();
+        orderAdapter = new OrderAdapter(this, orderList);
         orderListView.setAdapter(orderAdapter);
     }
 
-    public void getUnusualOrders(@Query("page") String page, @Query("pageNum") String pageNum, @Query("typeVal") String typeVal){
+    public void getOrders(String page, String pageNum, String typeVal){
         RetrofitFactory.getInstance().API()
-                .getUnusualOrders(Constants.MAC_TEST, page, pageNum, typeVal)
+                .getOrders(AccountManager.getInstance().getToken(), Constants.MAC_TEST, page, pageNum, typeVal)
                 .compose(this.<BaseEntity<UnusualOrdersBean>>setThread())
                 .subscribe(new Observer<BaseEntity<UnusualOrdersBean>>() {
                     @Override
@@ -74,7 +73,8 @@ public class AbnormalOrderActivity extends BaseActivity {
                     @Override
                     public void onNext(BaseEntity<UnusualOrdersBean> unusualOrdersBeanBaseEntity) {
                         if(unusualOrdersBeanBaseEntity.isSuccess()){
-
+                            orderList.addAll(unusualOrdersBeanBaseEntity.getData().list);
+                            orderAdapter.notifyDataSetChanged();
                         }else {
                             showLoading(unusualOrdersBeanBaseEntity.getMsg());
                         }
@@ -105,9 +105,9 @@ public class AbnormalOrderActivity extends BaseActivity {
     class OrderAdapter extends BaseAdapter {
 
         private Context context;
-        private List<String> list;
+        private List<UnusualOrdersBean.Order> list;
 
-        public OrderAdapter(Context context, List<String> list){
+        public OrderAdapter(Context context, List<UnusualOrdersBean.Order> list){
             this.context = context;
             this.list = list;
         }
@@ -146,7 +146,15 @@ public class AbnormalOrderActivity extends BaseActivity {
                 holder = (ViewHolder) convertView.getTag();
             }
 
-            holder.orderNumberTv.setText(list.get(position));
+            UnusualOrdersBean.Order order = list.get(position);
+            holder.orderNumberTv.setText(order.order_no);
+            holder.dealTimeTv.setText(order.create_time);
+            holder.sellerTv.setText(order.client_name);
+            holder.buyerTv.setText(order.buyer_name);
+            holder.weightTv.setText(order.total_amount);
+            holder.incomeTv.setText(order.total_weight);
+            holder.billingTv.setText(order.payment_type);
+            holder.orderStatusTv.setText(order.status);
 
             return convertView;
         }
