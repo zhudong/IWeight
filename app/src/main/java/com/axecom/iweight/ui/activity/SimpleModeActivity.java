@@ -54,8 +54,8 @@ public class SimpleModeActivity extends BaseActivity {
         }
         list2.add("上翻");
         list2.add("下翻");
-        gridAdapter = new GridAdapter(this, list2);
-        commoditysGridView.setAdapter(gridAdapter);
+//        gridAdapter = new GridAdapter(this, list2);
+//        commoditysGridView.setAdapter(gridAdapter);
 
         List<String> digitaList = new ArrayList<>();
 

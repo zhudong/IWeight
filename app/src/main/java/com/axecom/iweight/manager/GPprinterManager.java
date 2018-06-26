@@ -53,7 +53,7 @@ public class GPprinterManager {
                 mService.registerConnectCallback(new ConnectCallback());
                 mService.registerPrinterStatusCallback(new QueryPrinterRealStatus());
                 Log.d(TAG, "绑定服务成功了");
-                Toast.makeText(context, "绑定服务成功了", Toast.LENGTH_SHORT).show();;
+//                Toast.makeText(context, "绑定服务成功了", Toast.LENGTH_SHORT).show();;
 
             } catch (RemoteException e) {
                 e.printStackTrace();

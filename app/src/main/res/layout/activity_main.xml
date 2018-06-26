@@ -123,7 +123,6 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="白菜"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
                 </LinearLayout>
@@ -193,6 +192,7 @@
                         android:textSize="20sp" />
 
                     <TextView
+                        android:id="@+id/main_weight_tv"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -214,6 +214,7 @@
                         android:textSize="20sp" />
 
                     <TextView
+                        android:id="@+id/main_grandtotal_tv"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -342,9 +343,9 @@
                     android:textSize="20sp" />
 
                 <TextView
+                    android:id="@+id/main_weight_total_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="10.75 公斤"
                     android:textColor="@color/black"
                     android:textSize="30sp"
                     android:textStyle="bold" />
@@ -358,9 +359,9 @@
                     android:textSize="20sp" />
 
                 <TextView
+                    android:id="@+id/main_price_total_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="125.50 元"
                     android:textColor="@color/red_000"
                     android:textSize="30sp"
                     android:textStyle="bold" />
@@ -533,7 +534,8 @@
                 android:background="@drawable/shape_weight_display_bg"
                 android:text="@string/string_grand_total_txt"
                 android:textColor="@color/black"
-                android:textSize="35sp" />
+                android:textSize="35sp"
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/main_digital_clear_btn"
@@ -545,7 +547,8 @@
                 android:background="@drawable/shape_weight_display_bg"
                 android:text="@string/string_clear_txt"
                 android:textColor="@color/black"
-                android:textSize="35sp" />
+                android:textSize="35sp"
+                android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

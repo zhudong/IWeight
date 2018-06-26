@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Looper;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
 import com.axecom.iweight.base.BaseEntity;
+import com.axecom.iweight.bean.ScalesCategoryGoods;
 import com.axecom.iweight.bean.SubOrderBean;
 import com.axecom.iweight.bean.SubOrderReqBean;
 import com.axecom.iweight.conf.Constants;
@@ -50,6 +52,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -84,7 +87,13 @@ public class MainActivity extends BaseActivity {
     private EditText priceEt;
     private Button clearBtn, addBtn;
     private TextView commodityNameTv;
-
+    private TextView grandTotalTv;
+    private TextView weightTotalTv;
+    private TextView weightTv;
+    private TextView priceTotalTv;
+    private List<ScalesCategoryGoods.HotKeyGoods> hotKeyGoodsList;
+    private List<ScalesCategoryGoods.HotKeyGoods> seledtedGoodsList;
+    private ScalesCategoryGoods.HotKeyGoods selectedGoods;
 
     @Override
     public View setInitView() {
@@ -95,6 +104,10 @@ public class MainActivity extends BaseActivity {
         commoditysListView = rootView.findViewById(R.id.main_commoditys_list_view);
 //        bankCardBtn = rootView.findViewById(R.id.main_bank_card_btn);
         commodityNameTv = rootView.findViewById(R.id.main_commodity_name_tv);
+        grandTotalTv = rootView.findViewById(R.id.main_grandtotal_tv);
+        weightTotalTv = rootView.findViewById(R.id.main_weight_total_tv);
+        weightTv = rootView.findViewById(R.id.main_weight_tv);
+        priceTotalTv = rootView.findViewById(R.id.main_price_total_tv);
         cashBtn = rootView.findViewById(R.id.main_cash_btn);
         settingsBtn = rootView.findViewById(R.id.main_settings_btn);
         mainClearBtn = rootView.findViewById(R.id.main_clear_btn);
@@ -117,20 +130,13 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        List<String> list = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            list.add("白菜11111111111" + i);
-        }
-        commodityAdapter = new CommodityAdapter(this, list);
+        getGoodsData();
+        hotKeyGoodsList = new ArrayList<>();
+        seledtedGoodsList = new ArrayList<>();
+        commodityAdapter = new CommodityAdapter(this, seledtedGoodsList);
         commoditysListView.setAdapter(commodityAdapter);
 
-        List<String> list2 = new ArrayList<>();
-        for (int i = 0; i < 23; i++) {
-            list2.add("白菜111111111" + i);
-        }
-        list2.add("上翻");
-        list2.add("下翻");
-        gridAdapter = new GridAdapter(this, list2);
+        gridAdapter = new GridAdapter(this, hotKeyGoodsList);
         commoditysGridView.setAdapter(gridAdapter);
         commoditysGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -138,8 +144,14 @@ public class MainActivity extends BaseActivity {
 //                if (!mThread.isAlive()) {
 //                    mThread.run();
 //                }
-                String name = parent.getAdapter().getItem(position).toString();
-                commodityNameTv.setText(name);
+                selectedGoods = new ScalesCategoryGoods.HotKeyGoods();
+                selectedGoods.id =  ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).id;
+                selectedGoods.cid =  ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).cid;
+                selectedGoods.price =  ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).price;
+                selectedGoods.traceable_code =  ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).traceable_code;
+                selectedGoods.is_default =  ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).is_default;
+                selectedGoods.name =  ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).name;
+                commodityNameTv.setText(selectedGoods.name);
             }
         });
 
@@ -153,8 +165,14 @@ public class MainActivity extends BaseActivity {
         digitalGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(selectedGoods == null){
+                    return;
+                }
                 String text = parent.getAdapter().getItem(position).toString();
                 setEditText(priceEt, position, text);
+                grandTotalTv.setText(priceEt.getText().toString() + " 元");
+                selectedGoods.price = priceEt.getText().toString();
+                selectedGoods.grandTotal = priceEt.getText().toString();
             }
         });
 
@@ -292,10 +310,38 @@ public class MainActivity extends BaseActivity {
                 break;
             case R.id.main_digital_clear_btn:
                 priceEt.setText("");
+                grandTotalTv.setText("");
                 break;
             case R.id.main_digital_add_btn:
+                if(selectedGoods == null){
+                    return;
+                }
+                seledtedGoodsList.add(selectedGoods);
+                commodityAdapter.notifyDataSetChanged();
+                int weightTotal = 0;
+                int priceTotal = 0;
+                for (int i = 0; i < seledtedGoodsList.size(); i++) {
+                    ScalesCategoryGoods.HotKeyGoods goods = seledtedGoodsList.get(i);
+//                    weightTotal+=Integer.parseInt(goods.weight);
+                    if (goods.price!= null) {
+                        if(!TextUtils.isEmpty(goods.price)){
+                            priceTotal += Integer.parseInt(goods.price);
+                        }
+                    }
+                }
+                weightTotalTv.setText(weightTotal + "");
+                priceTotalTv.setText(priceTotal + "");
+                clear();
                 break;
         }
+    }
+
+    public void clear(){
+        selectedGoods = null;
+        grandTotalTv.setText("0.00");
+        commodityNameTv.setText("");
+        priceEt.setText("");
+        weightTv.setText("");
     }
 
     public void showDialog(View v) {
@@ -313,38 +359,43 @@ public class MainActivity extends BaseActivity {
     }
 
 
-    public void test() {
+    public void getGoodsData() {
         RetrofitFactory.getInstance().API()
-                .test()
-                .compose(this.<String>setThread())
-                .subscribe(new Observer<String>() {
+                .getGoodsData(AccountManager.getInstance().getToken(), Constants.MAC_TEST)
+                .compose(this.<BaseEntity<ScalesCategoryGoods>>setThread())
+                .subscribe(new Observer<BaseEntity<ScalesCategoryGoods>>() {
                     @Override
-                    public void onSubscribe(@NonNull Disposable d) {
-
+                    public void onSubscribe(Disposable d) {
+                        showLoading();
                     }
 
                     @Override
-                    public void onNext(@NonNull String s) {
-                        LogUtils.d(s);
+                    public void onNext(BaseEntity<ScalesCategoryGoods> scalesCategoryGoodsBaseEntity) {
+                        if (scalesCategoryGoodsBaseEntity.isSuccess()) {
+                            hotKeyGoodsList.addAll(scalesCategoryGoodsBaseEntity.getData().hotKeyGoods);
+                            gridAdapter.notifyDataSetChanged();
+                        } else {
+                            showLoading(scalesCategoryGoodsBaseEntity.getMsg());
+                        }
                     }
 
                     @Override
-                    public void onError(@NonNull Throwable e) {
-
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
                     }
 
                     @Override
                     public void onComplete() {
-
+                        closeLoading();
                     }
                 });
     }
 
     class CommodityAdapter extends BaseAdapter {
         private Context context;
-        private List<String> list;
+        private List<ScalesCategoryGoods.HotKeyGoods> list;
 
-        public CommodityAdapter(Context context, List<String> list) {
+        public CommodityAdapter(Context context, List<ScalesCategoryGoods.HotKeyGoods> list) {
             this.context = context;
             this.list = list;
         }
@@ -365,7 +416,7 @@ public class MainActivity extends BaseActivity {
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
             ViewHolder holder = null;
             if (convertView == null) {
                 convertView = LayoutInflater.from(context).inflate(R.layout.commodity_item, null);
@@ -381,7 +432,19 @@ public class MainActivity extends BaseActivity {
                 holder = (ViewHolder) convertView.getTag();
             }
 
-            holder.nameTv.setText(list.get(position));
+            ScalesCategoryGoods.HotKeyGoods goods = list.get(position);
+            holder.nameTv.setText(goods.name);
+            holder.weightTv.setText(goods.weight);
+            holder.priceTv.setText(goods.price);
+            holder.subtotalTv.setText(goods.grandTotal);
+            convertView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    seledtedGoodsList.remove(position);
+                    commodityAdapter.notifyDataSetChanged();
+                    return true;
+                }
+            });
             return convertView;
         }
 

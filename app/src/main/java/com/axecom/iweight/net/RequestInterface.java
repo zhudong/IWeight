@@ -7,6 +7,7 @@ import com.axecom.iweight.bean.LocalSettingsBean;
 import com.axecom.iweight.bean.LoginData;
 import com.axecom.iweight.bean.OrderListResultBean;
 import com.axecom.iweight.bean.ReportResultBean;
+import com.axecom.iweight.bean.SaveGoodsReqBean;
 import com.axecom.iweight.bean.ScalesCategoryGoods;
 import com.axecom.iweight.bean.SettingDataBean;
 import com.axecom.iweight.bean.SubOrderBean;
@@ -175,7 +176,7 @@ public interface RequestInterface {
     Observable<BaseEntity<UnusualOrdersBean>> getOrders(@Query("token") String token, @Query("mac") String mac, @Query("page") String page, @Query("pageNum") String pageNum, @Query("typeVal") String typeVal);
 
     @POST("storeGoodsData")
-    Observable<BaseEntity> storeGoodsData(@Query("token") String token, @Query("mac") String mac, @Body List<ScalesCategoryGoods.Goods> goods);
+    Observable<BaseEntity> storeGoodsData(@Body SaveGoodsReqBean goodsReqBean);
 
     @POST("invalidOrders")
     Observable<BaseEntity> invalidOrders(@Query("token") String token, @Query("mac") String mac, @Query("orderNo") String orderNo);

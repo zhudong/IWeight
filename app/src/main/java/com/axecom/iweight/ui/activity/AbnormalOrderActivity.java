@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
@@ -36,6 +37,8 @@ public class AbnormalOrderActivity extends BaseActivity {
     private OrderAdapter orderAdapter;
     private Button previousBtn, nextBtn, backBtn;
     private List<UnusualOrdersBean.Order> orderList;
+    private int previousPos = 8;
+    private int currentPage = 1;
 
     @Override
     public View setInitView() {
@@ -75,6 +78,8 @@ public class AbnormalOrderActivity extends BaseActivity {
                         if(unusualOrdersBeanBaseEntity.isSuccess()){
                             orderList.addAll(unusualOrdersBeanBaseEntity.getData().list);
                             orderAdapter.notifyDataSetChanged();
+                            scrollTo(orderListView,orderListView.getCount() - 1);
+
                         }else {
                             showLoading(unusualOrdersBeanBaseEntity.getMsg());
                         }
@@ -96,6 +101,12 @@ public class AbnormalOrderActivity extends BaseActivity {
     @Override
     public void onClick(View v) {
         switch (v.getId()){
+            case R.id.abnormal_order_previous_btn:
+                scrollTo(orderListView, orderListView.getFirstVisiblePosition() - previousPos <= 0 ? 0 : orderListView.getFirstVisiblePosition() - previousPos);
+                break;
+            case R.id.abnormal_order_next_btn:
+                getOrders(++currentPage + "", previousPos + "", "1");
+                break;
             case R.id.abnormal_order_back_btn:
                 finish();
                 break;

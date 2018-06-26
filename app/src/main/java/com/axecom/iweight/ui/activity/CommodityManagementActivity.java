@@ -25,6 +25,7 @@ import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
 import com.axecom.iweight.base.BaseEntity;
 import com.axecom.iweight.bean.CommodityBean;
+import com.axecom.iweight.bean.SaveGoodsReqBean;
 import com.axecom.iweight.bean.ScalesCategoryGoods;
 import com.axecom.iweight.conf.Constants;
 import com.axecom.iweight.impl.ItemDragHelperCallback;
@@ -120,19 +121,23 @@ public class CommodityManagementActivity extends BaseActivity {
                 classGv.setAdapter(classAdapter);
                 break;
             case R.id.commodity_management_save_btn:
-                List<ScalesCategoryGoods.Goods> goodsList = new ArrayList<>();
-                ScalesCategoryGoods.Goods good;
+                SaveGoodsReqBean goodsReqBean = new SaveGoodsReqBean();
+                List<SaveGoodsReqBean.Goods> goodsList = new ArrayList<>();
+                SaveGoodsReqBean.Goods good;
                 for (int i = 0; i < hotKeyList.size(); i++) {
-                    good = new ScalesCategoryGoods.Goods();
+                    good = new SaveGoodsReqBean.Goods();
                     good.id = hotKeyList.get(i).getHotKeyGoods().id;
                     good.cid = hotKeyList.get(i).getHotKeyGoods().cid;
-                    good.id_default = hotKeyList.get(i).getHotKeyGoods().id_default;
+                    good.is_default = hotKeyList.get(i).getHotKeyGoods().is_default;
                     good.name = hotKeyList.get(i).getHotKeyGoods().name;
                     good.price = hotKeyList.get(i).getHotKeyGoods().price;
                     good.traceable_code = hotKeyList.get(i).getHotKeyGoods().traceable_code;
                     goodsList.add(good);
                 }
-                storeGoodsData(goodsList);
+                goodsReqBean.setToken(AccountManager.getInstance().getToken());
+                goodsReqBean.setMac(Constants.MAC_TEST);
+                goodsReqBean.setGoods(goodsList);
+                storeGoodsData(goodsReqBean);
                 break;
             case R.id.commodity_management_back_btn:
                 finish();
@@ -140,9 +145,9 @@ public class CommodityManagementActivity extends BaseActivity {
         }
     }
 
-    public void storeGoodsData(List<ScalesCategoryGoods.Goods> goods){
+    public void storeGoodsData(SaveGoodsReqBean goodsReqBean){
         RetrofitFactory.getInstance().API()
-                .storeGoodsData(AccountManager.getInstance().getToken(), Constants.MAC_TEST, goods)
+                .storeGoodsData(goodsReqBean)
                 .compose(this.<BaseEntity>setThread())
                 .subscribe(new Observer<BaseEntity>() {
                     @Override
@@ -306,7 +311,7 @@ public class CommodityManagementActivity extends BaseActivity {
                         hotKeyGoods.name = item.getAllGoods().name;
                         hotKeyGoods.price = item.getAllGoods().price;
                         hotKeyGoods.traceable_code = item.getAllGoods().traceable_code;
-                        hotKeyGoods.id_default = item.getAllGoods().id_default;
+                        hotKeyGoods.is_default = item.getAllGoods().is_default;
                     }
                     if (item.getCategoryChilds() != null) {
                         hotKeyGoods.id = item.getCategoryChilds().id;
@@ -314,7 +319,7 @@ public class CommodityManagementActivity extends BaseActivity {
                         hotKeyGoods.name = item.getCategoryChilds().name;
                         hotKeyGoods.price = item.getCategoryChilds().price;
                         hotKeyGoods.traceable_code = item.getCategoryChilds().traceable_code;
-                        hotKeyGoods.id_default = item.getCategoryChilds().id_default;
+                        hotKeyGoods.is_default = item.getCategoryChilds().is_default;
                     }
                     CommodityBean hotKeyBean = new CommodityBean();
                     hotKeyBean.setHotKeyGoods(hotKeyGoods);

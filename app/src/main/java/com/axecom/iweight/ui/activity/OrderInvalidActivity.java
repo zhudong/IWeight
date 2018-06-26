@@ -5,6 +5,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -38,7 +39,7 @@ public class OrderInvalidActivity extends BaseActivity {
     private Button previousBtn, nextBtn, backBtn;
     private int previousPos = 8;
     private int nextPos = 16;
-    private  CustomDialog mDialog;
+    private CustomDialog mDialog;
     private CustomDialog.Builder builder;
     private List<UnusualOrdersBean.Order> orderList;
     private int currentPage = 1;
@@ -60,14 +61,14 @@ public class OrderInvalidActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        getOrders(currentPage + "", previousPos+"", "1");
+        getOrders(currentPage + "", previousPos + "", "1");
         orderList = new ArrayList<>();
         orderAdapter = new OrderAdapter(this, orderList);
         orderListView.setAdapter(orderAdapter);
-
+//        orderListView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
     }
 
-    public void getOrders(String page, String pageNum, String typeVal){
+    public void getOrders(String page, String pageNum, String typeVal) {
         RetrofitFactory.getInstance().API()
                 .getOrders(AccountManager.getInstance().getToken(), Constants.MAC_TEST, page, pageNum, typeVal)
                 .compose(this.<BaseEntity<UnusualOrdersBean>>setThread())
@@ -79,11 +80,12 @@ public class OrderInvalidActivity extends BaseActivity {
 
                     @Override
                     public void onNext(BaseEntity<UnusualOrdersBean> unusualOrdersBeanBaseEntity) {
-                        if(unusualOrdersBeanBaseEntity.isSuccess()){
+                        if (unusualOrdersBeanBaseEntity.isSuccess()) {
                             orderList.addAll(unusualOrdersBeanBaseEntity.getData().list);
                             orderAdapter.notifyDataSetChanged();
-                            scrollTo(orderListView.getFirstVisiblePosition() - previousPos <= 0 ? 0 : orderListView.getFirstVisiblePosition() - previousPos);
-                        }else {
+//                            scrollTo(orderListView.getFirstVisiblePosition() - previousPos <= 0 ? 0 : orderListView.getFirstVisiblePosition() - previousPos);
+                            scrollTo(orderListView.getCount() - 1);
+                        } else {
                             showLoading(unusualOrdersBeanBaseEntity.getMsg());
                         }
                     }
@@ -101,9 +103,9 @@ public class OrderInvalidActivity extends BaseActivity {
                 });
     }
 
-    public void invalidOrders(String orderNo){
+    public void invalidOrders(final UnusualOrdersBean.Order order) {
         RetrofitFactory.getInstance().API()
-                .invalidOrders(AccountManager.getInstance().getToken(), Constants.MAC_TEST, orderNo)
+                .invalidOrders(AccountManager.getInstance().getToken(), Constants.MAC_TEST, order.order_no)
                 .compose(this.<BaseEntity>setThread())
                 .subscribe(new Observer<BaseEntity>() {
                     @Override
@@ -114,6 +116,7 @@ public class OrderInvalidActivity extends BaseActivity {
                     @Override
                     public void onNext(BaseEntity baseEntity) {
                         showLoading(baseEntity.getMsg());
+                        orderList.remove(order);
                         orderAdapter.notifyDataSetChanged();
                     }
 
@@ -132,12 +135,12 @@ public class OrderInvalidActivity extends BaseActivity {
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.order_invalid_previous_btn:
-                getOrders(++currentPage + "", previousPos + "", "1");
+                scrollTo(orderListView.getFirstVisiblePosition() - previousPos <= 0 ? 0 : orderListView.getFirstVisiblePosition() - previousPos);
                 break;
             case R.id.order_invalid_next_btn:
-                scrollTo(orderListView.getFirstVisiblePosition() + nextPos);
+                getOrders(++currentPage + "", previousPos + "", "1");
                 break;
             case R.id.order_invalid_back_btn:
                 finish();
@@ -145,7 +148,7 @@ public class OrderInvalidActivity extends BaseActivity {
         }
     }
 
-    public void scrollTo(final int position){
+    public void scrollTo(final int position) {
         orderListView.post(new Runnable() {
             @Override
             public void run() {
@@ -162,12 +165,12 @@ public class OrderInvalidActivity extends BaseActivity {
         mDialog.show();
     }
 
-    class OrderAdapter extends BaseAdapter{
+    class OrderAdapter extends BaseAdapter {
 
         private Context context;
         private List<UnusualOrdersBean.Order> list;
 
-        public OrderAdapter(Context context, List<UnusualOrdersBean.Order> list){
+        public OrderAdapter(Context context, List<UnusualOrdersBean.Order> list) {
             this.context = context;
             this.list = list;
         }
@@ -190,7 +193,7 @@ public class OrderInvalidActivity extends BaseActivity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder holder;
-            if(convertView == null){
+            if (convertView == null) {
                 convertView = LayoutInflater.from(context).inflate(R.layout.order_item, null);
                 holder = new ViewHolder();
                 holder.orderNumberTv = convertView.findViewById(R.id.order_item_number_tv);
@@ -203,7 +206,7 @@ public class OrderInvalidActivity extends BaseActivity {
                 holder.orderStatusTv = convertView.findViewById(R.id.order_item_status_tv);
                 holder.invalidBtn = convertView.findViewById(R.id.order_item_invalid_btn);
                 convertView.setTag(holder);
-            }else {
+            } else {
                 holder = (ViewHolder) convertView.getTag();
             }
             final UnusualOrdersBean.Order order = list.get(position);
@@ -225,7 +228,7 @@ public class OrderInvalidActivity extends BaseActivity {
                                 @Override
                                 public void onClick(View v) {
                                     mDialog.dismiss();
-                                    invalidOrders(order.order_no);
+                                    invalidOrders(order);
                                 }
                             },
                             new View.OnClickListener() {
@@ -241,7 +244,7 @@ public class OrderInvalidActivity extends BaseActivity {
             return convertView;
         }
 
-        class ViewHolder{
+        class ViewHolder {
             TextView orderNumberTv;
             TextView dealTimeTv;
             TextView sellerTv;

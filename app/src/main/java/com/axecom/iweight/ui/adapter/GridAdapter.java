@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 
 import com.axecom.iweight.R;
+import com.axecom.iweight.bean.ScalesCategoryGoods;
 
 import java.util.List;
 
@@ -17,9 +18,9 @@ import java.util.List;
 
 public class GridAdapter extends BaseAdapter{
     private Context context;
-    private List<String> list;
+    private List<ScalesCategoryGoods.HotKeyGoods> list;
 
-    public GridAdapter(Context context, List<String> list){
+    public GridAdapter(Context context, List<ScalesCategoryGoods.HotKeyGoods> list){
         this.context = context;
         this.list = list;
     }
@@ -49,7 +50,9 @@ public class GridAdapter extends BaseAdapter{
         }else {
             holder = (ViewHolder) convertView.getTag();
         }
-        holder.commodityBtn.setText(list.get(position));
+
+        ScalesCategoryGoods.HotKeyGoods goods = list.get(position);
+        holder.commodityBtn.setText(goods.name);
 //        convertView.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
