@@ -19,7 +19,14 @@ import com.axecom.iweight.manager.MacManager;
 import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.ui.view.SoftKeyborad;
 import com.axecom.iweight.utils.LogUtils;
+import com.axecom.iweight.utils.SerialPortUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
+import android_serialport_api.SerialPort;
+import android_serialport_api.SerialPortFinder;
 import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
@@ -61,6 +68,8 @@ public class HomeActivity extends BaseActivity {
     public void initView() {
 //        getScalesIdByMac(MacManager.getInstace(HomeActivity.this).getMac());
         getScalesIdByMac(Constants.MAC_TEST);
+        SerialPortUtils serialPortUtils = new SerialPortUtils();
+        serialPortUtils.openSerialPort();
     }
 
     private Handler mHanlder = new Handler() {

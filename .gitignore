@@ -7,7 +7,5 @@
 /build
 /captures
 .externalNativeBuild
-app/src/main/res/layout/activity_home.xml
-app/src/main/res/layout/activity_home.xml
 .idea/misc.xml
 IWeight.iml
