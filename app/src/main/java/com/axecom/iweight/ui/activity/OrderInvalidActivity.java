@@ -2,6 +2,8 @@ package com.axecom.iweight.ui.activity;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +24,10 @@ import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.ui.view.CustomDialog;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -42,6 +47,8 @@ public class OrderInvalidActivity extends BaseActivity {
     private CustomDialog mDialog;
     private CustomDialog.Builder builder;
     private List<UnusualOrdersBean.Order> orderList;
+    private Set<UnusualOrdersBean.Order> orderSet;
+    private Map<String, UnusualOrdersBean.Order> orderMap;
     private int currentPage = 1;
 
     @Override
@@ -63,7 +70,8 @@ public class OrderInvalidActivity extends BaseActivity {
     public void initView() {
         getOrders(currentPage + "", previousPos + "", "1");
         orderList = new ArrayList<>();
-        orderAdapter = new OrderAdapter(this, orderList);
+        orderMap = new HashMap<>();
+        orderAdapter = new OrderAdapter(this, orderMap, orderList);
         orderListView.setAdapter(orderAdapter);
 //        orderListView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
     }
@@ -82,6 +90,9 @@ public class OrderInvalidActivity extends BaseActivity {
                     public void onNext(BaseEntity<UnusualOrdersBean> unusualOrdersBeanBaseEntity) {
                         if (unusualOrdersBeanBaseEntity.isSuccess()) {
                             orderList.addAll(unusualOrdersBeanBaseEntity.getData().list);
+                            for (int i = 0; i < unusualOrdersBeanBaseEntity.getData().list.size(); i++) {
+                                orderMap.put(unusualOrdersBeanBaseEntity.getData().list.get(i).order_no, unusualOrdersBeanBaseEntity.getData().list.get(i));
+                            }
                             orderAdapter.notifyDataSetChanged();
 //                            scrollTo(orderListView.getFirstVisiblePosition() - previousPos <= 0 ? 0 : orderListView.getFirstVisiblePosition() - previousPos);
                             scrollTo(orderListView.getCount() - 1);
@@ -116,7 +127,9 @@ public class OrderInvalidActivity extends BaseActivity {
                     @Override
                     public void onNext(BaseEntity baseEntity) {
                         showLoading(baseEntity.getMsg());
-                        orderList.remove(order);
+                        order.status = "已作废";
+                        orderMap.put(order.order_no, order);
+//                        orderList.remove(order);
                         orderAdapter.notifyDataSetChanged();
                     }
 
@@ -168,21 +181,23 @@ public class OrderInvalidActivity extends BaseActivity {
     class OrderAdapter extends BaseAdapter {
 
         private Context context;
-        private List<UnusualOrdersBean.Order> list;
+        private Map<String, UnusualOrdersBean.Order> orderMap;
+        private List<UnusualOrdersBean.Order> orderList;
 
-        public OrderAdapter(Context context, List<UnusualOrdersBean.Order> list) {
+        public OrderAdapter(Context context, Map<String, UnusualOrdersBean.Order> orderMap, List<UnusualOrdersBean.Order> orderList) {
             this.context = context;
-            this.list = list;
+            this.orderMap = orderMap;
+            this.orderList = orderList;
         }
 
         @Override
         public int getCount() {
-            return list.size();
+            return orderMap.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return list.get(position);
+            return orderMap.get(orderList.get(position).order_no);
         }
 
         @Override
@@ -209,7 +224,7 @@ public class OrderInvalidActivity extends BaseActivity {
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
-            final UnusualOrdersBean.Order order = list.get(position);
+            final UnusualOrdersBean.Order order = orderMap.get(orderList.get(position).order_no);
             holder.orderNumberTv.setText(order.order_no);
             holder.dealTimeTv.setText(order.create_time);
             holder.sellerTv.setText(order.client_name);
@@ -218,6 +233,13 @@ public class OrderInvalidActivity extends BaseActivity {
             holder.incomeTv.setText(order.total_weight);
             holder.billingTv.setText(order.payment_type);
             holder.orderStatusTv.setText(order.status);
+            if(TextUtils.equals(order.status, "已作废")){
+                holder.invalidBtn.setEnabled(false);
+                holder.invalidBtn.setTextColor(ContextCompat.getColor(context, R.color.gray_e3));
+            }else {
+                holder.invalidBtn.setEnabled(true);
+                holder.invalidBtn.setTextColor(ContextCompat.getColor(context, R.color.black));
+            }
             holder.invalidBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
