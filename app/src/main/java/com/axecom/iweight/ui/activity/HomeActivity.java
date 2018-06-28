@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
@@ -20,6 +21,9 @@ import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.ui.view.SoftKeyborad;
 import com.axecom.iweight.utils.LogUtils;
 import com.axecom.iweight.utils.SerialPortUtils;
+import com.syc.function.Function;
+
+import org.xvolks.jnative.JNative;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,7 +49,7 @@ public class HomeActivity extends BaseActivity {
     private TextView weightTv;
     private int weightId;
     private CheckedTextView savePwdCtv;
-
+    private int commHandle = 0;
     @Override
     public View setInitView() {
         rootView = LayoutInflater.from(this).inflate(R.layout.activity_home, null);
@@ -68,8 +72,11 @@ public class HomeActivity extends BaseActivity {
     public void initView() {
 //        getScalesIdByMac(MacManager.getInstace(HomeActivity.this).getMac());
         getScalesIdByMac(Constants.MAC_TEST);
-        SerialPortUtils serialPortUtils = new SerialPortUtils();
-        serialPortUtils.openSerialPort();
+        
+        commHandle = Function.API_OpenComm("dev/tty1".getBytes(), 115200);
+        if (commHandle == 0) {
+            Toast.makeText(this, "can't open serial", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private Handler mHanlder = new Handler() {
