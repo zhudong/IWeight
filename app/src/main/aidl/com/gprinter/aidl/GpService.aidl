@@ -4,8 +4,11 @@ interface GpService{
 	void closePort(int PrinterId);
 	int getPrinterConnectStatus(int PrinterId);
 	int printeTestPage(int PrinterId);   
-  	int queryPrinterStatus(int PrinterId,int Timesout);
+  	void queryPrinterStatus(int PrinterId,int Timesout,int requestCode);
   	int getPrinterCommandType(int PrinterId);
 	int sendEscCommand(int PrinterId, String b64);
-  	int sendTscCommand(int PrinterId, String  b64); 
+  	int sendLabelCommand(int PrinterId, String  b64);
+	void isUserExperience(boolean userExperience);
+	String getClientID();
+	int setServerIP(String ip, int port);
 }       

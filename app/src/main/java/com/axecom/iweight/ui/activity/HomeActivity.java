@@ -72,10 +72,12 @@ public class HomeActivity extends BaseActivity {
     public void initView() {
 //        getScalesIdByMac(MacManager.getInstace(HomeActivity.this).getMac());
         getScalesIdByMac(Constants.MAC_TEST);
-        commHandle = Function.API_OpenComm("dev/tty".getBytes(), 115200);
-        if (commHandle == 0) {
-            Toast.makeText(this, "can't open serial", Toast.LENGTH_SHORT).show();
-        }
+//        commHandle = Function.API_OpenComm("dev/tty".getBytes(), 115200);
+//        if (commHandle == 0) {
+//            Toast.makeText(this, "can't open serial", Toast.LENGTH_SHORT).show();
+//        }
+        SerialPortUtils serialPortUtils = new SerialPortUtils();
+        serialPortUtils.openSerialPort();
     }
 
     private Handler mHanlder = new Handler() {

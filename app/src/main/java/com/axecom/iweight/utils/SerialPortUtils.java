@@ -14,7 +14,7 @@ import android_serialport_api.SerialPort;
 public class SerialPortUtils {
 
     private final String TAG = "SerialPortUtils";
-    private String path = "/dev/ttyUSB0";
+    private String path = "/dev/bus/usb/001/022";
     private int baudrate = 115200;
     public boolean serialPortStatus = false; //是否打开串口标志
     public String data_;

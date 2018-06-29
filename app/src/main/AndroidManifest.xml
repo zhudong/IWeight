@@ -97,22 +97,14 @@
             android:name="com.gprinter.service.GpPrintService"
             android:enabled="true"
             android:exported="true"
-            android:label="GpPrintService"
-            android:process=":remote">
+            android:label="GpPrintService" >
             <intent-filter>
                 <action android:name="com.gprinter.aidl.GpPrintService" />
             </intent-filter>
         </service>
-        <service
-            android:name="com.jb.sdk.service.JbPrintService"
-            android:enabled="true"
-            android:exported="true"
-            android:label="JbPrintService"
-            android:process=":remote">
-            <intent-filter>
-                <action android:name="com.jb.sdk.service.JbPrintService" />
-            </intent-filter>
+        <service android:name="com.gprinter.service.AllService" >
         </service>
+
         <service android:name="com.inuker.bluetooth.library.BluetoothService" />
 
         <!-- since 1.8.0 option 可选项。用于同一设备中不同应用的JPush服务相互拉起的功能。 -->

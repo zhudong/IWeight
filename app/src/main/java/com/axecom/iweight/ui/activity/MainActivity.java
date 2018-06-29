@@ -43,8 +43,6 @@ import com.inuker.bluetooth.library.search.SearchRequest;
 import com.inuker.bluetooth.library.search.SearchResult;
 import com.inuker.bluetooth.library.search.response.SearchResponse;
 import com.inuker.bluetooth.library.utils.BluetoothLog;
-import com.jb.sdk.command.ReceiptCommand;
-import com.jb.sdk.service.JbPrintService;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -79,7 +77,7 @@ public class MainActivity extends BaseActivity {
     private CommodityAdapter commodityAdapter;
     private GridAdapter gridAdapter;
     private DigitalAdapter digitalAdapter;
-    private Button bankCardBtn;
+//    private Button bankCardBtn;
     private Button cashBtn;
     private Button settingsBtn;
     private Button mainClearBtn;
@@ -284,7 +282,7 @@ public class MainActivity extends BaseActivity {
                 startDDMActivity(StaffMemberLoginActivity.class, false);
                 break;
             case R.id.main_clear_btn:
-//                gPprinterManager.openConnect();
+                gPprinterManager.openConnect();
 //                gPprinterManager.printTest();
                 SubOrderReqBean subOrderReqBean = new SubOrderReqBean();
                 SubOrderReqBean.Goods good;
@@ -306,9 +304,10 @@ public class MainActivity extends BaseActivity {
                 subOrderReqBean.setPayment_id("1");
                 subOrderReqBean.setCreate_time(getCurrentTime());
                 subOrderReqBean.setGoods(goodsList);
-                submitOrder(subOrderReqBean);
+//                submitOrder(subOrderReqBean);
                 break;
             case R.id.main_digital_clear_btn:
+                gPprinterManager.printTestPaper();
                 priceEt.setText("");
                 grandTotalTv.setText("");
                 break;

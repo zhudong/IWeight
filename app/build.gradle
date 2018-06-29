@@ -85,9 +85,9 @@ dependencies {
     compile 'io.reactivex.rxjava2:rxjava:2.1.1'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
     compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
-    compile files('libs/jbsdk.jar')
+    //    compile files('libs/jbsdk.jar')
     //    implementation files('libs/gprinter-2.1.jar')
-    compile files('libs/gprinter-2.1.jar')
+    //    compile files('libs/gprinter-2.1.jar')
     //    compile 'com.github.a-voyager:BluetoothHelper:f71d40a98b'
     compile 'com.inuker.bluetooth:library:1.4.0'
     compile project(':bthelper')
@@ -99,4 +99,8 @@ dependencies {
     //    compile 'cn.jiguang.sdk:jcore:1.1.9'  // 此处以JCore 1.1.9 版本为例。
     compile files('libs/Function.jar')
     compile files('libs/JNative.jar')
+    compile files('libs/gprintersdkv22.jar')
+    compile files('libs/jcc-bate-0.7.3.jar')
+    compile files('libs/ksoap2-android-assembly-2.5.2-jar-with-dependencies.jar')
+    compile files('libs/xUtils-2.6.14.jar')
 }
