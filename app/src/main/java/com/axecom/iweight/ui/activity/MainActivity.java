@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.usb.UsbManager;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
@@ -37,6 +38,8 @@ import com.axecom.iweight.ui.adapter.GridAdapter;
 import com.axecom.iweight.ui.view.BTHelperDialog;
 import com.axecom.iweight.ui.view.BluetoothDialog;
 import com.axecom.iweight.utils.LogUtils;
+import com.hoho.android.usbserial.driver.UsbSerialDriver;
+import com.hoho.android.usbserial.driver.UsbSerialProber;
 import com.inuker.bluetooth.library.BluetoothClient;
 import com.inuker.bluetooth.library.beacon.Beacon;
 import com.inuker.bluetooth.library.search.SearchRequest;
@@ -173,7 +176,11 @@ public class MainActivity extends BaseActivity {
                 selectedGoods.grandTotal = priceEt.getText().toString();
             }
         });
-
+        UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
+        List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager);
+        if (availableDrivers.isEmpty()) {
+            return;
+        }
 //
 //        if(!ClientManager.getClient().isBluetoothOpened()){
 //            ClientManager.getClient().openBluetooth();

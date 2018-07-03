@@ -1,7 +1,11 @@
 package com.axecom.iweight.ui.activity;
 
+import android.content.Context;
+import android.hardware.usb.UsbDeviceConnection;
+import android.hardware.usb.UsbManager;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -21,6 +25,9 @@ import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.ui.view.SoftKeyborad;
 import com.axecom.iweight.utils.LogUtils;
 import com.axecom.iweight.utils.SerialPortUtils;
+import com.hoho.android.usbserial.driver.UsbSerialDriver;
+import com.hoho.android.usbserial.driver.UsbSerialPort;
+import com.hoho.android.usbserial.driver.UsbSerialProber;
 import com.syc.function.Function;
 
 import org.xvolks.jnative.JNative;
@@ -28,6 +35,7 @@ import org.xvolks.jnative.JNative;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import android_serialport_api.SerialPort;
 import android_serialport_api.SerialPortFinder;
@@ -76,8 +84,78 @@ public class HomeActivity extends BaseActivity {
 //        if (commHandle == 0) {
 //            Toast.makeText(this, "can't open serial", Toast.LENGTH_SHORT).show();
 //        }
-        SerialPortUtils serialPortUtils = new SerialPortUtils();
-        serialPortUtils.openSerialPort();
+        usbOpen();
+    }
+
+    public void usbOpen(){
+        UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
+        List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager);
+        if (availableDrivers.isEmpty()) {
+            return;
+        }
+        UsbSerialDriver driver = availableDrivers.get(0);
+        UsbDeviceConnection connection = manager.openDevice(driver.getDevice());
+        if (connection == null) {
+            // You probably need to call UsbManager.requestPermission(driver.getDevice(), ..)
+            return;
+        }
+
+// Read some data! Most have just one port (port 0).
+        port = driver.getPorts().get(0);
+        try {
+            port.open(connection);
+            port.setParameters(115200, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
+            new ReadThread().run();
+//            byte buffer[] = new byte[16];
+//            int numBytesRead = port.read(buffer, 1000);
+//            LogUtils.d("Read " + numBytesRead + " bytes.");
+        } catch (IOException e) {
+            // Deal with error.
+        } finally {
+            try {
+                port.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public boolean threadStatus = false; //线程状态，为了安全终止线程
+    UsbSerialPort port;
+    /**
+     * 单开一线程，来读数据
+     */
+    private class ReadThread extends Thread{
+        @Override
+        public void run() {
+            super.run();
+            //判断进程是否在运行，更安全的结束进程
+            while (!threadStatus){
+                LogUtils.d( "进入线程run");
+                //64   1024
+                byte[] buffer = new byte[64];
+                int size; //读取数据的大小
+                try {
+                    int numBytesRead = port.read(buffer, 1000);
+                    String s="" ;
+                    String s1 = "";
+                    for (byte b : buffer) {
+                        String s2 = String.format("%02x ", b).substring(0,2);
+                        s1+=Integer.parseInt(String.format("%02x ", b).substring(0,2), 16);
+                        s += String.format("%02x ", b);
+
+                    }
+                    LogUtils.d("Read " + numBytesRead + " bytes.");
+
+                } catch (IOException e) {
+                    LogUtils.e( "run: 数据读取异常：" +e.toString());
+                }
+            }
+
+        }
+    }
+    public static int byte2Int(byte b){
+        int r = (int) b;
+        return r;
     }
 
     private Handler mHanlder = new Handler() {
