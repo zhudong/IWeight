@@ -1,8 +1,11 @@
 package com.axecom.iweight.ui.activity;
 
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.os.Handler;
@@ -89,10 +92,20 @@ public class HomeActivity extends BaseActivity {
 //        if (commHandle == 0) {
 //            Toast.makeText(this, "can't open serial", Toast.LENGTH_SHORT).show();
 //        }
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("android.hardware.usb.action.USB_DEVICE_DETACHED");
+        intentFilter.addAction("android.hardware.usb.action.USB_DEVICE_ATTACHED");
+        registerReceiver(usbReceiver, intentFilter);
         usbOpen();
     }
 
-    public void usbOpen(){
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(usbReceiver);
+    }
+
+    public void usbOpen() {
         UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
         List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager);
         if (availableDrivers.isEmpty()) {
@@ -101,17 +114,17 @@ public class HomeActivity extends BaseActivity {
 
         for (int i = 0; i < availableDrivers.size(); i++) {
             UsbSerialDriver driver = availableDrivers.get(i);
-            if(driver.getDevice().getVendorId() == 6790 && driver.getDevice().getProductId() == 29987){
+            if (driver.getDevice().getVendorId() == 6790 && driver.getDevice().getProductId() == 29987) {
                 SysApplication.getInstances().setCardDriver(driver);
                 UsbDeviceConnection connection = null;
 
                 PendingIntent mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent("com.android.example.USB_PERMISSION"), 0);
-                if(manager.hasPermission(driver.getDevice())){
+                if (manager.hasPermission(driver.getDevice())) {
                     //if has already got permission, just goto connect it
                     //that means: user has choose yes for your previously popup window asking for grant perssion for this usb device
                     //and also choose option: not ask again
                     connection = manager.openDevice(driver.getDevice());
-                }else{
+                } else {
                     //this line will let android popup window, ask user whether to allow this app to have permission to operate this usb device
                     manager.requestPermission(driver.getDevice(), mPermissionIntent);
                 }
@@ -123,69 +136,85 @@ public class HomeActivity extends BaseActivity {
                 try {
                     port.open(connection);
                     port.setParameters(115200, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
-                    new ReadThread(port).start();
+                    readThread.start();
                 } catch (IOException e) {
                     // Deal with error.
                 } finally {
                 }
             }
-            if(driver.getDevice().getVendorId() == 26728 && driver.getDevice().getProductId() == 1280){
+            if (driver.getDevice().getVendorId() == 26728 && driver.getDevice().getProductId() == 1280) {
                 SysApplication.getInstances().setGpDriver(driver);
             }
         }
 
-        if(SysApplication.getInstances().getCardDriver() == null){
+        if (SysApplication.getInstances().getCardDriver() == null) {
             showLoading("没有插入读卡器，请检查设备");
         }
-        if(SysApplication.getInstances().getGpDriver() == null){
+        if (SysApplication.getInstances().getGpDriver() == null) {
             showLoading("没有插入打印机，请检查设备");
         }
 // Read some data! Most have just one port (port 0).
 
     }
+
     public boolean threadStatus = false; //线程状态，为了安全终止线程
     UsbSerialPort port;
+    ReadThread readThread = new ReadThread();
+
     /**
      * 单开一线程，来读数据
      */
-    private class ReadThread extends Thread{
-        UsbSerialPort port;
-        public ReadThread(    UsbSerialPort port){
-            this.port = port;
-        }
+    private class ReadThread extends Thread {
+
         @Override
         public void run() {
             super.run();
             //判断进程是否在运行，更安全的结束进程
-            while (!threadStatus){
-                LogUtils.d( "进入线程run");
+            while (!threadStatus) {
+                LogUtils.d("进入线程run");
                 //64   1024
                 byte[] buffer = new byte[32];
                 int size; //读取数据的大小
                 try {
                     int numBytesRead = port.read(buffer, 1000);
-                    String s="" ;
+                    String s = "";
                     String s1 = "";
                     for (byte b : buffer) {
-                        String s2 = String.format("%02x ", b).substring(0,2);
-                        s1+=Integer.parseInt(String.format("%02x ", b).substring(0,2), 16);
+                        String s2 = String.format("%02x ", b).substring(0, 2);
+                        s1 += Integer.parseInt(String.format("%02x ", b).substring(0, 2), 16);
                         s += String.format("%02x ", b);
 
                     }
                     LogUtils.d("Read " + s1 + " bytes.");
 
                 } catch (IOException e) {
-                    LogUtils.e( "run: 数据读取异常：" +e.toString());
+                    LogUtils.e("run: 数据读取异常：" + e.toString());
                 }
             }
 
         }
     }
-    public static int byte2Int(byte b){
-        int r = (int) b;
-        return r;
-    }
 
+    private BroadcastReceiver usbReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals("android.hardware.usb.action.USB_DEVICE_DETACHED")) {
+                threadStatus = true;
+                UsbDevice device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+                if (device != null) {
+                    if (device.getVendorId() == 6790 && device.getProductId() == 29987) {
+                        showLoading("读卡器被拔出，请检查设备");
+                    }
+                    if (device.getVendorId() == 26728 && device.getProductId() == 1280) {
+                        showLoading("打印机被拔出，请检查设备");
+                    }
+                }
+            }
+            if (intent.getAction().equals("android.hardware.usb.action.USB_DEVICE_ATTACHED")) {
+                threadStatus = false;
+            }
+        }
+    };
     private Handler mHanlder = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -226,10 +255,10 @@ public class HomeActivity extends BaseActivity {
                     @Override
                     public void onConfirmed(String result) {
                         cardNumberTv.setText(result);
-                        if (AccountManager.getInstance().getPwdBySerialNumber(result) != null){
+                        if (AccountManager.getInstance().getPwdBySerialNumber(result) != null) {
                             pwdTv.setText(AccountManager.getInstance().getPwdBySerialNumber(result));
                             savePwdCtv.setChecked(true);
-                        }else {
+                        } else {
                             savePwdCtv.setChecked(false);
                         }
                     }

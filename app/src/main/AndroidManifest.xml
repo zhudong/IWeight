@@ -56,11 +56,20 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
             </intent-filter>
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/device_filter" />
         </activity>
+        <receiver android:name=".net.UsbReceiver" >
+            <intent-filter >
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
+        </receiver>
         <activity
             android:name=".ui.activity.MainActivity"
             android:hardwareAccelerated="false"
