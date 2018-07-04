@@ -8,7 +8,7 @@
     <Button
         android:id="@+id/main_grid_item_btn"
         android:clickable="false"
-        android:layout_width="115dp"
+        android:layout_width="match_parent"
         android:layout_height="85dp"
         android:textSize="20sp"
         android:background="@drawable/shape_weight_display_bg"

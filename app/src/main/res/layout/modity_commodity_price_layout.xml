@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="1000dp"
-    android:layout_gravity="center"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_gravity="center">
 
     <LinearLayout
         android:layout_width="1000dp"
@@ -43,9 +43,10 @@
                     android:textSize="20sp" />
 
                 <TextView
+                    android:id="@+id/modity_commodity_id_tv"
                     android:layout_width="wrap_content"
-                    android:layout_marginLeft="5dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
                     android:layout_weight="1"
                     android:text="7"
                     android:textColor="@color/black"
@@ -67,9 +68,9 @@
 
                 <TextView
                     android:id="@+id/modity_commodity_name_tv"
-                    android:layout_marginLeft="5dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
                     android:layout_weight="1"
                     android:text="7"
                     android:textColor="@color/black"
@@ -89,15 +90,17 @@
                     android:textColor="@color/black"
                     android:textSize="20sp" />
 
-                <TextView
+                <EditText
+                    android:id="@+id/modity_commodity_price_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:paddingLeft="5dp"
                     android:background="@drawable/shape_white_btn_bg"
+                    android:paddingLeft="5dp"
                     android:text="7"
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textSize="20sp"
+                    android:theme="@style/MyEditText" />
             </LinearLayout>
 
             <LinearLayout
@@ -113,25 +116,28 @@
                     android:textColor="@color/black"
                     android:textSize="20sp" />
 
-                <TextView
+                <EditText
+                    android:id="@+id/modity_commodity_traceable_code_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:paddingLeft="5dp"
                     android:background="@drawable/shape_white_btn_bg"
+                    android:paddingLeft="5dp"
                     android:text="7"
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textSize="20sp"
+                    android:theme="@style/MyEditText" />
             </LinearLayout>
 
             <CheckedTextView
-                android:layout_marginLeft="20dp"
+                android:id="@+id/modity_commodity_is_default_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
-                android:text="默认常用商品："
-                android:gravity="center"
+                android:layout_marginLeft="20dp"
                 android:checked="true"
+                android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+                android:gravity="center"
+                android:text="默认常用商品："
                 android:textColor="@color/black"
                 android:textSize="20sp" />
         </LinearLayout>
@@ -140,19 +146,21 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:padding="40dp"
             android:background="@drawable/shape_weight_display_bg"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="40dp">
 
             <com.axecom.iweight.ui.view.SoftKey
-                android:padding="0dp"
-                android:listSelector="@null"
-                android:numColumns="3"
+                android:id="@+id/modity_commodity_softkey"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_weight="1"
                 android:horizontalSpacing="2dp"
-                android:verticalSpacing="2dp"
-                android:layout_weight="1"/>
+                android:listSelector="@null"
+                android:numColumns="3"
+                android:padding="0dp"
+                android:verticalSpacing="2dp" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

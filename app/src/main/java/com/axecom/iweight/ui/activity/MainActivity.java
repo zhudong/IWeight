@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
 import com.axecom.iweight.base.BaseEntity;
+import com.axecom.iweight.bean.LoginInfo;
 import com.axecom.iweight.bean.ScalesCategoryGoods;
 import com.axecom.iweight.bean.SubOrderBean;
 import com.axecom.iweight.bean.SubOrderReqBean;
@@ -92,6 +93,9 @@ public class MainActivity extends BaseActivity {
     private TextView weightTotalTv;
     private TextView weightTv;
     private TextView priceTotalTv;
+    private TextView operatorTv;
+    private TextView stallNumberTv;
+    private TextView componyTitleTv;
     private List<ScalesCategoryGoods.HotKeyGoods> hotKeyGoodsList;
     private List<ScalesCategoryGoods.HotKeyGoods> seledtedGoodsList;
     private ScalesCategoryGoods.HotKeyGoods selectedGoods;
@@ -108,6 +112,9 @@ public class MainActivity extends BaseActivity {
         grandTotalTv = rootView.findViewById(R.id.main_grandtotal_tv);
         weightTotalTv = rootView.findViewById(R.id.main_weight_total_tv);
         weightTv = rootView.findViewById(R.id.main_weight_tv);
+        operatorTv = rootView.findViewById(R.id.main_operator_tv);
+        stallNumberTv = rootView.findViewById(R.id.main_stall_number_tv);
+        componyTitleTv = rootView.findViewById(R.id.main_compony_title_tv);
         priceTotalTv = rootView.findViewById(R.id.main_price_total_tv);
         cashBtn = rootView.findViewById(R.id.main_cash_btn);
         settingsBtn = rootView.findViewById(R.id.main_settings_btn);
@@ -132,6 +139,7 @@ public class MainActivity extends BaseActivity {
     @Override
     public void initView() {
         getGoodsData();
+        getLoginInfo();
         hotKeyGoodsList = new ArrayList<>();
         seledtedGoodsList = new ArrayList<>();
         commodityAdapter = new CommodityAdapter(this, seledtedGoodsList);
@@ -364,6 +372,35 @@ public class MainActivity extends BaseActivity {
 
     }
 
+    public void getLoginInfo(){
+        RetrofitFactory.getInstance().API()
+                .getLoginInfo(AccountManager.getInstance().getToken(), Constants.MAC_TEST)
+                .compose(this.<BaseEntity<LoginInfo>>setThread())
+                .subscribe(new Observer<BaseEntity<LoginInfo>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        showLoading();
+                    }
+
+                    @Override
+                    public void onNext(BaseEntity<LoginInfo> loginInfoBaseEntity) {
+                        stallNumberTv.setText(loginInfoBaseEntity.getData().boothNumber);
+                        operatorTv.setText(loginInfoBaseEntity.getData().name);
+                        componyTitleTv.setText(loginInfoBaseEntity.getData().organizationName);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        closeLoading();
+                    }
+                });
+
+    }
 
     public void getGoodsData() {
         RetrofitFactory.getInstance().API()

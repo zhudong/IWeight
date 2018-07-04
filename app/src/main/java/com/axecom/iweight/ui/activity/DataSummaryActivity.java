@@ -114,7 +114,7 @@ public class DataSummaryActivity extends BaseActivity {
 
     public void getReportsList(final int type, String dateVal, String typeVal, String page, final String pNum) {
         RetrofitFactory.getInstance().API()
-                .getReportsList(AccountManager.getInstance().getToken(), Constants.MAC_TEST, dateVal, typeVal, page, pNum)
+                .getReportsList(AccountManager.getInstance().getAdminToken(), Constants.MAC_TEST, dateVal, typeVal, page, pNum)
                 .compose(this.<BaseEntity<ReportResultBean>>setThread())
                 .subscribe(new Observer<BaseEntity<ReportResultBean>>() {
                     @Override
@@ -156,7 +156,7 @@ public class DataSummaryActivity extends BaseActivity {
 
     public void getOrderList(String dateVal, String page, String pageNum) {
         RetrofitFactory.getInstance().API()
-                .getOrderList(AccountManager.getInstance().getToken(), Constants.MAC_TEST, dateVal, page, pageNum)
+                .getOrderList(AccountManager.getInstance().getAdminToken(), Constants.MAC_TEST, dateVal, page, pageNum)
                 .compose(this.<BaseEntity<OrderListResultBean>>setThread())
                 .subscribe(new Observer<BaseEntity<OrderListResultBean>>() {
                     @Override

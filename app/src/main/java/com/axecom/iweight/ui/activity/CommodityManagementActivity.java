@@ -104,8 +104,9 @@ public class CommodityManagementActivity extends BaseActivity {
                 Intent intent = new Intent(CommodityManagementActivity.this, ModityCommodityActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("commodityBean", hotKeyList.get(position));
+                intent.putExtra("position", position);
                 intent.putExtras(bundle);
-                startActivity(intent);
+                startActivityForResult(intent, 1001);
             }
         });
 
@@ -134,7 +135,7 @@ public class CommodityManagementActivity extends BaseActivity {
                     good.traceable_code = hotKeyList.get(i).getHotKeyGoods().traceable_code;
                     goodsList.add(good);
                 }
-                goodsReqBean.setToken(AccountManager.getInstance().getToken());
+                goodsReqBean.setToken(AccountManager.getInstance().getAdminToken());
                 goodsReqBean.setMac(Constants.MAC_TEST);
                 goodsReqBean.setGoods(goodsList);
                 storeGoodsData(goodsReqBean);
@@ -145,7 +146,22 @@ public class CommodityManagementActivity extends BaseActivity {
         }
     }
 
-    public void storeGoodsData(SaveGoodsReqBean goodsReqBean){
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == 1001) {
+            if (data != null) {
+                int position = data.getIntExtra("position", -1);
+                ScalesCategoryGoods.HotKeyGoods goods = (ScalesCategoryGoods.HotKeyGoods) data.getExtras().getSerializable("hotKeyGoods");
+                CommodityBean bean = new CommodityBean();
+                bean.setHotKeyGoods(goods);
+                hotKeyList.set(position, bean);
+            }
+
+        }
+    }
+
+    public void storeGoodsData(SaveGoodsReqBean goodsReqBean) {
         RetrofitFactory.getInstance().API()
                 .storeGoodsData(goodsReqBean)
                 .compose(this.<BaseEntity>setThread())
@@ -157,9 +173,9 @@ public class CommodityManagementActivity extends BaseActivity {
 
                     @Override
                     public void onNext(BaseEntity baseEntity) {
-                        if(baseEntity.isSuccess()){
+                        if (baseEntity.isSuccess()) {
                             Toast.makeText(CommodityManagementActivity.this, baseEntity.getMsg(), Toast.LENGTH_SHORT).show();
-                        }else {
+                        } else {
                             showLoading(baseEntity.getMsg());
                         }
                     }
@@ -178,7 +194,7 @@ public class CommodityManagementActivity extends BaseActivity {
 
     public void getGoodsData() {
         RetrofitFactory.getInstance().API()
-                .getGoodsData(AccountManager.getInstance().getToken(), Constants.MAC_TEST)
+                .getGoodsData(AccountManager.getInstance().getAdminToken(), Constants.MAC_TEST)
                 .compose(this.<BaseEntity<ScalesCategoryGoods>>setThread())
                 .subscribe(new Observer<BaseEntity<ScalesCategoryGoods>>() {
                     @Override

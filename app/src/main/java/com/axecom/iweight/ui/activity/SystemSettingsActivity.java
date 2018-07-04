@@ -230,7 +230,7 @@ public class SystemSettingsActivity extends BaseActivity {
 
     public void getSettingData(){
         RetrofitFactory.getInstance().API()
-                .getSettingData(AccountManager.getInstance().getToken(), Constants.MAC_TEST)
+                .getSettingData(AccountManager.getInstance().getAdminToken(), Constants.MAC_TEST)
                 .compose(this.<BaseEntity>setThread())
                 .subscribe(new Observer<BaseEntity>() {
                     @Override

@@ -78,7 +78,7 @@ public class OrderInvalidActivity extends BaseActivity {
 
     public void getOrders(String page, String pageNum, String typeVal) {
         RetrofitFactory.getInstance().API()
-                .getOrders(AccountManager.getInstance().getToken(), Constants.MAC_TEST, page, pageNum, typeVal)
+                .getOrders(AccountManager.getInstance().getAdminToken(), Constants.MAC_TEST, page, pageNum, typeVal)
                 .compose(this.<BaseEntity<UnusualOrdersBean>>setThread())
                 .subscribe(new Observer<BaseEntity<UnusualOrdersBean>>() {
                     @Override
@@ -116,7 +116,7 @@ public class OrderInvalidActivity extends BaseActivity {
 
     public void invalidOrders(final UnusualOrdersBean.Order order) {
         RetrofitFactory.getInstance().API()
-                .invalidOrders(AccountManager.getInstance().getToken(), Constants.MAC_TEST, order.order_no)
+                .invalidOrders(AccountManager.getInstance().getAdminToken(), Constants.MAC_TEST, order.order_no)
                 .compose(this.<BaseEntity>setThread())
                 .subscribe(new Observer<BaseEntity>() {
                     @Override

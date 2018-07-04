@@ -357,6 +357,9 @@ public class Ch34xSerialDriver implements UsbSerialDriver {
 		supportedDevices.put(UsbId.VENDOR_QINHENG, new int[]{
 				UsbId.QINHENG_HL340
 		});
+		supportedDevices.put(UsbId.VENDOR_JIABO, new int[]{
+				UsbId.PRODUCT_JIABO
+		});
 		return supportedDevices;
 	}
 

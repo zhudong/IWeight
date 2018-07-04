@@ -8,7 +8,7 @@
 
     <LinearLayout
         style="@style/layout_style"
-        android:layout_width="600dp"
+        android:layout_width="450dp"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:padding="5dp">
@@ -27,7 +27,7 @@
             android:layout_marginTop="5dp"
             android:gravity="center"
             android:horizontalSpacing="2dp"
-            android:numColumns="5"
+            android:numColumns="3"
             android:verticalSpacing="2dp" />
 
         <Button
@@ -59,7 +59,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="520dp"
+        android:layout_width="500dp"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
@@ -92,7 +92,7 @@
                     android:gravity="center"
                     android:text="0.000公斤"
                     android:textColor="@color/black"
-                    android:textSize="40sp"
+                    android:textSize="50sp"
                     android:textStyle="bold" />
 
 
@@ -116,7 +116,7 @@
                         android:layout_height="wrap_content"
                         android:text="品种："
                         android:textColor="@color/black"
-                        android:textSize="20sp" />
+                        android:textSize="25sp" />
 
                     <TextView
                         android:id="@+id/main_commodity_name_tv"
@@ -124,7 +124,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textColor="@color/black"
-                        android:textSize="20sp" />
+                        android:textSize="25sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -138,7 +138,7 @@
                         android:layout_height="wrap_content"
                         android:text="单价："
                         android:textColor="@color/black"
-                        android:textSize="20sp" />
+                        android:textSize="25sp" />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -157,7 +157,7 @@
                             android:paddingLeft="5dp"
                             android:paddingRight="5dp"
                             android:textColor="@color/black"
-                            android:textSize="20sp"
+                            android:textSize="25sp"
                             android:theme="@style/MyEditText" />
 
                         <TextView
@@ -166,7 +166,7 @@
                             android:layout_marginLeft="10dp"
                             android:text="元"
                             android:textColor="@color/black"
-                            android:textSize="20sp" />
+                            android:textSize="25sp" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -189,7 +189,7 @@
                         android:layout_height="wrap_content"
                         android:text="净重："
                         android:textColor="@color/black"
-                        android:textSize="20sp" />
+                        android:textSize="25sp" />
 
                     <TextView
                         android:id="@+id/main_weight_tv"
@@ -198,7 +198,7 @@
                         android:layout_weight="1"
                         android:text="0.000 kg"
                         android:textColor="@color/black"
-                        android:textSize="20sp" />
+                        android:textSize="25sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -211,7 +211,7 @@
                         android:layout_height="wrap_content"
                         android:text="小计："
                         android:textColor="@color/black"
-                        android:textSize="20sp" />
+                        android:textSize="25sp" />
 
                     <TextView
                         android:id="@+id/main_grandtotal_tv"
@@ -220,7 +220,7 @@
                         android:layout_weight="1"
                         android:text="0.00  元"
                         android:textColor="@color/black"
-                        android:textSize="20sp" />
+                        android:textSize="25sp" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -234,7 +234,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp">
+                    android:layout_marginLeft="25sp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -255,7 +255,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="10dp"
                 android:background="@color/gray_ccc"
                 android:orientation="horizontal">
 
@@ -266,7 +266,7 @@
                     android:gravity="center"
                     android:text="商品"
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textSize="25sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -275,7 +275,7 @@
                     android:gravity="center"
                     android:text="单价"
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textSize="25sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -284,7 +284,7 @@
                     android:gravity="center"
                     android:text="数量"
                     android:textColor="@color/black"
-                    android:textSize="20sp"
+                    android:textSize="25sp"
                     android:visibility="gone" />
 
                 <TextView
@@ -294,7 +294,7 @@
                     android:gravity="center"
                     android:text="净重"
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textSize="25sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -303,7 +303,7 @@
                     android:gravity="center"
                     android:text="小计"
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textSize="25sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -312,7 +312,7 @@
                     android:gravity="center"
                     android:text="操作"
                     android:textColor="@color/black"
-                    android:textSize="20sp"
+                    android:textSize="25sp"
                     android:visibility="gone" />
             </LinearLayout>
 
@@ -340,7 +340,7 @@
                     android:layout_height="wrap_content"
                     android:text="总重："
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textSize="25sp" />
 
                 <TextView
                     android:id="@+id/main_weight_total_tv"
@@ -356,7 +356,7 @@
                     android:layout_marginLeft="30dp"
                     android:text="总货款："
                     android:textColor="@color/black"
-                    android:textSize="20sp" />
+                    android:textSize="25sp" />
 
                 <TextView
                     android:id="@+id/main_price_total_tv"
@@ -368,71 +368,13 @@
             </LinearLayout>
 
             <ImageView
+                android:layout_marginBottom="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:background="@drawable/shape_dotted_line"
                 android:layerType="software" />
         </LinearLayout>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:gravity="bottom">
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="90dp"
-                android:layout_marginTop="10dp"
-
-                android:background="@drawable/shape_bg" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-
-                <Button
-                    android:id="@+id/main_cash_btn"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:background="@drawable/shape_circle"
-                    android:elevation="1dp"
-                    android:text="@string/string_cash"
-                    android:textColor="@color/black"
-                    android:textSize="30sp"
-                    android:translationZ="1dp" />
-
-
-                <Button
-                    android:id="@+id/main_settings_btn"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_marginLeft="50dp"
-                    android:layout_marginRight="50dp"
-                    android:background="@drawable/shape_circle"
-                    android:elevation="1dp"
-                    android:text="@string/string_settings"
-                    android:textColor="@color/black"
-                    android:textSize="30sp"
-                    android:translationZ="1dp" />
-
-                <Button
-                    android:id="@+id/main_clear_btn"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:background="@drawable/shape_circle"
-                    android:elevation="1dp"
-                    android:text="@string/string_clear"
-                    android:textColor="@color/black"
-                    android:textSize="30sp"
-                    android:translationZ="1dp" />
-            </LinearLayout>
-        </RelativeLayout>
     </LinearLayout>
 
 
@@ -451,13 +393,15 @@
             android:visibility="gone" />
 
         <TextView
+            android:id="@+id/main_compony_title_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:text="@string/string_compony_name"
             android:textColor="@color/black"
-            android:textSize="20sp" />
+            android:textStyle="bold"
+            android:textSize="25sp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -472,14 +416,15 @@
                 android:layout_height="wrap_content"
                 android:text="@string/string_stall_number"
                 android:textColor="@color/black"
-                android:textSize="20sp" />
+                android:textSize="25sp" />
 
             <TextView
+                android:id="@+id/main_stall_number_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="A005"
                 android:textColor="@color/black"
-                android:textSize="20sp" />
+                android:textSize="25sp" />
 
             <TextView
                 android:layout_width="0dp"
@@ -491,14 +436,15 @@
                 android:layout_height="wrap_content"
                 android:text="@string/string_operator"
                 android:textColor="@color/black"
-                android:textSize="20sp" />
+                android:textSize="25sp" />
 
             <TextView
+                android:id="@+id/main_operator_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="张三"
                 android:textColor="@color/black"
-                android:textSize="20sp" />
+                android:textSize="25sp" />
 
         </LinearLayout>
 
@@ -550,5 +496,66 @@
                 android:textSize="35sp"
                 android:textStyle="bold" />
         </LinearLayout>
+
+        <RelativeLayout
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:gravity="bottom">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="90dp"
+                android:layout_marginTop="10dp"
+
+                android:background="@drawable/shape_bg" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+
+                <Button
+                    android:id="@+id/main_cash_btn"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:background="@drawable/shape_circle"
+                    android:elevation="1dp"
+                    android:text="@string/string_cash"
+                    android:textColor="@color/black"
+                    android:textSize="30sp"
+                    android:translationZ="1dp" />
+
+
+                <Button
+                    android:id="@+id/main_settings_btn"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@drawable/shape_circle"
+                    android:elevation="1dp"
+                    android:text="@string/string_settings"
+                    android:textColor="@color/black"
+                    android:textSize="30sp"
+                    android:translationZ="1dp" />
+
+                <Button
+                    android:id="@+id/main_clear_btn"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:background="@drawable/shape_circle"
+                    android:elevation="1dp"
+                    android:text="@string/string_clear"
+                    android:textColor="@color/black"
+                    android:textSize="30sp"
+                    android:translationZ="1dp" />
+            </LinearLayout>
+        </RelativeLayout>
     </LinearLayout>
 </LinearLayout>

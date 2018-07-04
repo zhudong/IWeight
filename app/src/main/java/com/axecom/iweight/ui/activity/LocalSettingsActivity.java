@@ -107,7 +107,7 @@ public class LocalSettingsActivity extends BaseActivity {
 
     public void getScalesSettingData() {
         RetrofitFactory.getInstance().API()
-                .getScalesSettingData(AccountManager.getInstance().getToken(), Constants.MAC_TEST)
+                .getScalesSettingData(AccountManager.getInstance().getAdminToken(), Constants.MAC_TEST)
                 .compose(this.<BaseEntity<LocalSettingsBean>>setThread())
                 .subscribe(new Observer<BaseEntity<LocalSettingsBean>>() {
                     @Override

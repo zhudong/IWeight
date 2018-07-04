@@ -4,5 +4,6 @@
     <mapping directory="" vcs="svn" />
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/bthelper" vcs="svn" />
+    <mapping directory="$PROJECT_DIR$/usbSerialForAndroid" vcs="svn" />
   </component>
 </project>

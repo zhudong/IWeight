@@ -30,8 +30,6 @@ import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
 import com.syc.function.Function;
 
-import org.xvolks.jnative.JNative;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -84,7 +82,7 @@ public class HomeActivity extends BaseActivity {
 //        if (commHandle == 0) {
 //            Toast.makeText(this, "can't open serial", Toast.LENGTH_SHORT).show();
 //        }
-        usbOpen();
+//        usbOpen();
     }
 
     public void usbOpen(){

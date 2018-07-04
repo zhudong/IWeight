@@ -5,6 +5,7 @@ import com.axecom.iweight.base.BaseEntity;
 import com.axecom.iweight.bean.CalibrationBean;
 import com.axecom.iweight.bean.LocalSettingsBean;
 import com.axecom.iweight.bean.LoginData;
+import com.axecom.iweight.bean.LoginInfo;
 import com.axecom.iweight.bean.OrderListResultBean;
 import com.axecom.iweight.bean.ReportResultBean;
 import com.axecom.iweight.bean.SaveGoodsReqBean;
@@ -180,4 +181,7 @@ public interface RequestInterface {
 
     @POST("invalidOrders")
     Observable<BaseEntity> invalidOrders(@Query("token") String token, @Query("mac") String mac, @Query("orderNo") String orderNo);
+
+    @POST("getLoginInfo")
+    Observable<BaseEntity<LoginInfo>> getLoginInfo(@Query("token") String token, @Query("mac") String mac);
 }

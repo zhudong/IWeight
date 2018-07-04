@@ -67,6 +67,8 @@ public final class UsbId {
 
     public static final int VENDOR_QINHENG = 0x1a86;
     public static final int QINHENG_HL340 = 0x7523;
+    public static final int VENDOR_JIABO = 0x6868;
+    public static final int PRODUCT_JIABO = 0x500;
 
     private UsbId() {
         throw new IllegalAccessError("Non-instantiable class.");
