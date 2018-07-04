@@ -102,6 +102,7 @@ public class HomeActivity extends BaseActivity {
         for (int i = 0; i < availableDrivers.size(); i++) {
             UsbSerialDriver driver = availableDrivers.get(i);
             if(driver.getDevice().getVendorId() == 6790 && driver.getDevice().getProductId() == 29987){
+                SysApplication.getInstances().setCardDriver(driver);
                 UsbDeviceConnection connection = null;
 
                 PendingIntent mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent("com.android.example.USB_PERMISSION"), 0);
@@ -133,7 +134,12 @@ public class HomeActivity extends BaseActivity {
             }
         }
 
-
+        if(SysApplication.getInstances().getCardDriver() == null){
+            showLoading("没有插入读卡器，请检查设备");
+        }
+        if(SysApplication.getInstances().getGpDriver() == null){
+            showLoading("没有插入打印机，请检查设备");
+        }
 // Read some data! Most have just one port (port 0).
 
     }

@@ -49,7 +49,7 @@ public class SysApplication extends MultiDexApplication {
     public static int mWidthPixels;
     public static int mHeightPixels;
     public GPprinterManager gPprinterManager;
-    private UsbSerialDriver gpDriver;
+    private UsbSerialDriver gpDriver, cardDriver;
 
     private static DisplayImageOptions options02;
 
@@ -269,5 +269,13 @@ public class SysApplication extends MultiDexApplication {
 
     public void setGpDriver(UsbSerialDriver gpDriver) {
         this.gpDriver = gpDriver;
+    }
+
+    public UsbSerialDriver getCardDriver() {
+        return cardDriver;
+    }
+
+    public void setCardDriver(UsbSerialDriver cardDriver) {
+        this.cardDriver = cardDriver;
     }
 }
