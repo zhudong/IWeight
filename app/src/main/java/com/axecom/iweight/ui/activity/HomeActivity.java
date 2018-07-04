@@ -1,6 +1,8 @@
 package com.axecom.iweight.ui.activity;
 
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.os.Handler;
@@ -16,10 +18,12 @@ import android.widget.Toast;
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
 import com.axecom.iweight.base.BaseEntity;
+import com.axecom.iweight.base.SysApplication;
 import com.axecom.iweight.bean.LoginData;
 import com.axecom.iweight.bean.WeightBean;
 import com.axecom.iweight.conf.Constants;
 import com.axecom.iweight.manager.AccountManager;
+import com.axecom.iweight.manager.GPprinterManager;
 import com.axecom.iweight.manager.MacManager;
 import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.ui.view.SoftKeyborad;
@@ -56,6 +60,9 @@ public class HomeActivity extends BaseActivity {
     private int weightId;
     private CheckedTextView savePwdCtv;
     private int commHandle = 0;
+    private GPprinterManager gPprinterManager;
+
+
     @Override
     public View setInitView() {
         rootView = LayoutInflater.from(this).inflate(R.layout.activity_home, null);
@@ -82,7 +89,7 @@ public class HomeActivity extends BaseActivity {
 //        if (commHandle == 0) {
 //            Toast.makeText(this, "can't open serial", Toast.LENGTH_SHORT).show();
 //        }
-//        usbOpen();
+        usbOpen();
     }
 
     public void usbOpen(){
@@ -91,31 +98,44 @@ public class HomeActivity extends BaseActivity {
         if (availableDrivers.isEmpty()) {
             return;
         }
-        UsbSerialDriver driver = availableDrivers.get(0);
-        UsbDeviceConnection connection = manager.openDevice(driver.getDevice());
-        if (connection == null) {
-            // You probably need to call UsbManager.requestPermission(driver.getDevice(), ..)
-            return;
-        }
 
-// Read some data! Most have just one port (port 0).
-        port = driver.getPorts().get(0);
-        try {
-            port.open(connection);
-            port.setParameters(115200, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
-            new ReadThread().run();
-//            byte buffer[] = new byte[16];
-//            int numBytesRead = port.read(buffer, 1000);
-//            LogUtils.d("Read " + numBytesRead + " bytes.");
-        } catch (IOException e) {
-            // Deal with error.
-        } finally {
-            try {
-                port.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+        for (int i = 0; i < availableDrivers.size(); i++) {
+            UsbSerialDriver driver = availableDrivers.get(i);
+            if(driver.getDevice().getVendorId() == 6790 && driver.getDevice().getProductId() == 29987){
+                UsbDeviceConnection connection = null;
+
+                PendingIntent mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent("com.android.example.USB_PERMISSION"), 0);
+                if(manager.hasPermission(driver.getDevice())){
+                    //if has already got permission, just goto connect it
+                    //that means: user has choose yes for your previously popup window asking for grant perssion for this usb device
+                    //and also choose option: not ask again
+                    connection = manager.openDevice(driver.getDevice());
+                }else{
+                    //this line will let android popup window, ask user whether to allow this app to have permission to operate this usb device
+                    manager.requestPermission(driver.getDevice(), mPermissionIntent);
+                }
+                if (connection == null) {
+                    // You probably need to call UsbManager.requestPermission(driver.getDevice(), ..)
+                    return;
+                }
+                port = driver.getPorts().get(0);
+                try {
+                    port.open(connection);
+                    port.setParameters(115200, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
+                    new ReadThread(port).start();
+                } catch (IOException e) {
+                    // Deal with error.
+                } finally {
+                }
+            }
+            if(driver.getDevice().getVendorId() == 26728 && driver.getDevice().getProductId() == 1280){
+                SysApplication.getInstances().setGpDriver(driver);
             }
         }
+
+
+// Read some data! Most have just one port (port 0).
+
     }
     public boolean threadStatus = false; //线程状态，为了安全终止线程
     UsbSerialPort port;
@@ -123,6 +143,10 @@ public class HomeActivity extends BaseActivity {
      * 单开一线程，来读数据
      */
     private class ReadThread extends Thread{
+        UsbSerialPort port;
+        public ReadThread(    UsbSerialPort port){
+            this.port = port;
+        }
         @Override
         public void run() {
             super.run();
@@ -130,7 +154,7 @@ public class HomeActivity extends BaseActivity {
             while (!threadStatus){
                 LogUtils.d( "进入线程run");
                 //64   1024
-                byte[] buffer = new byte[64];
+                byte[] buffer = new byte[32];
                 int size; //读取数据的大小
                 try {
                     int numBytesRead = port.read(buffer, 1000);
@@ -142,7 +166,7 @@ public class HomeActivity extends BaseActivity {
                         s += String.format("%02x ", b);
 
                     }
-                    LogUtils.d("Read " + numBytesRead + " bytes.");
+                    LogUtils.d("Read " + s1 + " bytes.");
 
                 } catch (IOException e) {
                     LogUtils.e( "run: 数据读取异常：" +e.toString());

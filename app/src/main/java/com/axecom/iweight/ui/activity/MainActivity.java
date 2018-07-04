@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
 import com.axecom.iweight.base.BaseEntity;
+import com.axecom.iweight.base.SysApplication;
 import com.axecom.iweight.bean.LoginInfo;
 import com.axecom.iweight.bean.ScalesCategoryGoods;
 import com.axecom.iweight.bean.SubOrderBean;
@@ -184,11 +185,8 @@ public class MainActivity extends BaseActivity {
                 selectedGoods.grandTotal = priceEt.getText().toString();
             }
         });
-        UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
-        List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager);
-        if (availableDrivers.isEmpty()) {
-            return;
-        }
+        UsbSerialDriver driver = SysApplication.getInstances().getGpDriver();
+        SysApplication.getInstances().gPprinterManager.openConnect(driver.getDevice().getDeviceName());
 //
 //        if(!ClientManager.getClient().isBluetoothOpened()){
 //            ClientManager.getClient().openBluetooth();
@@ -297,7 +295,7 @@ public class MainActivity extends BaseActivity {
                 startDDMActivity(StaffMemberLoginActivity.class, false);
                 break;
             case R.id.main_clear_btn:
-                gPprinterManager.openConnect();
+//                gPprinterManager.openConnect();
 //                gPprinterManager.printTest();
                 SubOrderReqBean subOrderReqBean = new SubOrderReqBean();
                 SubOrderReqBean.Goods good;
@@ -379,7 +377,6 @@ public class MainActivity extends BaseActivity {
                 .subscribe(new Observer<BaseEntity<LoginInfo>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        showLoading();
                     }
 
                     @Override

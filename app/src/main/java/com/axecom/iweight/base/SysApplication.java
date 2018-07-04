@@ -9,7 +9,9 @@ import android.telephony.TelephonyManager;
 
 
 import com.axecom.iweight.R;
+import com.axecom.iweight.manager.GPprinterManager;
 import com.axecom.iweight.utils.LogUtils;
+import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -46,6 +48,9 @@ public class SysApplication extends MultiDexApplication {
     public static String machineCode;
     public static int mWidthPixels;
     public static int mHeightPixels;
+    public GPprinterManager gPprinterManager;
+    private UsbSerialDriver gpDriver;
+
     private static DisplayImageOptions options02;
 
 
@@ -111,6 +116,7 @@ public class SysApplication extends MultiDexApplication {
         //极光推送
         JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
+        gPprinterManager = new GPprinterManager(this);
 
         //集成友盟统计
         //MobclickAgent.startWithConfigure(new MobclickAgent.UMAnalyticsConfig(this, "57ce5fea67e58ebf39000507", getChanl()));
@@ -255,5 +261,13 @@ public class SysApplication extends MultiDexApplication {
     public static DisplayImageOptions getRoundImageLoaderOption() {
 
         return options02;
+    }
+
+    public UsbSerialDriver getGpDriver() {
+        return gpDriver;
+    }
+
+    public void setGpDriver(UsbSerialDriver gpDriver) {
+        this.gpDriver = gpDriver;
     }
 }

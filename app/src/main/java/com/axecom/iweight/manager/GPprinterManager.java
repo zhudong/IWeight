@@ -108,11 +108,11 @@ public class GPprinterManager {
      * 打开连接
      *
      */
-    public void openConnect() {
+    public void openConnect(String deviceAddress) {
         //id为打印服务操作的打印机的id，最大可以操作3台
         try {
             Toast.makeText(context, "openConnect", Toast.LENGTH_SHORT).show();;
-            mService.openPort(mPrinterId, PortParameters.USB, "/dev/bus/usb/001/009", 0);
+            mService.openPort(mPrinterId, PortParameters.USB, deviceAddress, 0);
         } catch (RemoteException e) {
             e.printStackTrace();
         }

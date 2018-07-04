@@ -30,6 +30,7 @@ import com.axecom.iweight.ui.activity.HomeActivity;
 import com.axecom.iweight.ui.activity.MainActivity;
 import com.axecom.iweight.ui.uiutils.ViewUtils;
 import com.axecom.iweight.utils.LogUtils;
+import com.hoho.android.usbserial.driver.UsbSerialDriver;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -61,6 +62,7 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
     //    private SweetAlertDialog mSweetAlertDialog;
     private View mMenuRoot;
     private SweetAlertDialog mSweetAlertDialog;
+    private UsbSerialDriver gpDriver;
 
     @SuppressLint("InlinedApi")
     @Override
@@ -508,5 +510,13 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
                 return upstream.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
             }
         };
+    }
+
+    public UsbSerialDriver getGpDriver() {
+        return gpDriver;
+    }
+
+    public void setGpDriver(UsbSerialDriver gpDriver) {
+        this.gpDriver = gpDriver;
     }
 }
