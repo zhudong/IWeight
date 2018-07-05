@@ -95,7 +95,7 @@ public class StaffMemberLoginActivity extends BaseActivity {
                         if(loginDataBaseEntity.isSuccess()){
                             AccountManager.getInstance().setAdminToken(loginDataBaseEntity.getData().getAdminToken());
                             setResult(RESULT_OK);
-//                            finish();
+                            finish();
                         }else {
                             showLoading(loginDataBaseEntity.getMsg());
                         }

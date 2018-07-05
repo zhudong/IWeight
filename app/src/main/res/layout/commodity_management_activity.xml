@@ -48,6 +48,7 @@
                 android:padding="10dp">
 
                 <EditText
+                    android:id="@+id/commodity_management_search_et"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/shape_white_btn_bg" />
@@ -72,6 +73,7 @@
                             android:layout_weight="1"
                             android:gravity="center"
                             android:text="全部"
+                            android:tag="-1"
                             android:textColor="@color/black"
                             android:textSize="20sp" />
 

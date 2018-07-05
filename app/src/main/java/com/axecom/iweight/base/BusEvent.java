@@ -9,7 +9,7 @@ public class BusEvent {
     public static final int GO_HOME_CODE = 34;
     public static final int LOGIN_SUCCESS = 10;
     public static final int GO_HOME_PAGE = 42;
-
+    public static final int USB_NEW_DATA = 1;
 
 
     //图片下载完成

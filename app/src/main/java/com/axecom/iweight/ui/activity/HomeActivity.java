@@ -28,6 +28,7 @@ import com.axecom.iweight.conf.Constants;
 import com.axecom.iweight.manager.AccountManager;
 import com.axecom.iweight.manager.GPprinterManager;
 import com.axecom.iweight.manager.MacManager;
+import com.axecom.iweight.manager.TemperatureUsbControl;
 import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.ui.view.SoftKeyborad;
 import com.axecom.iweight.utils.LogUtils;
@@ -65,7 +66,6 @@ public class HomeActivity extends BaseActivity {
     private int commHandle = 0;
     private GPprinterManager gPprinterManager;
 
-
     @Override
     public View setInitView() {
         rootView = LayoutInflater.from(this).inflate(R.layout.activity_home, null);
@@ -92,17 +92,18 @@ public class HomeActivity extends BaseActivity {
 //        if (commHandle == 0) {
 //            Toast.makeText(this, "can't open serial", Toast.LENGTH_SHORT).show();
 //        }
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("android.hardware.usb.action.USB_DEVICE_DETACHED");
-        intentFilter.addAction("android.hardware.usb.action.USB_DEVICE_ATTACHED");
-        registerReceiver(usbReceiver, intentFilter);
-        usbOpen();
+
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unregisterReceiver(usbReceiver);
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 
     public void usbOpen() {
@@ -212,6 +213,8 @@ public class HomeActivity extends BaseActivity {
             }
             if (intent.getAction().equals("android.hardware.usb.action.USB_DEVICE_ATTACHED")) {
                 threadStatus = false;
+                LogUtils.d("ACTION_USB_DEVICE_ATTACHED");
+
             }
         }
     };

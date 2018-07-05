@@ -82,7 +82,7 @@ public class MainActivity extends BaseActivity {
     private CommodityAdapter commodityAdapter;
     private GridAdapter gridAdapter;
     private DigitalAdapter digitalAdapter;
-//    private Button bankCardBtn;
+    //    private Button bankCardBtn;
     private Button cashBtn;
     private Button settingsBtn;
     private Button mainClearBtn;
@@ -97,6 +97,7 @@ public class MainActivity extends BaseActivity {
     private TextView operatorTv;
     private TextView stallNumberTv;
     private TextView componyTitleTv;
+    private TextView weightTopTv;
     private List<ScalesCategoryGoods.HotKeyGoods> hotKeyGoodsList;
     private List<ScalesCategoryGoods.HotKeyGoods> seledtedGoodsList;
     private ScalesCategoryGoods.HotKeyGoods selectedGoods;
@@ -117,6 +118,7 @@ public class MainActivity extends BaseActivity {
         stallNumberTv = rootView.findViewById(R.id.main_stall_number_tv);
         componyTitleTv = rootView.findViewById(R.id.main_compony_title_tv);
         priceTotalTv = rootView.findViewById(R.id.main_price_total_tv);
+        weightTopTv = rootView.findViewById(R.id.main_weight_top_tv);
         cashBtn = rootView.findViewById(R.id.main_cash_btn);
         settingsBtn = rootView.findViewById(R.id.main_settings_btn);
         mainClearBtn = rootView.findViewById(R.id.main_clear_btn);
@@ -134,6 +136,7 @@ public class MainActivity extends BaseActivity {
         settingsBtn.setOnClickListener(this);
         clearBtn.setOnClickListener(this);
         addBtn.setOnClickListener(this);
+        weightTopTv.setOnClickListener(this);
         return rootView;
     }
 
@@ -155,12 +158,12 @@ public class MainActivity extends BaseActivity {
 //                    mThread.run();
 //                }
                 selectedGoods = new ScalesCategoryGoods.HotKeyGoods();
-                selectedGoods.id =  ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).id;
-                selectedGoods.cid =  ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).cid;
-                selectedGoods.price =  ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).price;
-                selectedGoods.traceable_code =  ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).traceable_code;
-                selectedGoods.is_default =  ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).is_default;
-                selectedGoods.name =  ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).name;
+                selectedGoods.id = ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).id;
+                selectedGoods.cid = ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).cid;
+                selectedGoods.price = ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).price;
+                selectedGoods.traceable_code = ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).traceable_code;
+                selectedGoods.is_default = ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).is_default;
+                selectedGoods.name = ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).name;
                 commodityNameTv.setText(selectedGoods.name);
             }
         });
@@ -175,7 +178,7 @@ public class MainActivity extends BaseActivity {
         digitalGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(selectedGoods == null){
+                if (selectedGoods == null) {
                     return;
                 }
                 String text = parent.getAdapter().getItem(position).toString();
@@ -186,7 +189,9 @@ public class MainActivity extends BaseActivity {
             }
         });
         UsbSerialDriver driver = SysApplication.getInstances().getGpDriver();
-        SysApplication.getInstances().gPprinterManager.openConnect(driver.getDevice().getDeviceName());
+        if (driver != null) {
+            SysApplication.getInstances().gPprinterManager.openConnect(driver.getDevice().getDeviceName());
+        }
 //
 //        if(!ClientManager.getClient().isBluetoothOpened()){
 //            ClientManager.getClient().openBluetooth();
@@ -284,15 +289,30 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == RESULT_OK){
+            startDDMActivity(SettingsActivity.class, false);
+        }
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
 //            case R.id.main_bank_card_btn:
+            case R.id.main_weight_top_tv:
+                Intent intent = new Intent();
+                intent.setClass(this, StaffMemberLoginActivity.class);
+                startActivityForResult(intent, 1002);
+                break;
             case R.id.main_cash_btn:
                 startDDMActivity(SettingsActivity.class, false);
 //                showDialog(v);
                 break;
             case R.id.main_settings_btn:
-                startDDMActivity(StaffMemberLoginActivity.class, false);
+                Intent intent2 = new Intent();
+                intent2.setClass(this, StaffMemberLoginActivity.class);
+                startActivityForResult(intent2, 1002);
                 break;
             case R.id.main_clear_btn:
 //                gPprinterManager.openConnect();
@@ -325,7 +345,7 @@ public class MainActivity extends BaseActivity {
                 grandTotalTv.setText("");
                 break;
             case R.id.main_digital_add_btn:
-                if(selectedGoods == null){
+                if (selectedGoods == null) {
                     return;
                 }
                 seledtedGoodsList.add(selectedGoods);
@@ -335,25 +355,34 @@ public class MainActivity extends BaseActivity {
                 for (int i = 0; i < seledtedGoodsList.size(); i++) {
                     ScalesCategoryGoods.HotKeyGoods goods = seledtedGoodsList.get(i);
 //                    weightTotal+=Integer.parseInt(goods.weight);
-                    if (goods.price!= null) {
-                        if(!TextUtils.isEmpty(goods.price)){
+                    if (goods.price != null) {
+                        if (!TextUtils.isEmpty(goods.price)) {
                             priceTotal += Integer.parseInt(goods.price);
                         }
                     }
                 }
                 weightTotalTv.setText(weightTotal + "");
                 priceTotalTv.setText(priceTotal + "");
-                clear();
+                clear(0);
                 break;
         }
     }
 
-    public void clear(){
-        selectedGoods = null;
-        grandTotalTv.setText("0.00");
-        commodityNameTv.setText("");
-        priceEt.setText("");
-        weightTv.setText("");
+    public void clear(int type) {
+        if (type == 0) {
+            selectedGoods = null;
+            grandTotalTv.setText("0.00");
+            commodityNameTv.setText("");
+            priceEt.setText("");
+            weightTv.setText("");
+        }
+        if (type == 1) {
+            weightTopTv.setText("0.000公斤");
+            priceEt.setText("");
+            weightTv.setText("");
+            seledtedGoodsList.clear();
+            commodityAdapter.notifyDataSetChanged();
+        }
     }
 
     public void showDialog(View v) {
@@ -370,7 +399,7 @@ public class MainActivity extends BaseActivity {
 
     }
 
-    public void getLoginInfo(){
+    public void getLoginInfo() {
         RetrofitFactory.getInstance().API()
                 .getLoginInfo(AccountManager.getInstance().getToken(), Constants.MAC_TEST)
                 .compose(this.<BaseEntity<LoginInfo>>setThread())

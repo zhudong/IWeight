@@ -105,4 +105,5 @@ dependencies {
     compile files('libs/xUtils-2.6.14.jar')
     compile project(':usbSerialForAndroid')
 //    compile 'com.github.felHR85:UsbSerial:4.5.2'
+    compile 'org.greenrobot:eventbus:3.0.0'
 }

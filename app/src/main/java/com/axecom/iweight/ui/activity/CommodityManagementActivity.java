@@ -8,6 +8,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -38,6 +41,8 @@ import com.axecom.iweight.net.RetrofitFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -56,6 +61,7 @@ public class CommodityManagementActivity extends BaseActivity {
     private LinearLayout classTitleLayout;
     private TextView allTitleTv;
     private Button saveBtn, backBtn;
+    private EditText searchEt;
 
     private boolean isShowDelTv = false;
 
@@ -68,8 +74,38 @@ public class CommodityManagementActivity extends BaseActivity {
         allTitleTv = rootView.findViewById(R.id.commodity_management_class_titlte_all_tv);
         saveBtn = rootView.findViewById(R.id.commodity_management_save_btn);
         backBtn = rootView.findViewById(R.id.commodity_management_back_btn);
+        searchEt = rootView.findViewById(R.id.commodity_management_search_et);
         getGoodsData();
+        searchEt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(s.length() == 0){
+                    return;
+                }
+                Pattern pattern = Pattern.compile(s.toString());
+                List<CommodityBean> result = new ArrayList<>();
+
+                for (int i = 0; i < allGoodsList.size(); i++) {
+                    CommodityBean bean = allGoodsList.get(i);
+                    Matcher matcher = pattern.matcher(allGoodsList.get(i).getAllGoods().name);
+                    if(matcher.find()){
+                        result.add(allGoodsList.get(i));
+                    }
+                }
+                classAdapter = new ClassAdapter(CommodityManagementActivity.this, result);
+                classGv.setAdapter(classAdapter);
+            }
+        });
         allTitleTv.setOnClickListener(this);
         saveBtn.setOnClickListener(this);
         backBtn.setOnClickListener(this);
@@ -120,6 +156,10 @@ public class CommodityManagementActivity extends BaseActivity {
             case R.id.commodity_management_class_titlte_all_tv:
                 classAdapter = new ClassAdapter(this, allGoodsList);
                 classGv.setAdapter(classAdapter);
+                for (int i = 0; i < classTitleLayout.getChildCount(); i++) {
+                    ((TextView) classTitleLayout.getChildAt(i)).setTextColor(ContextCompat.getColor(CommodityManagementActivity.this, R.color.black));
+                }
+                allTitleTv.setTextColor(ContextCompat.getColor(CommodityManagementActivity.this, R.color.green_3CB371));
                 break;
             case R.id.commodity_management_save_btn:
                 SaveGoodsReqBean goodsReqBean = new SaveGoodsReqBean();
@@ -223,12 +263,13 @@ public class CommodityManagementActivity extends BaseActivity {
                                 categoryBean.setCategoryGoods((ScalesCategoryGoods.categoryGoods) scalesCategoryGoodsBaseEntity.getData().categoryGoods.get(i));
 //                                categoryBean.setCategoryChilds((ScalesCategoryGoods.categoryGoods.child) ((ScalesCategoryGoods.categoryGoods) scalesCategoryGoodsBaseEntity.getData().categoryGoods.get(i)).child);
                                 categoryList.add(categoryBean);
-                                TextView titleTv = new TextView(CommodityManagementActivity.this);
+                                final TextView titleTv = new TextView(CommodityManagementActivity.this);
                                 titleTv.setText(categoryBean.getCategoryGoods().name);
                                 titleTv.setTextSize(20);
                                 titleTv.setTextColor(ContextCompat.getColor(CommodityManagementActivity.this, R.color.black));
                                 titleTv.setLayoutParams(new LinearLayout.LayoutParams(100, LinearLayout.LayoutParams.WRAP_CONTENT));
                                 titleTv.setGravity(Gravity.CENTER);
+                                titleTv.setTag(((ScalesCategoryGoods.categoryGoods) scalesCategoryGoodsBaseEntity.getData().categoryGoods.get(i)).id);
                                 classTitleLayout.addView(titleTv);
                                 final int finalI = i;
                                 final int finalI1 = i;
@@ -245,6 +286,16 @@ public class CommodityManagementActivity extends BaseActivity {
                                                 categoryChildList.add(clildBean);
                                                 ClassAdapter adapter = new ClassAdapter(CommodityManagementActivity.this, categoryChildList);
                                                 classGv.setAdapter(adapter);
+                                                titleTv.setTextColor(ContextCompat.getColor(CommodityManagementActivity.this, R.color.green_3CB371));
+                                                for (int i = 0; i < classTitleLayout.getChildCount(); i++) {
+                                                    TextView tv = (TextView) classTitleLayout.getChildAt(i);
+                                                    if(tv.getTag() == titleTv.getTag()){
+                                                        tv.setTextColor(ContextCompat.getColor(CommodityManagementActivity.this, R.color.green_3CB371));
+                                                    }else {
+                                                        tv.setTextColor(ContextCompat.getColor(CommodityManagementActivity.this, R.color.black));
+                                                    }
+                                                }
+                                                allTitleTv.setTextColor(ContextCompat.getColor(CommodityManagementActivity.this, R.color.black));
                                             }
                                         }
                                     }
