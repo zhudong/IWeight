@@ -24,10 +24,15 @@ public class BusEvent {
     private boolean mBooleanParam02;
     private int mIntValue;
     private int mIntValue02;
+    private byte[] byteParam;
 
     public BusEvent(int type, long longparam) {
         this.mType = type;
         this.mLongParam = longparam;
+    }
+    public BusEvent(int type, byte[] byteParam) {
+        this.mType = type;
+        this.byteParam = byteParam;
     }
 
     public BusEvent(int type, int intParam) {
@@ -191,4 +196,5 @@ public class BusEvent {
     public int getIntValue02() {
         return mIntValue02;
     }
+    public byte[] getByteParam(){return byteParam; }
 }

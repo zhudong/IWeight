@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.axecom.iweight.base.BusEvent;
 import com.axecom.iweight.base.SysApplication;
+import com.axecom.iweight.utils.LogUtils;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
@@ -24,7 +25,7 @@ import java.util.concurrent.Executors;
 
 public class TemperatureUsbControl {
     private static final String TAG = TemperatureUsbControl.class.getSimpleName();
-    private static final String TEMPERATURE_USB_VENDOR_ID = "1a86";     //供应商id
+    private static final String TEMPERATURE_USB_VENDOR_ID = "1A86";     //供应商id
     private static final String TEMPERATURE_USB_PRODUCT_ID = "7523";    //产品id
     private static final String GPRINTER_USB_VENDOR_ID = "6868";     //供应商id
     private static final String GPRINTER_USB_PRODUCT_ID = "500";    //产品id
@@ -118,8 +119,45 @@ public class TemperatureUsbControl {
     private void startIoManager() {
         if (sTemperatureUsbPort != null) {
             Log.i(TAG, "Starting io manager ..");
-            mSerialIoManager = new SerialInputOutputManager(sTemperatureUsbPort, mListener);
-            mExecutor.submit(mSerialIoManager);  //实质是用一个线程不断读取USB端口
+//            mSerialIoManager = new SerialInputOutputManager(sTemperatureUsbPort, mListener);
+//            mExecutor.submit(mSerialIoManager);  //实质是用一个线程不断读取USB端口
+
+            new ReadThread(sTemperatureUsbPort).run();
+        }
+    }
+    public boolean threadStatus = false; //线程状态，为了安全终止线程
+
+    private class ReadThread extends Thread {
+        UsbSerialPort port;
+        public ReadThread(UsbSerialPort port ){
+            this.port = port;
+        }
+        @Override
+        public void run() {
+            super.run();
+            //判断进程是否在运行，更安全的结束进程
+            while (!threadStatus) {
+                LogUtils.d("进入线程run");
+                //64   1024
+                byte[] buffer = new byte[32];
+                int size; //读取数据的大小
+                try {
+                    int numBytesRead = port.read(buffer, 1000);
+                    String s = "";
+                    String s1 = "";
+                    for (byte b : buffer) {
+                        String s2 = String.format("%02x ", b).substring(0, 2);
+                        s1 += Integer.parseInt(String.format("%02x ", b).substring(0, 2), 16);
+                        s += String.format("%02x ", b);
+
+                    }
+                    LogUtils.d("Read " + s1 + " bytes.");
+
+                } catch (IOException e) {
+                    LogUtils.e("run: 数据读取异常：" + e.toString());
+                }
+            }
+
         }
     }
 

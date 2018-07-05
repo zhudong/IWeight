@@ -3,6 +3,7 @@ package com.axecom.iweight.base;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.hardware.usb.UsbDevice;
 import android.os.Handler;
 import android.support.multidex.MultiDexApplication;
 import android.telephony.TelephonyManager;
@@ -49,7 +50,8 @@ public class SysApplication extends MultiDexApplication {
     public static int mWidthPixels;
     public static int mHeightPixels;
     public GPprinterManager gPprinterManager;
-    private UsbSerialDriver gpDriver, cardDriver;
+    private UsbSerialDriver gpDriver;
+    private UsbDevice usbDevice;
 
     private static DisplayImageOptions options02;
 
@@ -271,11 +273,11 @@ public class SysApplication extends MultiDexApplication {
         this.gpDriver = gpDriver;
     }
 
-    public UsbSerialDriver getCardDriver() {
-        return cardDriver;
+    public UsbDevice getCardDevice() {
+        return usbDevice;
     }
 
-    public void setCardDriver(UsbSerialDriver cardDriver) {
-        this.cardDriver = cardDriver;
+    public void setCardDevice(UsbDevice cardDevice) {
+        this.usbDevice = cardDevice;
     }
 }

@@ -45,7 +45,7 @@ public class UsbManagerActivity extends BaseActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        mTemperatureUsbControl.onPause();
+//        mTemperatureUsbControl.onPause();
         unregisterReceiver(usbReceiver);
     }
 
