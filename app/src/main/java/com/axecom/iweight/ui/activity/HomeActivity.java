@@ -106,19 +106,6 @@ public class HomeActivity extends BaseActivity {
     }
 
     @Override
-    public void onEventMainThread(BusEvent event) {
-        super.onEventMainThread(event);
-        if (event.getType() == BusEvent.USB_NEW_DATA) {
-            byte[] data = event.getByteParam();
-            String cardNo = "";
-            for (byte b : data) {
-                cardNo += Integer.parseInt(String.format("%02x ", b).substring(0, 2), 16);
-            }
-            LogUtils.d("cardNo: " + cardNo);
-        }
-    }
-
-    @Override
     protected void onPause() {
         super.onPause();
     }
@@ -129,68 +116,8 @@ public class HomeActivity extends BaseActivity {
         unregisterReceiver(usbReceiver);
     }
 
-    private static final String ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION";
-
-    private void tryGetUsbPermission(){
-        manager = (UsbManager) getSystemService(Context.USB_SERVICE);
-
-        IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
-        registerReceiver(mUsbPermissionActionReceiver, filter);
-
-        PendingIntent mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
-
-        //here do emulation to ask all connected usb device for permission
-        for (final UsbDevice usbDevice : manager.getDeviceList().values()) {
-            //add some conditional check if necessary
-            //if(isWeCaredUsbDevice(usbDevice)){
-            if(manager.hasPermission(usbDevice)){
-                //if has already got permission, just goto connect it
-                //that means: user has choose yes for your previously popup window asking for grant perssion for this usb device
-                //and also choose option: not ask again
-                afterGetUsbPermission(usbDevice);
-            }else{
-                //this line will let android popup window, ask user whether to allow this app to have permission to operate this usb device
-                manager.requestPermission(usbDevice, mPermissionIntent);
-            }
-            //}
-        }
-    }
-
-
-    private void afterGetUsbPermission(UsbDevice usbDevice){
-        //call method to set up device communication
-        Toast.makeText(this, String.valueOf("Got permission for usb device: " + usbDevice), Toast.LENGTH_LONG).show();
-        Toast.makeText(this, String.valueOf("Found USB device: VID=" + usbDevice.getVendorId() + " PID=" + usbDevice.getProductId()), Toast.LENGTH_LONG).show();
-
-        doYourOpenUsbDevice(usbDevice);
-    }
-
-    private void doYourOpenUsbDevice(UsbDevice usbDevice){
-        //now follow line will NOT show: User has not given permission to device UsbDevice
-        //add your operation code here
-    }
-
-    private final BroadcastReceiver mUsbPermissionActionReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (ACTION_USB_PERMISSION.equals(action)) {
-                synchronized (this) {
-                    UsbDevice usbDevice = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                        //user choose YES for your previously popup window asking for grant perssion for this usb device
-                        if(null != usbDevice){
-                            afterGetUsbPermission(usbDevice);
-                        }
-                    }
-                    else {
-                        //user choose NO for your previously popup window asking for grant perssion for this usb device
-                        Toast.makeText(context, String.valueOf("Permission denied for device" + usbDevice), Toast.LENGTH_LONG).show();
-                    }
-                }
-            }
-        }
-    };
     UsbManager manager;
+
     public void usbOpen() {
         manager = (UsbManager) getSystemService(Context.USB_SERVICE);
         List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager);
@@ -250,11 +177,11 @@ public class HomeActivity extends BaseActivity {
 
     /**
      * 单开一线程，来读数据
-     *
-     *  55 aa 14 16 ff 05 d6 29 95 a2 c8 08 04 00 01 62 b9 9d b5 0f b8 1d 00 ff 00 00 00 00 00 00 00 00
-     55 aa 14 16 ff 05 a6 45 9e e2 9f 08 04 00 01 be d6 7a 56 ab 67 1d 00 ff 00 00 00 00 00 00 0
-     55 aa 14 16 ff 05 06 e9 93 a2 de 08 04 00 01 82 60 7a 68 ec 9f 1d 00 ff 00 00 00 00 00 00 00 00  bytes.
-     55 aa 14 16 ff 05 d3 12 da 2d 36 08 04 00 01 6a a7 b0 d8 5e 50 1d 00 ff 00 00 00 00 00 00 00 00  bytes.
+     * <p>
+     * 55 aa 14 16 ff 05 d6 29 95 a2 c8 08 04 00 01 62 b9 9d b5 0f b8 1d 00 ff 00 00 00 00 00 00 00 00
+     * 55 aa 14 16 ff 05 a6 45 9e e2 9f 08 04 00 01 be d6 7a 56 ab 67 1d 00 ff 00 00 00 00 00 00 0
+     * 55 aa 14 16 ff 05 06 e9 93 a2 de 08 04 00 01 82 60 7a 68 ec 9f 1d 00 ff 00 00 00 00 00 00 00 00  bytes.
+     * 55 aa 14 16 ff 05 d3 12 da 2d 36 08 04 00 01 6a a7 b0 d8 5e 50 1d 00 ff 00 00 00 00 00 00 00 00  bytes.
      */
     private class ReadThread extends Thread {
 
@@ -269,22 +196,22 @@ public class HomeActivity extends BaseActivity {
                 int size; //读取数据的大小
                 try {
                     int numBytesRead = port.read(buffer, 1000);
-                    String s = "";
-                    String s1 = "";
-                    for (byte b : buffer) {
-                        String s2 = String.format("%02x ", b).substring(0, 2);
-                        s1 += Integer.parseInt(String.format("%02x ", b).substring(0, 2), 16);
-                        s += String.format("%02x ", b);
-
-                    }
-                    LogUtils.d("Read " + s + " bytes.");
-                    final String finalS = s1;
                     if (numBytesRead > 0) {
+                        String s = "";
+                        for (byte b : buffer) {
+                            s += String.format("%02x ", b);
+                        }
+                        LogUtils.d("Read " + s + " bytes.");
+                        String[] cards = s.split(" ");
+                        String cardNo="";
+                        for (int i = 9; i > 5; i--) {
+                            cardNo+=cards[i];
+                        }
+                        final String finalCardNo = cardNo;
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                LogUtils.d("----- " + finalS.substring(13, 27));
-                                cardNumberTv.setText(finalS.substring(13, 27));
+                                cardNumberTv.setText(finalCardNo.toUpperCase());
                             }
                         });
                     }
