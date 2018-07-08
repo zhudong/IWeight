@@ -118,7 +118,7 @@ public class SysApplication extends MultiDexApplication {
         //极光推送
         JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
-        gPprinterManager = new GPprinterManager(this);
+//        gPprinterManager = new GPprinterManager(this);
 
         //集成友盟统计
         //MobclickAgent.startWithConfigure(new MobclickAgent.UMAnalyticsConfig(this, "57ce5fea67e58ebf39000507", getChanl()));

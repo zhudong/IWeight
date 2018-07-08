@@ -66,6 +66,9 @@ public class HomeActivity extends BaseActivity {
     private CheckedTextView savePwdCtv;
     private int commHandle = 0;
     private GPprinterManager gPprinterManager;
+    UsbManager manager;
+    public boolean threadStatus = false; //线程状态，为了安全终止线程
+    UsbSerialPort port;
 
     @Override
     public View setInitView() {
@@ -108,15 +111,9 @@ public class HomeActivity extends BaseActivity {
     @Override
     protected void onPause() {
         super.onPause();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+        threadStatus = true;
         unregisterReceiver(usbReceiver);
     }
-
-    UsbManager manager;
 
     public void usbOpen() {
         manager = (UsbManager) getSystemService(Context.USB_SERVICE);
@@ -171,8 +168,7 @@ public class HomeActivity extends BaseActivity {
 
     }
 
-    public boolean threadStatus = false; //线程状态，为了安全终止线程
-    UsbSerialPort port;
+
 //    ReadThread readThread = new ReadThread();
 
     /**
