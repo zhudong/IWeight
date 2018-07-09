@@ -104,6 +104,7 @@ public class CommodityManagementActivity extends BaseActivity {
                 }
                 classAdapter = new ClassAdapter(CommodityManagementActivity.this, result);
                 classGv.setAdapter(classAdapter);
+                setClassTitleTxtColor();
             }
         });
         allTitleTv.setOnClickListener(this);
@@ -156,10 +157,7 @@ public class CommodityManagementActivity extends BaseActivity {
             case R.id.commodity_management_class_titlte_all_tv:
                 classAdapter = new ClassAdapter(this, allGoodsList);
                 classGv.setAdapter(classAdapter);
-                for (int i = 0; i < classTitleLayout.getChildCount(); i++) {
-                    ((TextView) classTitleLayout.getChildAt(i)).setTextColor(ContextCompat.getColor(CommodityManagementActivity.this, R.color.black));
-                }
-                allTitleTv.setTextColor(ContextCompat.getColor(CommodityManagementActivity.this, R.color.green_3CB371));
+                setClassTitleTxtColor();
                 break;
             case R.id.commodity_management_save_btn:
                 SaveGoodsReqBean goodsReqBean = new SaveGoodsReqBean();
@@ -199,6 +197,13 @@ public class CommodityManagementActivity extends BaseActivity {
             }
 
         }
+    }
+
+    public void setClassTitleTxtColor(){
+        for (int i = 0; i < classTitleLayout.getChildCount(); i++) {
+            ((TextView) classTitleLayout.getChildAt(i)).setTextColor(ContextCompat.getColor(CommodityManagementActivity.this, R.color.black));
+        }
+        allTitleTv.setTextColor(ContextCompat.getColor(CommodityManagementActivity.this, R.color.green_3CB371));
     }
 
     public void storeGoodsData(SaveGoodsReqBean goodsReqBean) {
@@ -265,7 +270,7 @@ public class CommodityManagementActivity extends BaseActivity {
                                 categoryList.add(categoryBean);
                                 final TextView titleTv = new TextView(CommodityManagementActivity.this);
                                 titleTv.setText(categoryBean.getCategoryGoods().name);
-                                titleTv.setTextSize(20);
+                                titleTv.setTextSize(25);
                                 titleTv.setTextColor(ContextCompat.getColor(CommodityManagementActivity.this, R.color.black));
                                 titleTv.setLayoutParams(new LinearLayout.LayoutParams(100, LinearLayout.LayoutParams.WRAP_CONTENT));
                                 titleTv.setGravity(Gravity.CENTER);

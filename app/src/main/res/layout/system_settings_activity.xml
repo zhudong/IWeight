@@ -33,7 +33,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="70dp"
                     android:layout_marginTop="10dp"
                     android:layout_weight="1"
                     android:orientation="horizontal">
@@ -61,7 +61,7 @@
                     <Button
                         android:id="@+id/system_settings_login_type_btn"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:background="@drawable/shape_green_bg"
                         android:text="@string/string_choose"
                         android:textColor="@color/white"
@@ -70,8 +70,8 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_height="70dp"
+                    android:layout_marginTop="20dp"
                     android:layout_weight="1"
                     android:orientation="horizontal">
 
@@ -98,7 +98,7 @@
                     <Button
                         android:id="@+id/system_settings_printer_btn"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:background="@drawable/shape_green_bg"
                         android:text="@string/string_choose"
                         android:textColor="@color/white"
@@ -107,8 +107,8 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_height="70dp"
+                    android:layout_marginTop="20dp"
                     android:layout_weight="1"
                     android:orientation="horizontal">
 
@@ -138,8 +138,8 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_height="70dp"
+                    android:layout_marginTop="20dp"
                     android:layout_weight="1"
                     android:orientation="horizontal">
 
@@ -165,7 +165,7 @@
                     <Button
                         android:id="@+id/system_settings_balance_rounding_btn"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:background="@drawable/shape_green_bg"
                         android:text="@string/string_choose"
                         android:textColor="@color/white"
@@ -183,7 +183,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="70dp"
                     android:layout_marginTop="10dp"
                     android:layout_weight="1"
                     android:orientation="horizontal">
@@ -210,7 +210,7 @@
                     <Button
                         android:id="@+id/system_settings_default_priceing_method_btn"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:background="@drawable/shape_green_bg"
                         android:text="@string/string_choose"
                         android:textColor="@color/white"
@@ -219,8 +219,8 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_height="70dp"
+                    android:layout_marginTop="20dp"
                     android:layout_weight="1"
                     android:orientation="horizontal">
 
@@ -247,7 +247,7 @@
                     <Button
                         android:id="@+id/system_settings_weight_rounding_btn"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:background="@drawable/shape_green_bg"
                         android:text="@string/string_choose"
                         android:textColor="@color/white"
@@ -255,8 +255,8 @@
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_height="70dp"
+                    android:layout_marginTop="20dp"
                     android:layout_weight="1"
                     android:orientation="horizontal">
 
@@ -286,8 +286,8 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_height="70dp"
+                    android:layout_marginTop="20dp"
                     android:layout_weight="1"
                     android:orientation="horizontal">
 
@@ -313,7 +313,7 @@
                     <Button
                         android:id="@+id/system_settings_weight_unit_btn"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:background="@drawable/shape_green_bg"
                         android:text="@string/string_choose"
                         android:textColor="@color/white"
@@ -326,10 +326,17 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:gravity="center"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="30dp">
 
             <CheckedTextView
                 android:id="@+id/system_settings_not_clear_price_ctv"
@@ -389,7 +396,8 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
+            android:gravity="center"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
             android:layout_marginTop="10dp">
@@ -451,7 +459,8 @@
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
+            android:gravity="center"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
             android:layout_marginTop="10dp">
@@ -467,7 +476,10 @@
                 android:textColor="@color/black"
                 android:textSize="20sp" />
         </LinearLayout>
+        </LinearLayout>
+
         <ImageView
+            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/black"/>
