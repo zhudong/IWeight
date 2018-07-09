@@ -49,6 +49,7 @@ public class CalibrationActivity extends BaseActivity {
     private Button backBtn;
     private Button nextStepBtn;
     private Button doneBtn;
+    private Button precisionBtn;
     private GridView digitalGridView;
     private KeyBoardAdapter keyBoardAdapter;
     private LinearLayout firstLayout;
@@ -56,6 +57,7 @@ public class CalibrationActivity extends BaseActivity {
     private LinearLayout nextStepLayout;
     private ImageView nextStepLineIv;
     private boolean isShowStaffLogin = true;
+    private boolean isChecked = false;
 
     @Override
     public View setInitView() {
@@ -65,6 +67,7 @@ public class CalibrationActivity extends BaseActivity {
         backBtn = rootView.findViewById(R.id.calibration_back_btn);
         nextStepBtn = rootView.findViewById(R.id.calibration_next_step_btn);
         doneBtn = rootView.findViewById(R.id.calibration_done_btn);
+        precisionBtn = rootView.findViewById(R.id.calibration_dcalibration_precision_btn);
         digitalGridView = rootView.findViewById(R.id.calibration_digital_keys_grid_view);
         firstLayout = rootView.findViewById(R.id.calibration_first_layout);
         secondLayout = rootView.findViewById(R.id.calibration_second_layout);
@@ -85,6 +88,7 @@ public class CalibrationActivity extends BaseActivity {
         backBtn.setOnClickListener(this);
         nextStepBtn.setOnClickListener(this);
         doneBtn.setOnClickListener(this);
+        precisionBtn.setOnClickListener(this);
         return rootView;
     }
 
@@ -173,6 +177,16 @@ public class CalibrationActivity extends BaseActivity {
                 bean.setStandard_weighing(standardWeighingTv.getText().toString());
                 bean.setScales_id(AccountManager.getInstance().getScalesId());
                 storeCalibrationRecord(bean);
+                break;
+            case R.id.calibration_dcalibration_precision_btn:
+                if(isChecked){
+                    precisionBtn.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_green_bg));
+                    precisionBtn.setTextColor(ContextCompat.getColor(this, R.color.white));
+                }else {
+                    precisionBtn.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_weight_display_bg));
+                    precisionBtn.setTextColor(ContextCompat.getColor(this, R.color.gray_ccc));
+                }
+                isChecked = !isChecked;
                 break;
         }
 
