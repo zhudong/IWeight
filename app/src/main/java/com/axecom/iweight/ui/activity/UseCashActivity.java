@@ -1,6 +1,7 @@
 package com.axecom.iweight.ui.activity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -45,17 +46,19 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
     private ImageView qrCodeIv;
     private ImageLoader imageLoader;
     private DisplayImageOptions options;
+    private Intent intent;
+    private Bundle bundle;
 
     @Override
     public View setInitView() {
         rootView = LayoutInflater.from(this).inflate(R.layout.cash_dialog_layout, null);
-        confirmBtn = findViewById(R.id.cash_dialog_confirm_btn);
-        cancelBtn = findViewById(R.id.cash_dialog_cancel_btn);
-        cashPayBtn = findViewById(R.id.cash_dialog_cash_pay_btn);
-        aliPayBtn = findViewById(R.id.cash_dialog_alipay_btn);
-        wechatPayBtn = findViewById(R.id.cash_dialog_wechat_pay_btn);
-        cashPayLayout = findViewById(R.id.cash_dialog_cash_pay_layout);
-        qrCodeIv = findViewById(R.id.cash_dialog_qr_code_iv);
+        confirmBtn = rootView.findViewById(R.id.cash_dialog_confirm_btn);
+        cancelBtn = rootView.findViewById(R.id.cash_dialog_cancel_btn);
+        cashPayBtn = rootView.findViewById(R.id.cash_dialog_cash_pay_btn);
+        aliPayBtn = rootView.findViewById(R.id.cash_dialog_alipay_btn);
+        wechatPayBtn = rootView.findViewById(R.id.cash_dialog_wechat_pay_btn);
+        cashPayLayout = rootView.findViewById(R.id.cash_dialog_cash_pay_layout);
+        qrCodeIv = rootView.findViewById(R.id.cash_dialog_qr_code_iv);
 
         orderBean = (SubOrderReqBean) getIntent().getExtras().getSerializable("orderBean");
 

@@ -705,7 +705,8 @@ public class MainActivity extends BaseActivity {
                 subOrderReqBean.setCreate_time(getCurrentTime());
                 subOrderReqBean.setGoods(goodsList);
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("orderBean", (Serializable) subOrderReqBean);
+                bundle.putSerializable("orderBean", subOrderReqBean);
+                intent.putExtras(bundle);
                 intent.setClass(this, UseCashActivity.class);
                 break;
         }

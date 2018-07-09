@@ -1,9 +1,10 @@
 package com.axecom.iweight.bean;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-public class SubOrderReqBean {
+public class SubOrderReqBean implements Serializable{
 
     private String token;
     private String mac;
