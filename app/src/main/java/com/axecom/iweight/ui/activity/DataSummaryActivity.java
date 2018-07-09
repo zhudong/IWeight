@@ -19,6 +19,7 @@ import com.axecom.iweight.bean.ReportResultBean;
 import com.axecom.iweight.conf.Constants;
 import com.axecom.iweight.manager.AccountManager;
 import com.axecom.iweight.net.RetrofitFactory;
+import com.axecom.iweight.utils.LogUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +57,8 @@ public class DataSummaryActivity extends BaseActivity {
     private int currentPage = 1;
     private String currentDay;
     private int typeVal = 1;
-    private int pageNum = 10;
+    private int pageNum = 9;
+    private int previousPos = 8;
 
     @Override
     public View setInitView() {
@@ -99,8 +101,8 @@ public class DataSummaryActivity extends BaseActivity {
 
     @Override
     public void initView() {
+        getReportsList(currentDay, typeVal + "", currentPage + "", pageNum + "");
         currentDay = getCurrentTime("2018-06-17","yyyy-MM-dd", 0);
-        getReportsList(0, currentDay, typeVal + "", currentPage + "", pageNum + "");
         dataList = new ArrayList<>();
         dataAdapter = new DataAdapter(this, dataList);
         dataListView.setAdapter(dataAdapter);
@@ -112,7 +114,7 @@ public class DataSummaryActivity extends BaseActivity {
 
     }
 
-    public void getReportsList(final int type, String dateVal, String typeVal, String page, final String pNum) {
+    public void getReportsList(final String dateVal, String typeVal, String page, final String pNum) {
         RetrofitFactory.getInstance().API()
                 .getReportsList(AccountManager.getInstance().getAdminToken(), Constants.MAC_TEST, dateVal, typeVal, page, pNum)
                 .compose(this.<BaseEntity<ReportResultBean>>setThread())
@@ -125,13 +127,10 @@ public class DataSummaryActivity extends BaseActivity {
                     @Override
                     public void onNext(BaseEntity<ReportResultBean> reportResultBeanBaseEntity) {
                         if (reportResultBeanBaseEntity.isSuccess()) {
+                            dataList.clear();
                             dataList.addAll(reportResultBeanBaseEntity.getData().list);
+                            LogUtils.d("-----list size " + dataList.size());
                             dataAdapter.notifyDataSetChanged();
-//                            if (type == 1)
-//                                scrollTo(dataListView, dataListView.getFirstVisiblePosition() - pageNum <= 0 ? 0 : dataListView.getFirstVisiblePosition() - pageNum);
-                            if (type == 2) {
-                                scrollTo(dataListView, dataListView.getFirstVisiblePosition() + pageNum);
-                            }
                             countTotalTv.setText(reportResultBeanBaseEntity.getData().total_num + "");
                             weightTotalTv.setText(reportResultBeanBaseEntity.getData().total_weight);
                             grandTotalTv.setText(reportResultBeanBaseEntity.getData().total_amount);
@@ -196,7 +195,7 @@ public class DataSummaryActivity extends BaseActivity {
                 dataList.clear();
                 currentPage = 1;
                 typeVal = 1;
-                getReportsList(0, currentDay, typeVal + "", currentPage + "", pageNum + "");
+                getReportsList(currentDay, typeVal + "", currentPage + "", pageNum + "");
                 reportTitleLayout.setVisibility(View.VISIBLE);
                 reportTotalLayout.setVisibility(View.VISIBLE);
                 dataListView.setVisibility(View.VISIBLE);
@@ -218,7 +217,7 @@ public class DataSummaryActivity extends BaseActivity {
                 dataList.clear();
                 currentPage = 1;
                 typeVal = 2;
-                getReportsList(0, currentDay, typeVal + "", currentPage + "", pageNum + "");
+                getReportsList(currentDay, typeVal + "", currentPage + "", pageNum + "");
                 reportTitleLayout.setVisibility(View.VISIBLE);
                 reportTotalLayout.setVisibility(View.VISIBLE);
                 dataListView.setVisibility(View.VISIBLE);
@@ -237,6 +236,7 @@ public class DataSummaryActivity extends BaseActivity {
 //                salesDetailsReportTv.getPaint().setFakeBoldText(false);
                 break;
             case R.id.data_summary_sales_details_report_tv:
+                orderList.clear();
                 reportTitleLayout.setVisibility(View.GONE);
                 reportTotalLayout.setVisibility(View.GONE);
                 dataListView.setVisibility(View.GONE);
@@ -257,28 +257,30 @@ public class DataSummaryActivity extends BaseActivity {
             case R.id.data_summary_reports_prev_page_btn:
 //                if (currentPage == 1)
 //                    return;
-                scrollTo(dataListView, dataListView.getFirstVisiblePosition() - pageNum <= 0 ? 0 : dataListView.getFirstVisiblePosition() - pageNum);
-
+//                scrollTo(dataListView, dataListView.getFirstVisiblePosition() - previousPos <= 0 ? 0 : dataListView.getFirstVisiblePosition() - previousPos);
 //                getReportsList(1, getCurrentTime("yyyy-MM"), typeVal + "", (--currentPage == 1 ? 1 : --currentPage) + "", pageNum + "");
+                getReportsList( currentDay, typeVal + "", --currentPage <= 1 ? "1" : --currentPage + "", pageNum + "");
+
                 break;
             case R.id.data_summary_reports_next_page_btn:
-                getReportsList(2, currentDay, typeVal + "", ++currentPage + "", pageNum + "");
+                getReportsList( currentDay, typeVal + "", ++currentPage + "", pageNum + "");
+
                 break;
             case R.id.data_summary_reports_prev_month_btn:
                 currentPage = 1;
-                getReportsList(0, getCurrentTime("2018-06-17", "yyyy-MM", 1), typeVal + "", currentPage + "", pageNum + "");
+                getReportsList( getCurrentTime("2018-06-17", "yyyy-MM", 1), typeVal + "", (currentPage = 0) + "", pageNum + "");
                 break;
             case R.id.data_summary_reports_next_month_btn:
                 currentPage = 1;
-                getReportsList(0, getCurrentTime("2018-06-17", "yyyy-MM", 2), typeVal + "", currentPage + "", pageNum + "");
+                getReportsList( getCurrentTime("2018-06-17", "yyyy-MM", 2), typeVal + "", (currentPage = 0) + "", pageNum + "");
                 break;
             case R.id.data_summary_reports_prev_day_btn:
                 currentDay = getCurrentTime("2018-06-17", "yyyy-MM-dd", 3);
-                getReportsList(0, currentDay, typeVal + "", currentPage + "", pageNum + "");
+                getReportsList( currentDay, typeVal + "", (currentPage = 0) + "", pageNum + "");
                 break;
             case R.id.data_summary_reports_next_day_btn:
                 currentDay = getCurrentTime("2018-06-17", "yyyy-MM-dd", 4);
-                getReportsList(0, currentDay, typeVal + "", currentPage + "", pageNum + "");
+                getReportsList( currentDay, typeVal + "", (currentPage = 0) + "", pageNum + "");
                 break;
         }
     }

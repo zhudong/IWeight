@@ -73,7 +73,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="horizontal"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -119,6 +119,7 @@
         </LinearLayout>
 
         <ImageView
+            android:layout_marginTop="10dp"
             android:id="@+id/calibration_next_step_line_iv"
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -129,7 +130,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:visibility="gone"
             android:orientation="horizontal">
 
             <Button
@@ -155,11 +155,12 @@
         </LinearLayout>
 
         <LinearLayout
+            android:layout_marginTop="10dp"
             android:id="@+id/calibration_second_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="870dp"
@@ -168,9 +169,9 @@
                 android:orientation="vertical">
 
                 <LinearLayout
-                    android:layout_marginTop="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
                     android:gravity="center_horizontal"
                     android:orientation="horizontal">
 

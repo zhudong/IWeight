@@ -134,6 +134,9 @@ public class SettingsActivity extends BaseActivity {
                 case POSITION_RE_BOOT:
                     startDDMActivity(HomeActivity.class, false);
                     break;
+                case POSITION_WEIGHT:
+                    finish();
+                    break;
             }
         }
     };

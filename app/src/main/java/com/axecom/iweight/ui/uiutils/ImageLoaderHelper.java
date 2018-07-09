@@ -6,7 +6,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
-import com.fuexpress.kr.R;
+import com.axecom.iweight.R;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
@@ -47,9 +47,9 @@ public class ImageLoaderHelper {
 
     public DisplayImageOptions getDisplayOptionsIcon() {
         return new DisplayImageOptions.Builder()
-                .showImageOnLoading(R.mipmap.default_icon)
-                .showImageForEmptyUri(R.mipmap.default_icon)
-                .showImageOnFail(R.mipmap.default_icon)
+                .showImageOnLoading(R.drawable.ic_launcher)
+                .showImageForEmptyUri(R.mipmap.ic_launcher)
+                .showImageOnFail(R.mipmap.ic_launcher)
                 .cacheInMemory(true)
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .imageScaleType(ImageScaleType.EXACTLY)
@@ -73,9 +73,9 @@ public class ImageLoaderHelper {
 
     public DisplayImageOptions getDisplayOptions(boolean isCacheOnDisk) {
         return new DisplayImageOptions.Builder()
-                .showImageOnLoading(R.color.default_image_background)
-                .showImageForEmptyUri(R.color.default_image_background)
-                .showImageOnFail(R.color.default_image_background)
+                .showImageOnLoading(R.color.gray_e3)
+                .showImageForEmptyUri(R.color.gray_e3)
+                .showImageOnFail(R.color.gray_e3)
                 .cacheInMemory(true)
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .imageScaleType(ImageScaleType.EXACTLY)

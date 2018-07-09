@@ -47,6 +47,7 @@ public class CalibrationActivity extends BaseActivity {
     private EditText dividingValueEt;
     private EditText calibrationValueEt;
     private Button backBtn;
+    private Button backBtn2;
     private Button nextStepBtn;
     private Button doneBtn;
     private Button precisionBtn;
@@ -65,6 +66,7 @@ public class CalibrationActivity extends BaseActivity {
         firstStepTv = rootView.findViewById(R.id.calibration_first_step_tv);
         secondStepTv = rootView.findViewById(R.id.calibration_second_step_tv);
         backBtn = rootView.findViewById(R.id.calibration_back_btn);
+        backBtn2 = rootView.findViewById(R.id.calibration_back_btn2);
         nextStepBtn = rootView.findViewById(R.id.calibration_next_step_btn);
         doneBtn = rootView.findViewById(R.id.calibration_done_btn);
         precisionBtn = rootView.findViewById(R.id.calibration_dcalibration_precision_btn);
@@ -86,6 +88,7 @@ public class CalibrationActivity extends BaseActivity {
         firstStepTv.setOnClickListener(this);
         secondStepTv.setOnClickListener(this);
         backBtn.setOnClickListener(this);
+        backBtn2.setOnClickListener(this);
         nextStepBtn.setOnClickListener(this);
         doneBtn.setOnClickListener(this);
         precisionBtn.setOnClickListener(this);
@@ -156,6 +159,7 @@ public class CalibrationActivity extends BaseActivity {
                 nextStepLayout.setVisibility(View.GONE);
                 break;
             case R.id.calibration_back_btn:
+            case R.id.calibration_back_btn2:
                 finish();
                 break;
             case R.id.calibration_next_step_btn:
