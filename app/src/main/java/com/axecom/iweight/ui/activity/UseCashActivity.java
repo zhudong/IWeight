@@ -128,7 +128,6 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
                     @Override
                     public void onSubscribe(Disposable d) {
                         showLoading();
-
                     }
 
                     @Override
@@ -142,14 +141,13 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
 
                     @Override
                     public void onError(Throwable e) {
-                        e.printStackTrace();
                         closeLoading();
+                        e.printStackTrace();
                     }
 
                     @Override
                     public void onComplete() {
                         closeLoading();
-
                     }
                 });
     }
