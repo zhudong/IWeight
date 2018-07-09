@@ -12,6 +12,7 @@ import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.usb.UsbManager;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.RemoteException;
@@ -69,6 +70,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -359,8 +361,8 @@ public class MainActivity extends BaseActivity {
                 startActivityForResult(intent, 1002);
                 break;
             case R.id.main_cash_btn:
-                startDDMActivity(SettingsActivity.class, false);
-//                showDialog(v);
+//                startDDMActivity(SettingsActivity.class, false);
+                showDialog(v);
                 break;
             case R.id.main_settings_btn:
                 Intent intent2 = new Intent();
@@ -392,6 +394,7 @@ public class MainActivity extends BaseActivity {
                 subOrderReqBean.setPayment_id("1");
                 subOrderReqBean.setCreate_time(getCurrentTime());
                 subOrderReqBean.setGoods(goodsList);
+                clear(1);
 //                submitOrder(subOrderReqBean);
                 break;
             case R.id.main_digital_clear_btn:
@@ -407,6 +410,8 @@ public class MainActivity extends BaseActivity {
                     e1.printStackTrace();
                 }
                 priceEt.setText("");
+                weightTv.setText("");
+                weightTotalTv.setText("");
                 grandTotalTv.setText("");
                 break;
             case R.id.main_digital_add_btn:
@@ -526,20 +531,20 @@ public class MainActivity extends BaseActivity {
         tsc.addTear(EscCommand.ENABLE.ON); // 撕纸模式开启
         tsc.addCls();// 清除打印缓冲区
 
-        tsc.addText(20, 30, LabelCommand.FONTTYPE.KOREAN, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
-                "조선말");
+//        tsc.addText(20, 30, LabelCommand.FONTTYPE.KOREAN, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
+//                "조선말");
         tsc.addText(100, 30, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
-                "简体字");
-        tsc.addText(180, 30, LabelCommand.FONTTYPE.TRADITIONAL_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
-                "繁體字");
+                "深圳市安鑫宝科技发展有限公司");
+//        tsc.addText(180, 30, LabelCommand.FONTTYPE.TRADITIONAL_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
+//                "繁體字");
 
         // 绘制图片
-        Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
-        tsc.addBitmap(20, 60, LabelCommand.BITMAP_MODE.OVERWRITE, b.getWidth(), b);
+//        Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
+//        tsc.addBitmap(20, 60, LabelCommand.BITMAP_MODE.OVERWRITE, b.getWidth(), b);
         //绘制二维码
         tsc.addQRCode(105, 75, LabelCommand.EEC.LEVEL_L, 5, LabelCommand.ROTATION.ROTATION_0, " www.smarnet.cc");
         // 绘制一维条码
-        tsc.add1DBarcode(50, 350, LabelCommand.BARCODETYPE.CODE128, 100, LabelCommand.READABEL.EANBEL, LabelCommand.ROTATION.ROTATION_0, "SMARNET");
+//        tsc.add1DBarcode(50, 350, LabelCommand.BARCODETYPE.CODE128, 100, LabelCommand.READABEL.EANBEL, LabelCommand.ROTATION.ROTATION_0, "SMARNET");
         tsc.addPrint(1, 1); // 打印标签
         tsc.addSound(2, 100); // 打印标签后 蜂鸣器响
         tsc.addCashdrwer(LabelCommand.FOOT.F5, 255, 255);
@@ -661,11 +666,11 @@ public class MainActivity extends BaseActivity {
             grandTotalTv.setText("0.00");
             commodityNameTv.setText("");
             priceEt.setText("");
-            weightTv.setText("");
+//            weightTv.setText("");
         }
         if (type == 1) {
             weightTopTv.setText("0.000公斤");
-            priceEt.setText("");
+//            priceEt.setText("");
             weightTv.setText("");
             seledtedGoodsList.clear();
             commodityAdapter.notifyDataSetChanged();
@@ -679,6 +684,28 @@ public class MainActivity extends BaseActivity {
 //                intent.setClass(this, UseBankCardActivity.class);
 //                break;
             case R.id.main_cash_btn:
+                SubOrderReqBean subOrderReqBean = new SubOrderReqBean();
+                SubOrderReqBean.Goods good;
+                List<SubOrderReqBean.Goods> goodsList = new ArrayList<>();
+                for (int i = 0; i < seledtedGoodsList.size(); i++) {
+                    good = new SubOrderReqBean.Goods();
+                    ScalesCategoryGoods.HotKeyGoods hotKeyGoods = seledtedGoodsList.get(i);
+                    good.setGoods_id(hotKeyGoods.id + "");
+                    good.setGoods_name(hotKeyGoods.name);
+                    good.setGoods_price(hotKeyGoods.price);
+                    good.setGoods_number("1");
+                    good.setGoods_amount(hotKeyGoods.grandTotal);
+                    goodsList.add(good);
+                }
+                subOrderReqBean.setToken(AccountManager.getInstance().getToken());
+//                subOrderReqBean.setMac(MacManager.getInstace(this).getMac());
+                subOrderReqBean.setMac(Constants.MAC_TEST);
+                subOrderReqBean.setTotal_amount(priceTotalTv.getText().toString());
+                subOrderReqBean.setTotal_weight(weightTotalTv.getText().toString());
+                subOrderReqBean.setCreate_time(getCurrentTime());
+                subOrderReqBean.setGoods(goodsList);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("orderBean", (Serializable) subOrderReqBean);
                 intent.setClass(this, UseCashActivity.class);
                 break;
         }

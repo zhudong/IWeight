@@ -1,5 +1,7 @@
 package com.axecom.iweight.conf;
 
+import com.axecom.iweight.base.SysApplication;
+import com.axecom.iweight.manager.MacManager;
 import com.axecom.iweight.utils.LogUtils;
 
 /**
