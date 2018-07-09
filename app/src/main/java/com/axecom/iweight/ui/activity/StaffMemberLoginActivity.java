@@ -94,7 +94,6 @@ public class StaffMemberLoginActivity extends BaseActivity {
                     case R.id.staff_member_pwd_et:
                         setEditText(pwdEt, position, text);
                         break;
-
                 }
             }
         });
