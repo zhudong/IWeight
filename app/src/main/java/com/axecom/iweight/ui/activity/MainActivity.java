@@ -678,12 +678,12 @@ public class MainActivity extends BaseActivity {
     }
 
     public void showDialog(View v) {
-        Intent intent = new Intent();
         switch (v.getId()) {
 //            case R.id.main_bank_card_btn:
 //                intent.setClass(this, UseBankCardActivity.class);
 //                break;
             case R.id.main_cash_btn:
+                Intent intent = new Intent();
                 SubOrderReqBean subOrderReqBean = new SubOrderReqBean();
                 SubOrderReqBean.Goods good;
                 List<SubOrderReqBean.Goods> goodsList = new ArrayList<>();
@@ -708,9 +708,10 @@ public class MainActivity extends BaseActivity {
                 bundle.putSerializable("orderBean", subOrderReqBean);
                 intent.putExtras(bundle);
                 intent.setClass(this, UseCashActivity.class);
+                startActivity(intent);
+
                 break;
         }
-        startActivity(intent);
 
     }
 

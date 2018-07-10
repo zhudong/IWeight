@@ -187,17 +187,17 @@ public class StaffMemberLoginActivity extends BaseActivity {
                 } finally {
                 }
             }
-            if (driver.getDevice().getVendorId() == 26728 && driver.getDevice().getProductId() == 1280) {
-                SysApplication.getInstances().setGpDriver(driver);
-            }
+//            if (driver.getDevice().getVendorId() == 26728 && driver.getDevice().getProductId() == 1280) {
+//                SysApplication.getInstances().setGpDriver(driver);
+//            }
         }
 
         if (SysApplication.getInstances().getCardDevice() == null) {
             showLoading("没有插入读卡器，请检查设备");
         }
-        if (SysApplication.getInstances().getGpDriver() == null) {
-            showLoading("没有插入打印机，请检查设备");
-        }
+//        if (SysApplication.getInstances().getGpDriver() == null) {
+//            showLoading("没有插入打印机，请检查设备");
+//        }
 // Read some data! Most have just one port (port 0).
 
     }
@@ -264,9 +264,9 @@ public class StaffMemberLoginActivity extends BaseActivity {
 //                            readThread.interrupt();
 //                        }
                     }
-                    if (device.getVendorId() == 26728 && device.getProductId() == 1280) {
-                        showLoading("打印机被拔出，请检查设备");
-                    }
+//                    if (device.getVendorId() == 26728 && device.getProductId() == 1280) {
+//                        showLoading("打印机被拔出，请检查设备");
+//                    }
                 }
             }
             if (intent.getAction().equals("android.hardware.usb.action.USB_DEVICE_ATTACHED")) {

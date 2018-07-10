@@ -78,6 +78,7 @@
                     android:textSize="20sp" />
 
                 <TextView
+                    android:id="@+id/data_summary_date_tv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="30dp"
@@ -102,7 +103,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -228,8 +229,9 @@
                 <ListView
                     android:id="@+id/data_summary_listview"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:visibility="visible"
                     android:listSelector="@color/gray_ccc" />
                 <ListView
                     android:id="@+id/sales_details_listview"

@@ -70,7 +70,7 @@ public class SubOrderReqBean implements Serializable{
         this.token = token;
     }
 
-    public static class Goods{
+    public static class Goods implements Serializable{
         private String goods_id;
         private String goods_name;
         private String goods_price;

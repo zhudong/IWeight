@@ -9,7 +9,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -23,6 +25,7 @@ import com.axecom.iweight.conf.Constants;
 import com.axecom.iweight.manager.AccountManager;
 import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.ui.uiutils.ImageLoaderHelper;
+import com.axecom.iweight.ui.view.SoftKey;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -44,6 +47,7 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
     private Button cashPayBtn;
     private Button aliPayBtn;
     private Button wechatPayBtn;
+    private EditText cashEt;
     private SubOrderReqBean orderBean;
     private LinearLayout cashPayLayout;
     private ImageView qrCodeIv;
@@ -51,6 +55,7 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
     private DisplayImageOptions options;
     private Intent intent;
     private Bundle bundle;
+    private SoftKey softKey;
 
     @Override
     public View setInitView() {
@@ -62,6 +67,8 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
         wechatPayBtn = rootView.findViewById(R.id.cash_dialog_wechat_pay_btn);
         cashPayLayout = rootView.findViewById(R.id.cash_dialog_cash_pay_layout);
         qrCodeIv = rootView.findViewById(R.id.cash_dialog_qr_code_iv);
+        cashEt = rootView.findViewById(R.id.cash_dialog_cash_et);
+        softKey = rootView.findViewById(R.id.cash_dialog_softkey);
 
         orderBean = (SubOrderReqBean) getIntent().getExtras().getSerializable("orderBean");
 
@@ -73,6 +80,17 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
         aliPayBtn.setOnClickListener(this);
         wechatPayBtn.setOnClickListener(this);
         return rootView;
+    }
+
+    @Override
+    public void initView() {
+        softKey.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String text = parent.getAdapter().getItem(position).toString();
+                setEditText(cashEt, position, text + " 元");
+            }
+        });
     }
 
     @Override
