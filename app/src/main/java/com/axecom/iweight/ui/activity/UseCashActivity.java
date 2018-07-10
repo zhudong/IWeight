@@ -3,6 +3,8 @@ package com.axecom.iweight.ui.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
@@ -14,6 +16,7 @@ import android.widget.LinearLayout;
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
 import com.axecom.iweight.base.BaseEntity;
+import com.axecom.iweight.bean.PayNoticeBean;
 import com.axecom.iweight.bean.SubOrderBean;
 import com.axecom.iweight.bean.SubOrderReqBean;
 import com.axecom.iweight.conf.Constants;
@@ -33,7 +36,7 @@ import io.reactivex.disposables.Disposable;
  * Created by Administrator on 2018-5-15.
  */
 
-public class UseCashActivity extends BaseActivity implements View.OnClickListener{
+public class UseCashActivity extends BaseActivity implements View.OnClickListener {
 
     private View rootView;
     private Button confirmBtn;
@@ -74,7 +77,7 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.cash_dialog_confirm_btn:
             case R.id.cash_dialog_cancel_btn:
                 finish();
@@ -115,7 +118,7 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
         }
     }
 
-    public void setOrderBean(String payId){
+    public void setOrderBean(String payId) {
         orderBean.setPayment_id(payId);
         submitOrder(orderBean);
     }
@@ -131,9 +134,18 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
                     }
 
                     @Override
-                    public void onNext(BaseEntity<SubOrderBean> subOrderBeanBaseEntity) {
+                    public void onNext(final BaseEntity<SubOrderBean> subOrderBeanBaseEntity) {
                         if (subOrderBeanBaseEntity.isSuccess()) {
                             imageLoader.displayImage(subOrderBeanBaseEntity.getData().getCode_img_url(), qrCodeIv, options);
+                            mHandler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Message msg = Message.obtain();
+                                    msg.obj = subOrderBeanBaseEntity.getData().getOrder_no();
+                                    mHandler.postDelayed(this, 1000 * 3);//延迟5秒,再次执行task本身,实现了循环的效果
+                                }
+                            }, 1000);
+
                         } else {
                             showLoading(subOrderBeanBaseEntity.getMsg());
                         }
@@ -148,6 +160,45 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
                     @Override
                     public void onComplete() {
                         closeLoading();
+                    }
+                });
+    }
+
+
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            String order_no = msg.obj.toString();
+            getPayNotice(order_no);
+        }
+    };
+
+    public void getPayNotice(String order_no) {
+        RetrofitFactory.getInstance().API()
+                .getPayNotice(order_no)
+                .compose(this.<BaseEntity<PayNoticeBean>>setThread())
+                .subscribe(new Observer<BaseEntity<PayNoticeBean>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(BaseEntity<PayNoticeBean> payNoticeBeanBaseEntity) {
+                        if (payNoticeBeanBaseEntity.isSuccess()) {
+                            showLoading(payNoticeBeanBaseEntity.getData().msg);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
                     }
                 });
     }

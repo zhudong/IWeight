@@ -30,6 +30,7 @@ import com.axecom.iweight.manager.AccountManager;
 import com.axecom.iweight.manager.GPprinterManager;
 import com.axecom.iweight.manager.MacManager;
 import com.axecom.iweight.manager.TemperatureUsbControl;
+import com.axecom.iweight.manager.UpdateManager;
 import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.ui.view.SoftKeyborad;
 import com.axecom.iweight.utils.LogUtils;
@@ -79,7 +80,8 @@ public class HomeActivity extends BaseActivity {
         loginTv = rootView.findViewById(R.id.home_login_tv);
         weightTv = rootView.findViewById(R.id.home_weight_number_tv);
         savePwdCtv = rootView.findViewById(R.id.home_save_pwd_ctv);
-
+        UpdateManager updateManager = new UpdateManager();
+        updateManager.getNewVersion(this, 0);
         pwdTv.setOnClickListener(this);
         loginTv.setOnClickListener(this);
         cardNumberTv.setOnClickListener(this);

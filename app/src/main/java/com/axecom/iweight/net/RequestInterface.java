@@ -7,6 +7,7 @@ import com.axecom.iweight.bean.LocalSettingsBean;
 import com.axecom.iweight.bean.LoginData;
 import com.axecom.iweight.bean.LoginInfo;
 import com.axecom.iweight.bean.OrderListResultBean;
+import com.axecom.iweight.bean.PayNoticeBean;
 import com.axecom.iweight.bean.ReportResultBean;
 import com.axecom.iweight.bean.SaveGoodsReqBean;
 import com.axecom.iweight.bean.ScalesCategoryGoods;
@@ -14,6 +15,7 @@ import com.axecom.iweight.bean.SettingDataBean;
 import com.axecom.iweight.bean.SubOrderBean;
 import com.axecom.iweight.bean.SubOrderReqBean;
 import com.axecom.iweight.bean.UnusualOrdersBean;
+import com.axecom.iweight.bean.VersionBean;
 import com.axecom.iweight.bean.WeightBean;
 
 import java.util.List;
@@ -184,4 +186,10 @@ public interface RequestInterface {
 
     @POST("getLoginInfo")
     Observable<BaseEntity<LoginInfo>> getLoginInfo(@Query("token") String token, @Query("mac") String mac);
+
+    @GET("getVersion")
+    Observable<BaseEntity<VersionBean>> getVersion();
+
+    @POST("getPayNotice")
+    Observable<BaseEntity<PayNoticeBean>> getPayNotice(@Query("order_no") String order_no);
 }

@@ -17,5 +17,6 @@
     <color name="transparent">#01000000</color>
     <color name="red_000">#FF0000</color>
     <color name="gray_ae">#AEAEAE</color>
+    <color name="progress_forecolor">#1985EC</color>
 
 </resources>
