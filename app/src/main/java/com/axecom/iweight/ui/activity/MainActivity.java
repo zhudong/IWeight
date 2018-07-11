@@ -27,6 +27,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,6 +51,7 @@ import com.axecom.iweight.ui.adapter.GridAdapter;
 import com.axecom.iweight.ui.view.BTHelperDialog;
 import com.axecom.iweight.ui.view.BluetoothDialog;
 import com.axecom.iweight.utils.LogUtils;
+import com.axecom.iweight.utils.SPUtils;
 import com.gprinter.aidl.GpService;
 import com.gprinter.command.EscCommand;
 import com.gprinter.command.GpCom;
@@ -92,6 +94,7 @@ public class MainActivity extends BaseActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    private static final String KEY_ISHOW_COUNT_LAYOUT = "key_ishow_count_layout";
     private static final String[] DATA_DIGITAL = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "删除", "0", "."};
     private GPprinterManager gPprinterManager;
     private PrinterServiceConnection conn = null;
@@ -109,7 +112,9 @@ public class MainActivity extends BaseActivity {
     private Button settingsBtn;
     private Button mainClearBtn;
 
-
+    private LinearLayout weightLayout;
+    private LinearLayout countLayout;
+    private EditText countEt;
     private EditText priceEt;
     private Button clearBtn, addBtn;
     private TextView commodityNameTv;
@@ -133,6 +138,9 @@ public class MainActivity extends BaseActivity {
         digitalGridView = rootView.findViewById(R.id.main_digital_keys_grid_view);
         commoditysListView = rootView.findViewById(R.id.main_commoditys_list_view);
 //        bankCardBtn = rootView.findViewById(R.id.main_bank_card_btn);
+        weightLayout = rootView.findViewById(R.id.main_weight_layout);
+        countLayout = rootView.findViewById(R.id.main_count_layout);
+        countEt = rootView.findViewById(R.id.main_count_et);
         commodityNameTv = rootView.findViewById(R.id.main_commodity_name_tv);
         grandTotalTv = rootView.findViewById(R.id.main_grandtotal_tv);
         weightTotalTv = rootView.findViewById(R.id.main_weight_total_tv);
@@ -156,6 +164,7 @@ public class MainActivity extends BaseActivity {
 
 //        gPprinterManager.openConnect();
 //        bankCardBtn.setOnClickListener(this);
+
         mainClearBtn.setOnClickListener(this);
         cashBtn.setOnClickListener(this);
         settingsBtn.setOnClickListener(this);
@@ -260,6 +269,18 @@ public class MainActivity extends BaseActivity {
 //        test();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        boolean isShowCountLayout = (boolean) SPUtils.get(this, KEY_ISHOW_COUNT_LAYOUT, false);
+        if(isShowCountLayout){
+            weightLayout.setVisibility(View.VISIBLE);
+            countLayout.setVisibility(View.GONE);
+        }else {
+            weightLayout.setVisibility(View.GONE);
+            countLayout.setVisibility(View.VISIBLE);
+        }
+    }
 
     private void connection() {
         conn = new PrinterServiceConnection();

@@ -17,6 +17,8 @@ import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.ui.view.ChooseDialog;
 import com.axecom.iweight.ui.view.ChooseDialog2;
 import com.axecom.iweight.ui.view.SoftKeyborad;
+import com.axecom.iweight.utils.LogUtils;
+import com.axecom.iweight.utils.SPUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -118,6 +120,12 @@ public class LocalSettingsActivity extends BaseActivity {
                     @Override
                     public void onNext(BaseEntity<LocalSettingsBean> localSettingsBeanBaseEntity) {
                         if (localSettingsBeanBaseEntity.isSuccess()) {
+                            Long saveDate = (Long) SPUtils.get(LocalSettingsActivity.this, "currentDate", null);
+                            if(saveDate !=  null){
+                                if (saveDate.compareTo(Long.parseLong(localSettingsBeanBaseEntity.getData().value.card_reader_type.update_time)) > 0){
+                                    LogUtils.d("111111111111111111111");
+                                }
+                            }
                             cardReaderTypeList.addAll(localSettingsBeanBaseEntity.getData().card_reader_type_list);
                             weightPorts.addAll(localSettingsBeanBaseEntity.getData().weight_port);
                             printerPorts.addAll(localSettingsBeanBaseEntity.getData().printer_port);
@@ -155,6 +163,22 @@ public class LocalSettingsActivity extends BaseActivity {
                         closeLoading();
                     }
                 });
+    }
+
+
+    public void saveSettingsToSP(){
+        SPUtils.put(this, "currentDate", System.currentTimeMillis());
+        SPUtils.putString(this, printerPortChooseTv.getId() + "", printerPortChooseTv.getText().toString());
+        SPUtils.putString(this, printerCountTv.getId() + "", printerCountTv.getText().toString());
+        SPUtils.putString(this, transactionDataTv.getId() + "", transactionDataTv.getText().toString());
+        SPUtils.putString(this, baudRateTv.getId() + "", baudRateTv.getText().toString());
+        SPUtils.putString(this, serverIPTv.getId() + "", serverIPTv.getText().toString());
+        SPUtils.putString(this, ledPortChooseTv.getId() + "", ledPortChooseTv.getText().toString());
+        SPUtils.putString(this, readCardPortChooseTv.getId() + "", readCardPortChooseTv.getText().toString());
+        SPUtils.putString(this, dataDaysTv.getId() + "", dataDaysTv.getText().toString());
+        SPUtils.putString(this, sleepTimeTv.getId() + "", sleepTimeTv.getText().toString());
+        SPUtils.putString(this, readCardTypeChooseTv.getId() + "", readCardTypeChooseTv.getText().toString());
+        SPUtils.putString(this, serverPortTv.getId() + "", serverPortTv.getText().toString());
     }
 
     @Override
@@ -243,6 +267,7 @@ public class LocalSettingsActivity extends BaseActivity {
                 }).show();
                 break;
             case R.id.local_settings_save_btn:
+                saveSettingsToSP();
                 break;
             case R.id.local_settings_back_btn:
                 finish();
