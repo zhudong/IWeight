@@ -48,7 +48,7 @@
                         android:layout_weight="1"
                         android:gravity="right"
                         android:text="重量端口配置："
-                        android:textColor="@color/gray_e3"
+                        android:textColor="@color/gray_555"
                         android:textSize="20sp" />
 
                     <TextView
@@ -58,7 +58,7 @@
                         android:layout_weight="1"
                         android:drawableBottom="@drawable/shape_black_line"
                         android:gravity="center_vertical"
-                        android:textColor="@color/gray_e3"
+                        android:textColor="@color/gray_555"
                         android:textSize="20sp" />
 
                     <Button
@@ -80,7 +80,7 @@
                         android:background="@drawable/shape_white_btn_bg"
                         android:gravity="center_vertical"
                         android:padding="5dp"
-                        android:textColor="@color/gray_e3"
+                        android:textColor="@color/gray_555"
                         android:textSize="20sp" />
                 </LinearLayout>
 
@@ -128,7 +128,7 @@
                         android:background="@drawable/shape_white_btn_bg"
                         android:gravity="center_vertical"
                         android:padding="5dp"
-                        android:textColor="@color/gray_e3"
+                        android:textColor="@color/gray_555"
                         android:textSize="20sp" />
                 </LinearLayout>
 
@@ -206,7 +206,7 @@
                         android:layout_weight="1"
                         android:gravity="right"
                         android:text="秤板波特率："
-                        android:textColor="@color/gray_e3"
+                        android:textColor="@color/gray_555"
                         android:textSize="20sp" />
 
                     <TextView
@@ -219,7 +219,7 @@
                         android:background="@drawable/shape_white_btn_bg"
                         android:gravity="center_vertical"
                         android:padding="5dp"
-                        android:textColor="@color/gray_e3"
+                        android:textColor="@color/gray_555"
                         android:textSize="20sp" />
                 </LinearLayout>
 
@@ -238,7 +238,7 @@
                         android:layout_weight="1"
                         android:gravity="right"
                         android:text="服务器ip："
-                        android:textColor="@color/gray_e3"
+                        android:textColor="@color/gray_555"
                         android:textSize="20sp" />
 
                     <TextView
@@ -251,7 +251,7 @@
                         android:background="@drawable/shape_white_btn_bg"
                         android:gravity="center_vertical"
                         android:padding="5dp"
-                        android:textColor="@color/gray_e3"
+                        android:textColor="@color/gray_555"
                         android:textSize="20sp" />
                 </LinearLayout>
             </LinearLayout>
@@ -278,7 +278,7 @@
                         android:layout_weight="1"
                         android:gravity="right"
                         android:text="外置LED端口配置："
-                        android:textColor="@color/gray_e3"
+                        android:textColor="@color/gray_555"
                         android:textSize="20sp" />
 
                     <TextView
@@ -290,10 +290,11 @@
                         android:drawableBottom="@drawable/shape_black_line"
                         android:gravity="center_vertical"
                         android:paddingLeft="5dp"
-                        android:textColor="@color/gray_e3"
+                        android:textColor="@color/gray_555"
                         android:textSize="20sp" />
 
                     <Button
+                        android:enabled="false"
                         android:id="@+id/local_settings_led_port_choose_btn"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
@@ -435,7 +436,7 @@
                         android:layout_weight="1"
                         android:gravity="right"
                         android:text="刷卡器类型："
-                        android:textColor="@color/gray_e3"
+                        android:textColor="@color/gray_555"
                         android:textSize="20sp" />
 
                     <TextView
@@ -445,7 +446,7 @@
                         android:layout_weight="1"
                         android:drawableBottom="@drawable/shape_black_line"
                         android:gravity="center_vertical"
-                        android:textColor="@color/gray_e3"
+                        android:textColor="@color/gray_555"
                         android:textSize="20sp" />
 
                     <Button
@@ -474,7 +475,7 @@
                         android:layout_weight="1"
                         android:gravity="right"
                         android:text="服务器端口："
-                        android:textColor="@color/gray_e3"
+                        android:textColor="@color/gray_555"
                         android:textSize="20sp" />
 
                     <TextView
@@ -486,7 +487,7 @@
                         android:background="@drawable/shape_white_btn_bg"
                         android:gravity="center_vertical"
                         android:padding="5dp"
-                        android:textColor="@color/gray_e3"
+                        android:textColor="@color/gray_555"
                         android:textSize="20sp" />
                 </LinearLayout>
 

@@ -419,7 +419,7 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
             }
         }
         if (event.getType() == BusEvent.GO_HOME_PAGE) {
-            if (!(this instanceof MainActivity)) {
+            if (!(this instanceof HomeActivity)) {
                 finish();
             }
         }

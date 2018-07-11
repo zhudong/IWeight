@@ -1,6 +1,7 @@
 package com.axecom.iweight.ui.activity;
 
 import android.content.Context;
+import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +14,12 @@ import android.widget.TextView;
 
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
+import com.axecom.iweight.base.BusEvent;
 import com.axecom.iweight.bean.SettingsBean;
+import com.axecom.iweight.ui.view.CustomDialog;
+import com.axecom.iweight.utils.SPUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +29,7 @@ import java.util.List;
  */
 
 public class SettingsActivity extends BaseActivity {
+    public static final String KET_SWITCH_SIMPLE_OR_COMPLEX = "key_switch_simple_or_complex";
 
     private static final int POSITION_SWITCH = 0;
     private static final int POSITION_PATCH = 1;
@@ -41,36 +48,36 @@ public class SettingsActivity extends BaseActivity {
     private static final int POSITION_RE_BOOT = 14;
 
     private static final int[] ICONS = {R.drawable.switching_setting,
-                                        R.drawable.patch_setting,
-                                        R.drawable.reports_setting,
-                                        R.drawable.server_setting,
-                                        R.drawable.invalid,
-                                        R.drawable.abnormal_setting,
-                                        R.drawable.bd_setting,
-                                        R.drawable.commodity_setting,
-                                        R.drawable.update_setting,
-                                        R.drawable.re_connecting,
-                                        R.drawable.wifi_setting,
-                                        R.drawable.local_setting,
-                                        R.drawable.system_setting,
-                                        R.drawable.weight_setting,
-                                        R.drawable.re_boot};
+            R.drawable.patch_setting,
+            R.drawable.reports_setting,
+            R.drawable.server_setting,
+            R.drawable.invalid,
+            R.drawable.abnormal_setting,
+            R.drawable.bd_setting,
+            R.drawable.commodity_setting,
+            R.drawable.update_setting,
+            R.drawable.re_connecting,
+            R.drawable.wifi_setting,
+            R.drawable.local_setting,
+            R.drawable.system_setting,
+            R.drawable.weight_setting,
+            R.drawable.re_boot};
 
     private static final int[] TITLES = {R.string.string_switching_setting_txt,
-                                        R.string.string_patch_setting_txt,
-                                        R.string.string_reports_setting_txt,
-                                        R.string.string_server_setting_txt,
-                                        R.string.string_order_setting_txt,
-                                        R.string.string_abnormal_setting_txt,
-                                        R.string.string_bd_setting_txt,
-                                        R.string.string_commodity_setting_txt,
-                                        R.string.string_update_setting_txt,
-                                        R.string.string_reconnection_txt,
-                                        R.string.string_wifi_setting_txt,
-                                        R.string.string_local_setting_txt,
-                                        R.string.string_system_setting_txt,
-                                        R.string.string_back_txt,
-                                        R.string.string_reboot_txt};
+            R.string.string_patch_setting_txt,
+            R.string.string_reports_setting_txt,
+            R.string.string_server_setting_txt,
+            R.string.string_order_setting_txt,
+            R.string.string_abnormal_setting_txt,
+            R.string.string_bd_setting_txt,
+            R.string.string_commodity_setting_txt,
+            R.string.string_update_setting_txt,
+            R.string.string_reconnection_txt,
+            R.string.string_wifi_setting_txt,
+            R.string.string_local_setting_txt,
+            R.string.string_system_setting_txt,
+            R.string.string_back_txt,
+            R.string.string_reboot_txt};
 
     private View rootView;
     private GridView settingsGV;
@@ -117,7 +124,7 @@ public class SettingsActivity extends BaseActivity {
                     startDDMActivity(ServerTestActivity.class, false);
                     break;
                 case POSITION_BD:
-                    startDDMActivity(CalibrationActivity.class , false);
+                    startDDMActivity(CalibrationActivity.class, false);
                     break;
                 case POSITION_WIFI:
                     startDDMActivity(WifiSettingsActivity.class, false);
@@ -132,10 +139,16 @@ public class SettingsActivity extends BaseActivity {
                     startDDMActivity(SystemSettingsActivity.class, false);
                     break;
                 case POSITION_RE_BOOT:
-                    startDDMActivity(HomeActivity.class, false);
+                    EventBus.getDefault().post(new BusEvent(BusEvent.GO_HOME_PAGE, true));
+//                    startDDMActivity(HomeActivity.class, false);
                     break;
                 case POSITION_WEIGHT:
                     finish();
+                    break;
+                case POSITION_SWITCH:
+                    showLoading("切换成功");
+                    boolean switchSimpleOrComplex = (boolean) SPUtils.get(SettingsActivity.this, KET_SWITCH_SIMPLE_OR_COMPLEX, false);
+                    SPUtils.put(SettingsActivity.this, KET_SWITCH_SIMPLE_OR_COMPLEX, !switchSimpleOrComplex);
                     break;
             }
         }
@@ -146,12 +159,12 @@ public class SettingsActivity extends BaseActivity {
 
     }
 
-    class SettingsAdapter extends BaseAdapter{
+    class SettingsAdapter extends BaseAdapter {
 
         private Context context;
         private List<SettingsBean> settingList;
 
-        public SettingsAdapter(Context context, List<SettingsBean> settingList){
+        public SettingsAdapter(Context context, List<SettingsBean> settingList) {
             this.context = context;
             this.settingList = settingList;
         }
@@ -174,13 +187,13 @@ public class SettingsActivity extends BaseActivity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder holder = null;
-            if(convertView == null){
+            if (convertView == null) {
                 convertView = LayoutInflater.from(context).inflate(R.layout.settings_item, null);
                 holder = new ViewHolder();
                 holder.iconIv = convertView.findViewById(R.id.settings_item_icon_iv);
                 holder.titleTv = convertView.findViewById(R.id.settings_item_title_tv);
                 convertView.setTag(holder);
-            }else {
+            } else {
                 holder = (ViewHolder) convertView.getTag();
             }
 
@@ -190,7 +203,7 @@ public class SettingsActivity extends BaseActivity {
             return convertView;
         }
 
-        class ViewHolder{
+        class ViewHolder {
             ImageView iconIv;
             TextView titleTv;
         }

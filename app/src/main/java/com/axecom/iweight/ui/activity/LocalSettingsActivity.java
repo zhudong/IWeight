@@ -1,5 +1,9 @@
 package com.axecom.iweight.ui.activity;
 
+import android.content.Context;
+import android.content.Intent;
+import android.hardware.usb.UsbManager;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -19,6 +23,8 @@ import com.axecom.iweight.ui.view.ChooseDialog2;
 import com.axecom.iweight.ui.view.SoftKeyborad;
 import com.axecom.iweight.utils.LogUtils;
 import com.axecom.iweight.utils.SPUtils;
+import com.hoho.android.usbserial.driver.UsbSerialDriver;
+import com.hoho.android.usbserial.driver.UsbSerialProber;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +33,8 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
 public class LocalSettingsActivity extends BaseActivity {
+
+    public static final String KEY_PRINTER_COUNT  = "printerCountTv";
 
     private View rootView;
 
@@ -40,6 +48,10 @@ public class LocalSettingsActivity extends BaseActivity {
     private List<LocalSettingsBean.ExternalLedPort> externalLedPorts;
     private List<LocalSettingsBean.CardReaderPort> cardReaderPorts;
     private int weightPos = 0, printerPos = 0, ledPos = 0, readCardPortPos = 0, readCardTypePos = 0;
+
+    private List<UsbSerialDriver> availableDrivers;
+    private UsbManager manager;
+    private ArrayList<ChooseBean> deviceList;
 
     @Override
     public View setInitView() {
@@ -92,6 +104,7 @@ public class LocalSettingsActivity extends BaseActivity {
 
     @Override
     public void initView() {
+        getUsbDevices();
         getScalesSettingData();
         cardReaderTypeList = new ArrayList<>();
         weightPorts = new ArrayList<>();
@@ -105,6 +118,21 @@ public class LocalSettingsActivity extends BaseActivity {
 //            bean.setChooseItem("测试数据 " + i);
 //            list.add(bean);
 //        }
+    }
+
+    public void getUsbDevices(){
+        manager = (UsbManager) getSystemService(Context.USB_SERVICE);
+        availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager);
+        if (availableDrivers.isEmpty()) {
+            return;
+        }
+        ChooseBean chooseBean;
+        deviceList = new ArrayList();
+        for (int i = 0; i < availableDrivers.size(); i++) {
+            chooseBean = new ChooseBean();
+            chooseBean.setChooseItem(availableDrivers.get(i).getDevice().getDeviceName());
+            deviceList.add(chooseBean);
+        }
     }
 
     public void getScalesSettingData() {
@@ -133,9 +161,39 @@ public class LocalSettingsActivity extends BaseActivity {
                             cardReaderPorts.addAll(localSettingsBeanBaseEntity.getData().card_reader_port);
 
                             weightPortChooseTv.setText(((LocalSettingsBean.WeightPort)localSettingsBeanBaseEntity.getData().weight_port.get(0)).val);
-                            printerPortChooseTv.setText(((LocalSettingsBean.PrinterPort)localSettingsBeanBaseEntity.getData().printer_port.get(0)).val);
+                            String printerProt = SPUtils.getString(LocalSettingsActivity.this, printerPortChooseTv.getId() + "", "");
+                            String readCardPort = SPUtils.getString(LocalSettingsActivity.this, readCardPortChooseTv.getId() + "", "");
+                            String printerCount = SPUtils.getString(LocalSettingsActivity.this, KEY_PRINTER_COUNT, "");
+                            String dataDays = SPUtils.getString(LocalSettingsActivity.this, dataDaysTv.getId() + "", "");
+                            String transactionData = SPUtils.getString(LocalSettingsActivity.this, transactionDataTv.getId() + "", "");
+                            if(!TextUtils.isEmpty(printerProt)){
+                                printerPortChooseTv.setText(printerProt);
+                            }else {
+                                printerPortChooseTv.setText(((LocalSettingsBean.PrinterPort)localSettingsBeanBaseEntity.getData().printer_port.get(0)).val);
+                            }
+                            if(!TextUtils.isEmpty(readCardPort)){
+                                readCardPortChooseTv.setText(readCardPort);
+                            }else {
+                                readCardPortChooseTv.setText(((LocalSettingsBean.CardReaderPort)localSettingsBeanBaseEntity.getData().card_reader_port.get(0)).val);
+                            }
+
+                            if(!TextUtils.isEmpty(printerCount)){
+                                printerCountTv.setText(printerCount);
+                            }else {
+                                printerCountTv.setText(((LocalSettingsBean.CardReaderPort)localSettingsBeanBaseEntity.getData().card_reader_port.get(0)).val);
+                            }
+                            if(!TextUtils.isEmpty(dataDays)){
+                                dataDaysTv.setText(dataDays);
+                            }else {
+                                dataDaysTv.setText(((LocalSettingsBean.CardReaderPort)localSettingsBeanBaseEntity.getData().card_reader_port.get(0)).val);
+                            }
+                            if(!TextUtils.isEmpty(transactionData)){
+                                transactionDataTv.setText(transactionData);
+                            }else {
+                                transactionDataTv.setText(((LocalSettingsBean.CardReaderPort)localSettingsBeanBaseEntity.getData().card_reader_port.get(0)).val);
+                            }
+
                             ledPortChooseTv.setText(((LocalSettingsBean.ExternalLedPort)localSettingsBeanBaseEntity.getData().external_led_port.get(0)).val);
-                            readCardPortChooseTv.setText(((LocalSettingsBean.CardReaderPort)localSettingsBeanBaseEntity.getData().card_reader_port.get(0)).val);
                             readCardTypeChooseTv.setText(((LocalSettingsBean.CardReaderTypeList)localSettingsBeanBaseEntity.getData().card_reader_type_list.get(0)).val);
 
                             weightPortTv.setText(localSettingsBeanBaseEntity.getData().value.weight_port.val);
@@ -169,7 +227,7 @@ public class LocalSettingsActivity extends BaseActivity {
     public void saveSettingsToSP(){
         SPUtils.put(this, "currentDate", System.currentTimeMillis());
         SPUtils.putString(this, printerPortChooseTv.getId() + "", printerPortChooseTv.getText().toString());
-        SPUtils.putString(this, printerCountTv.getId() + "", printerCountTv.getText().toString());
+        SPUtils.put(this, KEY_PRINTER_COUNT, Integer.parseInt(printerCountTv.getText().toString()));
         SPUtils.putString(this, transactionDataTv.getId() + "", transactionDataTv.getText().toString());
         SPUtils.putString(this, baudRateTv.getId() + "", baudRateTv.getText().toString());
         SPUtils.putString(this, serverIPTv.getId() + "", serverIPTv.getText().toString());
@@ -187,14 +245,7 @@ public class LocalSettingsActivity extends BaseActivity {
         SoftKeyborad.Builder softBuilder = new SoftKeyborad.Builder(this);
         switch (v.getId()) {
             case R.id.local_settings_weight_port_choose_btn:
-                ChooseBean weight;
-                ArrayList<ChooseBean> weightList = new ArrayList();
-                for (int i = 0; i < weightPorts.size(); i++) {
-                    weight = new ChooseBean();
-                    weight.setChooseItem(weightPorts.get(i).val);
-                    weightList.add(weight);
-                }
-                chooseBuilder.create(weightList, weightPos, new ChooseDialog2.OnSelectedListener() {
+                chooseBuilder.create(deviceList, weightPos, new ChooseDialog2.OnSelectedListener() {
                     @Override
                     public void onSelected(AdapterView<?> parent, View view, int position, long id) {
                         weightPos = position;
@@ -203,14 +254,7 @@ public class LocalSettingsActivity extends BaseActivity {
                 }).show();
                 break;
             case R.id.local_settings_printer_port_choose_btn:
-                ChooseBean printer;
-                ArrayList<ChooseBean> printerList = new ArrayList();
-                for (int i = 0; i < printerPorts.size(); i++) {
-                    printer = new ChooseBean();
-                    printer.setChooseItem(printerPorts.get(i).val);
-                    printerList.add(printer);
-                }
-                chooseBuilder.create(printerList, printerPos, new ChooseDialog2.OnSelectedListener() {
+                chooseBuilder.create(deviceList, printerPos, new ChooseDialog2.OnSelectedListener() {
                     @Override
                     public void onSelected(AdapterView<?> parent, View view, int position, long id) {
                         printerPos = position;
@@ -235,14 +279,7 @@ public class LocalSettingsActivity extends BaseActivity {
                 }).show();
                 break;
             case R.id.local_settings_read_card_port_choose_btn:
-                ChooseBean cardReader;
-                ArrayList<ChooseBean> cardReaderList = new ArrayList();
-                for (int i = 0; i < cardReaderPorts.size(); i++) {
-                    cardReader = new ChooseBean();
-                    cardReader.setChooseItem(cardReaderPorts.get(i).val);
-                    cardReaderList.add(cardReader);
-                }
-                chooseBuilder.create(cardReaderList, readCardPortPos, new ChooseDialog2.OnSelectedListener() {
+                chooseBuilder.create(deviceList, readCardPortPos, new ChooseDialog2.OnSelectedListener() {
                     @Override
                     public void onSelected(AdapterView<?> parent, View view, int position, long id) {
                         readCardPortPos = position;
@@ -268,6 +305,7 @@ public class LocalSettingsActivity extends BaseActivity {
                 break;
             case R.id.local_settings_save_btn:
                 saveSettingsToSP();
+                finish();
                 break;
             case R.id.local_settings_back_btn:
                 finish();

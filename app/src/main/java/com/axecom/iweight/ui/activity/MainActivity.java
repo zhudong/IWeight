@@ -129,6 +129,8 @@ public class MainActivity extends BaseActivity {
     private List<ScalesCategoryGoods.HotKeyGoods> hotKeyGoodsList;
     private List<ScalesCategoryGoods.HotKeyGoods> seledtedGoodsList;
     private ScalesCategoryGoods.HotKeyGoods selectedGoods;
+    private int mTotalCopies = 0;
+
 
     @Override
     public View setInitView() {
@@ -272,14 +274,15 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        boolean isShowCountLayout = (boolean) SPUtils.get(this, KEY_ISHOW_COUNT_LAYOUT, false);
-        if(isShowCountLayout){
-            weightLayout.setVisibility(View.VISIBLE);
-            countLayout.setVisibility(View.GONE);
-        }else {
-            weightLayout.setVisibility(View.GONE);
+        boolean switchSimpleOrComplex = (boolean) SPUtils.get(this, SettingsActivity.KET_SWITCH_SIMPLE_OR_COMPLEX, false);
+        if(switchSimpleOrComplex){
             countLayout.setVisibility(View.VISIBLE);
+            weightLayout.setVisibility(View.GONE);
+        }else {
+            countLayout.setVisibility(View.GONE);
+            weightLayout.setVisibility(View.VISIBLE);
         }
+        mTotalCopies = (int) SPUtils.get(this, LocalSettingsActivity.KEY_PRINTER_COUNT, mTotalCopies);
     }
 
     private void connection() {
@@ -536,12 +539,14 @@ public class MainActivity extends BaseActivity {
                  */
                 Log.d("LABEL RESPONSE", d);
 
-//                if (--mTotalCopies > 0 && d.charAt(1) == 0x00) {
-//                    sendLabelWithResponse();
-//                }
+                if (--mTotalCopies > 0 && d.charAt(1) == 0x00) {
+                    sendLabel();
+                }
             }
         }
     };
+
+
 
     public void sendLabel() {
         LabelCommand tsc = new LabelCommand();

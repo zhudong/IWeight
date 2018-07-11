@@ -26,6 +26,7 @@
             android:background="@color/black"/>
 
         <ListView
+            android:layout_weight="1"
             android:listSelector="@color/transparent"
             android:id="@+id/choose_dialog_listview"
             android:layout_width="match_parent"
