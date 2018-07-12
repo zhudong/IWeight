@@ -1,5 +1,6 @@
 package com.axecom.iweight.ui.activity;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -18,10 +19,12 @@ import com.axecom.iweight.manager.MacManager;
 import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.ui.view.ChooseDialog;
 import com.axecom.iweight.ui.view.SoftKeyborad;
+import com.axecom.iweight.utils.SPUtils;
 import com.google.gson.internal.LinkedTreeMap;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +32,28 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
 public class SystemSettingsActivity extends BaseActivity {
+
+    private static final String KEY_DEFAULT_LOGIN_TYPE = "key_default_login_type";
+    private static final String KEY_PRINTER = "key_printer";
+    private static final String KEY_BUYER_NUMBER = "key_buyer_number";
+    private static final String KEY_BALANCE_ROUNDING = "key_balance_rounding";
+    private static final String KEY_PRICEING_METHOD = "key_priceing_method";
+    private static final String KEY_WEIGHT_ROUNDING = "key_weight_rounding";
+    private static final String KEY_SELLER_NUMBER = "key_seller_number";
+    private static final String KEY_WEIGHT_UNIT = "key_weight_unit";
+
+    private static final String KEY_NOT_CLEAR = "key_not_clear";
+    private static final String KEY_SAVE_WEIGHT = "key_save_weight";
+    private static final String KEY_AUTO_OBTAIN = "key_auto_obtain";
+    private static final String KEY_CASH_SETTLEMENT = "key_cash_settlement";
+    private static final String KEY_DISTINGUISH = "key_distinguish";
+    private static final String KEY_ICCARD_SETTLEMENT = "key_iccard_settlement";
+    private static final String KEY_STOP_PRINT = "key_stop_print";
+    private static final String KEY_NO_PATCH_SETTLEMENT = "key_no_patch_settlement";
+    private static final String KEY_AUTO_PREV = "key_auto_prev";
+    private static final String KEY_CASH_ROUNDING = "key_cash_rounding";
+    private static final String KEY_STOP_CASH = "key_stop_cash";
+
 
     private View rootView;
     private Button loginTypeBtn, printerBtn, balanceRoundingBtn, priceingMethodBtn, weightRoundingBtn, weightUnitBtn;
@@ -44,7 +69,8 @@ public class SystemSettingsActivity extends BaseActivity {
     List<Map<String, String>> roundingWeightList = new ArrayList<>();
     List<Map<String, String>> screenUnitList = new ArrayList<>();
     List<Map<String, String>> balanceRoundingList = new ArrayList<>();
-    private int loginTypePos = 0,printerPos = 0,balanceRoundingPos = 0,priceingMethodPos = 0,weightRoundingPos = 0,weightUnitPos = 0;
+    private int loginTypePos = 0, printerPos = 0, balanceRoundingPos = 0, priceingMethodPos = 0, weightRoundingPos = 0, weightUnitPos = 0;
+    LinkedTreeMap valueMap;
 
     @Override
     public View setInitView() {
@@ -102,6 +128,7 @@ public class SystemSettingsActivity extends BaseActivity {
         autoPrevCtv.setOnClickListener(this);
         cashRoundingCtv.setOnClickListener(this);
         stopCashCtv.setOnClickListener(this);
+        loginTypeTv.setOnClickListener(this);
 
         return rootView;
     }
@@ -120,8 +147,8 @@ public class SystemSettingsActivity extends BaseActivity {
                 chooseBuilder.create(loginTypeList, loginTypePos, new ChooseDialog.OnSelectedListener() {
                     @Override
                     public void onSelected(AdapterView<?> parent, View view, int position, long id) {
-                         loginTypePos = position;
-                         loginTypeTv.setText(((Map<String,String>)parent.getAdapter().getItem(position)).get(position + 1 +""));
+                        loginTypePos = position;
+                        loginTypeTv.setText(((Map<String, String>) parent.getAdapter().getItem(position)).get(position + 1 + ""));
                     }
                 }).show();
                 break;
@@ -130,7 +157,7 @@ public class SystemSettingsActivity extends BaseActivity {
                     @Override
                     public void onSelected(AdapterView<?> parent, View view, int position, long id) {
                         printerPos = position;
-                        printerTv.setText(((Map<String,String>)parent.getAdapter().getItem(position)).get(position + 1 +""));
+                        printerTv.setText(((Map<String, String>) parent.getAdapter().getItem(position)).get(position + 1 + ""));
                     }
                 }).show();
                 break;
@@ -139,7 +166,7 @@ public class SystemSettingsActivity extends BaseActivity {
                     @Override
                     public void onSelected(AdapterView<?> parent, View view, int position, long id) {
                         balanceRoundingPos = position;
-                        balanceRoundingTv.setText(((Map<String,String>)parent.getAdapter().getItem(position)).get(position + 1 +""));
+                        balanceRoundingTv.setText(((Map<String, String>) parent.getAdapter().getItem(position)).get(position + 1 + ""));
                     }
                 }).show();
                 break;
@@ -148,7 +175,7 @@ public class SystemSettingsActivity extends BaseActivity {
                     @Override
                     public void onSelected(AdapterView<?> parent, View view, int position, long id) {
                         priceingMethodPos = position;
-                        priceingMethodTv.setText(((Map<String,String>)parent.getAdapter().getItem(position)).get(position + 1 +""));
+                        priceingMethodTv.setText(((Map<String, String>) parent.getAdapter().getItem(position)).get(position + 1 + ""));
                     }
                 }).show();
                 break;
@@ -157,7 +184,7 @@ public class SystemSettingsActivity extends BaseActivity {
                     @Override
                     public void onSelected(AdapterView<?> parent, View view, int position, long id) {
                         weightRoundingPos = position;
-                        weightRoundingTv.setText(((Map<String,String>)parent.getAdapter().getItem(position)).get(position + 1 +""));
+                        weightRoundingTv.setText(((Map<String, String>) parent.getAdapter().getItem(position)).get(position + 1 + ""));
                     }
                 }).show();
                 break;
@@ -166,7 +193,7 @@ public class SystemSettingsActivity extends BaseActivity {
                     @Override
                     public void onSelected(AdapterView<?> parent, View view, int position, long id) {
                         weightUnitPos = position;
-                        weightUnitTv.setText(((Map<String,String>)parent.getAdapter().getItem(position)).get(position + 1 +""));
+                        weightUnitTv.setText(((Map<String, String>) parent.getAdapter().getItem(position)).get(position + 1 + ""));
                     }
                 }).show();
                 break;
@@ -222,13 +249,142 @@ public class SystemSettingsActivity extends BaseActivity {
             case R.id.system_settings_back_btn:
                 finish();
                 break;
+            case R.id.system_settings_login_type_tv:
             case R.id.system_settings_save_btn:
-                boolean notClear = notClearPriceCtv.isChecked();
+                saveSettingsToSP();
                 break;
         }
     }
 
-    public void getSettingData(){
+    public void saveSettingsToSP() {
+        if (valueMap == null)
+            return;
+        if (SPUtils.readObject(this, KEY_DEFAULT_LOGIN_TYPE) != null) {
+            if (!TextUtils.equals(loginTypeTv.getText().toString(), ((LinkedTreeMap) SPUtils.readObject(this, KEY_DEFAULT_LOGIN_TYPE)).get("default_login_type").toString())) {
+                LinkedTreeMap v = new LinkedTreeMap();
+                v.put("update_time", System.currentTimeMillis());
+                v.put("val", loginTypeTv.getText().toString());
+                SPUtils.saveObject(this, KEY_DEFAULT_LOGIN_TYPE, (LinkedTreeMap) valueMap.put("default_login_type", v));
+            }
+        } else {
+            ((LinkedTreeMap) valueMap.get("default_login_type")).put("update_time", System.currentTimeMillis());
+            ((LinkedTreeMap) valueMap.get("default_login_type")).put("val", loginTypeTv.getText().toString());
+            LinkedTreeMap v = new LinkedTreeMap();
+            v.put("update_time", System.currentTimeMillis());
+            v.put("val", loginTypeTv.getText().toString());
+            SPUtils.saveObject(this, KEY_DEFAULT_LOGIN_TYPE, (LinkedTreeMap) valueMap.put("default_login_type", v));
+        }
+
+        if (SPUtils.readObject(this, KEY_PRINTER) != null) {
+            if (!TextUtils.equals(printerTv.getText().toString(), ((LinkedTreeMap) SPUtils.readObject(this, KEY_PRINTER)).get("printer_configuration").toString())) {
+                ((LinkedTreeMap) valueMap.get("printer_configuration")).put("update_time", System.currentTimeMillis());
+                ((LinkedTreeMap) valueMap.get("printer_configuration")).put("val", printerTv.getText().toString());
+                SPUtils.saveObject(this, KEY_PRINTER, valueMap.get("printer_configuration"));
+            }
+        } else {
+            ((LinkedTreeMap) valueMap.get("printer_configuration")).put("update_time", System.currentTimeMillis());
+            ((LinkedTreeMap) valueMap.get("printer_configuration")).put("val", printerTv.getText().toString());
+            SPUtils.saveObject(this, KEY_PRINTER, valueMap.get("printer_configuration"));
+        }
+
+       /* if (!TextUtils.equals(buyerNumberTv.getText().toString(), ((LinkedTreeMap) SPUtils.get(this, KEY_BUYER_NUMBER, null)).get("default_buyer_number").toString())) {
+            ((LinkedTreeMap) valueMap.get("default_buyer_number")).put("update_time", System.currentTimeMillis());
+            ((LinkedTreeMap) valueMap.get("default_buyer_number")).put("val", buyerNumberTv.getText().toString());
+            SPUtils.put(this, KEY_BUYER_NUMBER, valueMap.get("default_buyer_number"));
+
+        }
+        if (!TextUtils.equals(balanceRoundingTv.getText().toString(), ((LinkedTreeMap) SPUtils.get(this, KEY_BALANCE_ROUNDING, null)).get("balance_rounding").toString())) {
+            ((LinkedTreeMap) valueMap.get("balance_rounding")).put("update_time", System.currentTimeMillis());
+            ((LinkedTreeMap) valueMap.get("balance_rounding")).put("val", balanceRoundingTv.getText().toString());
+            SPUtils.put(this, KEY_BALANCE_ROUNDING, valueMap.get("balance_rounding"));
+
+        }
+        if (!TextUtils.equals(priceingMethodTv.getText().toString(), ((LinkedTreeMap) SPUtils.get(this, KEY_PRICEING_METHOD, null)).get("default_pricing_model").toString())) {
+            ((LinkedTreeMap) valueMap.get("default_pricing_model")).put("update_time", System.currentTimeMillis());
+            ((LinkedTreeMap) valueMap.get("default_pricing_model")).put("val", priceingMethodTv.getText().toString());
+            SPUtils.put(this, KEY_PRICEING_METHOD, valueMap.get("default_pricing_model"));
+
+        }
+        if (!TextUtils.equals(weightRoundingTv.getText().toString(), ((LinkedTreeMap) SPUtils.get(this, KEY_WEIGHT_ROUNDING, null)).get("rounding_weight").toString())) {
+            ((LinkedTreeMap) valueMap.get("rounding_weight")).put("update_time", System.currentTimeMillis());
+            ((LinkedTreeMap) valueMap.get("rounding_weight")).put("val", weightRoundingTv.getText().toString());
+            SPUtils.put(this, KEY_WEIGHT_ROUNDING, valueMap.get("rounding_weight"));
+
+        }
+        if (!TextUtils.equals(sellerNumberTv.getText().toString(), ((LinkedTreeMap) SPUtils.get(this, KEY_SELLER_NUMBER, null)).get("default_seller_number").toString())) {
+            ((LinkedTreeMap) valueMap.get("default_seller_number")).put("update_time", System.currentTimeMillis());
+            ((LinkedTreeMap) valueMap.get("default_seller_number")).put("val", sellerNumberTv.getText().toString());
+            SPUtils.put(this, KEY_SELLER_NUMBER, valueMap.get("default_seller_number"));
+
+        }
+        if (!TextUtils.equals(weightUnitTv.getText(), ((LinkedTreeMap) SPUtils.get(this, KEY_WEIGHT_UNIT, null)).get("screen_unit_display").toString())) {
+            ((LinkedTreeMap) valueMap.get("screen_unit_display")).put("update_time", System.currentTimeMillis());
+            ((LinkedTreeMap) valueMap.get("screen_unit_display")).put("val", weightUnitTv.getText().toString());
+            SPUtils.put(this, KEY_WEIGHT_UNIT, valueMap.get("screen_unit_display"));
+        }
+
+
+        if ((notClearPriceCtv.isChecked() != (Boolean) ((LinkedTreeMap) SPUtils.get(this, KEY_NOT_CLEAR, null)).get("price_after_saving"))) {
+            ((LinkedTreeMap) valueMap.get("price_after_saving")).put("update_time", System.currentTimeMillis());
+            ((LinkedTreeMap) valueMap.get("price_after_saving")).put("val", notClearPriceCtv.isChecked());
+            SPUtils.put(this, KEY_NOT_CLEAR, valueMap.get("price_after_saving"));
+            if ((saveWeightCtv.isChecked() != (Boolean) ((LinkedTreeMap) SPUtils.get(this, KEY_SAVE_WEIGHT, null)).get("confirm_the_preservation"))) {
+                ((LinkedTreeMap) valueMap.get("confirm_the_preservation")).put("update_time", System.currentTimeMillis());
+                ((LinkedTreeMap) valueMap.get("confirm_the_preservation")).put("val", saveWeightCtv.isChecked());
+                SPUtils.put(this, KEY_SAVE_WEIGHT, valueMap.get("confirm_the_preservation"));
+            }
+            if ((autoObtainCtv.isChecked() != (Boolean) ((LinkedTreeMap) SPUtils.get(this, KEY_AUTO_OBTAIN, null)).get("buyers_and_sellers_by_default"))) {
+                ((LinkedTreeMap) valueMap.get("buyers_and_sellers_by_default")).put("update_time", System.currentTimeMillis());
+                ((LinkedTreeMap) valueMap.get("buyers_and_sellers_by_default")).put("val", autoObtainCtv.isChecked());
+                SPUtils.put(this, KEY_AUTO_OBTAIN, valueMap.get("buyers_and_sellers_by_default"));
+            }
+            if ((cashEttlementCtv.isChecked() != (Boolean) ((LinkedTreeMap) SPUtils.get(this, KEY_CASH_SETTLEMENT, null)).get("online_settlement"))) {
+                ((LinkedTreeMap) valueMap.get("online_settlement")).put("update_time", System.currentTimeMillis());
+                ((LinkedTreeMap) valueMap.get("online_settlement")).put("val", cashEttlementCtv.isChecked());
+                SPUtils.put(this, KEY_CASH_SETTLEMENT, valueMap.get("online_settlement"));
+            }
+
+            if ((distinguishCtv.isChecked() != (Boolean) ((LinkedTreeMap) SPUtils.get(this, KEY_DISTINGUISH, null)).get("buyers_and_sellers_after_weighing"))) {
+
+                ((LinkedTreeMap) valueMap.get("buyers_and_sellers_after_weighing")).put("update_time", System.currentTimeMillis());
+                ((LinkedTreeMap) valueMap.get("buyers_and_sellers_after_weighing")).put("val", distinguishCtv.isChecked());
+                SPUtils.put(this, KEY_DISTINGUISH, valueMap.get("buyers_and_sellers_after_weighing"));
+            }
+            if ((icCardSettlementCtv.isChecked() != (Boolean) ((LinkedTreeMap) SPUtils.get(this, KEY_ICCARD_SETTLEMENT, null)).get("card_settlement"))) {
+                ((LinkedTreeMap) valueMap.get("card_settlement")).put("update_time", System.currentTimeMillis());
+                ((LinkedTreeMap) valueMap.get("card_settlement")).put("val", icCardSettlementCtv.isChecked());
+                SPUtils.put(this, KEY_ICCARD_SETTLEMENT, valueMap.get("card_settlement"));
+            }
+            if ((stopPrintCtv.isChecked() != (Boolean) ((LinkedTreeMap) SPUtils.get(this, KEY_STOP_PRINT, null)).get("disable_printing"))) {
+                ((LinkedTreeMap) valueMap.get("disable_printing")).put("update_time", System.currentTimeMillis());
+                ((LinkedTreeMap) valueMap.get("disable_printing")).put("val", stopPrintCtv.isChecked());
+                SPUtils.put(this, KEY_STOP_PRINT, valueMap.get("disable_printing"));
+            }
+            if ((noPatchSettlementCtv.isChecked() != (Boolean) ((LinkedTreeMap) SPUtils.get(this, KEY_NO_PATCH_SETTLEMENT, null)).get("allow_batchless_settlement"))) {
+                ((LinkedTreeMap) valueMap.get("allow_batchless_settlement")).put("update_time", System.currentTimeMillis());
+                ((LinkedTreeMap) valueMap.get("allow_batchless_settlement")).put("val", noPatchSettlementCtv.isChecked());
+                SPUtils.put(this, KEY_NO_PATCH_SETTLEMENT, valueMap.get("allow_batchless_settlement"));
+            }
+            if ((autoPrevCtv.isChecked() != (Boolean) ((LinkedTreeMap) SPUtils.get(this, KEY_AUTO_PREV, null)).get("take_a_unit_price"))) {
+                ((LinkedTreeMap) valueMap.get("take_a_unit_price")).put("update_time", System.currentTimeMillis());
+                ((LinkedTreeMap) valueMap.get("take_a_unit_price")).put("val", autoPrevCtv.isChecked());
+                SPUtils.put(this, KEY_AUTO_PREV, valueMap.get("take_a_unit_price"));
+            }
+            if ((cashRoundingCtv.isChecked() != (Boolean) ((LinkedTreeMap) SPUtils.get(this, KEY_CASH_ROUNDING, null)).get("cash_change_rounding"))) {
+                ((LinkedTreeMap) valueMap.get("cash_change_rounding")).put("update_time", System.currentTimeMillis());
+                ((LinkedTreeMap) valueMap.get("cash_change_rounding")).put("val", cashRoundingCtv.isChecked());
+                SPUtils.put(this, KEY_CASH_ROUNDING, valueMap.get("cash_change_rounding"));
+            }
+            if ((stopCashCtv.isChecked() != (Boolean) ((LinkedTreeMap) SPUtils.get(this, KEY_STOP_CASH, null)).get("disable_cash_mode"))) {
+                ((LinkedTreeMap) valueMap.get("disable_cash_mode")).put("update_time", System.currentTimeMillis());
+                ((LinkedTreeMap) valueMap.get("disable_cash_mode")).put("val", stopCashCtv.isChecked());
+                SPUtils.put(this, KEY_STOP_CASH, valueMap.get("disable_cash_mode"));
+            }
+
+        }*/
+    }
+
+    public void getSettingData() {
         RetrofitFactory.getInstance().API()
                 .getSettingData(AccountManager.getInstance().getAdminToken(), Constants.MAC_TEST)
                 .compose(this.<BaseEntity>setThread())
@@ -251,8 +407,17 @@ public class SystemSettingsActivity extends BaseActivity {
                             roundingWeightList.addAll((Collection<? extends Map<String, String>>) map.get("rounding_weight"));
                             screenUnitList.addAll((Collection<? extends Map<String, String>>) map.get("screen_unit_display"));
                             balanceRoundingList.addAll((Collection<? extends Map<String, String>>) map.get("balance_rounding"));
+                            valueMap = (LinkedTreeMap) ((LinkedTreeMap) settingDataBeanBaseEntity.getData()).get("value");
 
-                            loginTypeTv.setText(loginTypeList.get(0).get("1"));
+                            LinkedHashMap saveMap = (LinkedHashMap) SPUtils.readObject(SystemSettingsActivity.this, KEY_DEFAULT_LOGIN_TYPE);
+                            if (saveMap != null) {
+                                Long loginDate = (Long)  saveMap.get("update_time");
+                                Long valueDate = ((Double) ((LinkedTreeMap) valueMap.get("default_login_type")).get("update_time")).longValue();
+                                if (loginDate.compareTo(valueDate) > 0) {
+                                    loginTypeTv.setText(((LinkedTreeMap) saveMap.get("val")).get("val").toString());
+                                }
+                            }
+//                            loginTypeTv.setText(loginTypeList.get(0).get("1"));
                             printerTv.setText(printerList.get(0).get("1"));
                             balanceRoundingTv.setText(balanceRoundingList.get(0).get("1"));
                             priceingMethodTv.setText(pricingModelList.get(0).get("1"));
@@ -260,7 +425,6 @@ public class SystemSettingsActivity extends BaseActivity {
                             weightUnitTv.setText(screenUnitList.get(0).get("1"));
 
 
-                            LinkedTreeMap valueMap = (LinkedTreeMap) ((LinkedTreeMap) settingDataBeanBaseEntity.getData()).get("value");
                             LinkedTreeMap priceAfterSaving = (LinkedTreeMap) valueMap.get("price_after_saving");
                             notClearPriceCtv.setChecked((Boolean) priceAfterSaving.get("val"));
                             saveWeightCtv.setChecked((Boolean) ((LinkedTreeMap) valueMap.get("confirm_the_preservation")).get("val"));
@@ -274,10 +438,10 @@ public class SystemSettingsActivity extends BaseActivity {
                             cashRoundingCtv.setChecked((Boolean) ((LinkedTreeMap) valueMap.get("cash_change_rounding")).get("val"));
                             stopCashCtv.setChecked((Boolean) ((LinkedTreeMap) valueMap.get("disable_cash_mode")).get("val"));
 
-                            buyerNumberTv.setText(((LinkedTreeMap)valueMap.get("default_buyer_number")).get("val") != null? ((LinkedTreeMap)valueMap.get("default_buyer_number")).get("val").toString() : "");
-                            sellerNumberTv.setText(((LinkedTreeMap)valueMap.get("default_seller_number")).get("val") != null ? ((LinkedTreeMap)valueMap.get("default_seller_number")).get("val").toString():"");
+                            buyerNumberTv.setText(((LinkedTreeMap) valueMap.get("default_buyer_number")).get("val") != null ? ((LinkedTreeMap) valueMap.get("default_buyer_number")).get("val").toString() : "");
+                            sellerNumberTv.setText(((LinkedTreeMap) valueMap.get("default_seller_number")).get("val") != null ? ((LinkedTreeMap) valueMap.get("default_seller_number")).get("val").toString() : "");
 
-                        }else {
+                        } else {
                             showLoading(settingDataBeanBaseEntity.getMsg());
                         }
                     }
@@ -297,3 +461,4 @@ public class SystemSettingsActivity extends BaseActivity {
 
     }
 }
+

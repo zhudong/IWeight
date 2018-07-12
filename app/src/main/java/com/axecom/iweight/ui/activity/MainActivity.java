@@ -666,6 +666,7 @@ public class MainActivity extends BaseActivity {
             e.printStackTrace();
         }
     }
+
     class PrinterServiceConnection implements ServiceConnection {
         @Override
         public void onServiceDisconnected(ComponentName name) {
@@ -678,7 +679,8 @@ public class MainActivity extends BaseActivity {
             mGpService = GpService.Stub.asInterface(service);
             try {
                 if(mGpService != null)
-                mGpService.openPort(0, PortParameters.USB, driver.getDevice().getDeviceName(), 0);
+                    if(driver != null)
+                        mGpService.openPort(0, PortParameters.USB, driver.getDevice().getDeviceName(), 0);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
