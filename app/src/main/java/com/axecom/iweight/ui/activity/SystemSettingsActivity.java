@@ -259,33 +259,51 @@ public class SystemSettingsActivity extends BaseActivity {
     public void saveSettingsToSP() {
         if (valueMap == null)
             return;
-        if (SPUtils.readObject(this, KEY_DEFAULT_LOGIN_TYPE) != null) {
-            if (!TextUtils.equals(loginTypeTv.getText().toString(), ((LinkedTreeMap) SPUtils.readObject(this, KEY_DEFAULT_LOGIN_TYPE)).get("default_login_type").toString())) {
-                LinkedTreeMap v = new LinkedTreeMap();
-                v.put("update_time", System.currentTimeMillis());
-                v.put("val", loginTypeTv.getText().toString());
-                SPUtils.saveObject(this, KEY_DEFAULT_LOGIN_TYPE, (LinkedTreeMap) valueMap.put("default_login_type", v));
-            }
-        } else {
-            ((LinkedTreeMap) valueMap.get("default_login_type")).put("update_time", System.currentTimeMillis());
-            ((LinkedTreeMap) valueMap.get("default_login_type")).put("val", loginTypeTv.getText().toString());
-            LinkedTreeMap v = new LinkedTreeMap();
-            v.put("update_time", System.currentTimeMillis());
-            v.put("val", loginTypeTv.getText().toString());
-            SPUtils.saveObject(this, KEY_DEFAULT_LOGIN_TYPE, (LinkedTreeMap) valueMap.put("default_login_type", v));
-        }
 
-        if (SPUtils.readObject(this, KEY_PRINTER) != null) {
-            if (!TextUtils.equals(printerTv.getText().toString(), ((LinkedTreeMap) SPUtils.readObject(this, KEY_PRINTER)).get("printer_configuration").toString())) {
-                ((LinkedTreeMap) valueMap.get("printer_configuration")).put("update_time", System.currentTimeMillis());
-                ((LinkedTreeMap) valueMap.get("printer_configuration")).put("val", printerTv.getText().toString());
-                SPUtils.saveObject(this, KEY_PRINTER, valueMap.get("printer_configuration"));
-            }
-        } else {
-            ((LinkedTreeMap) valueMap.get("printer_configuration")).put("update_time", System.currentTimeMillis());
-            ((LinkedTreeMap) valueMap.get("printer_configuration")).put("val", printerTv.getText().toString());
-            SPUtils.saveObject(this, KEY_PRINTER, valueMap.get("printer_configuration"));
-        }
+        LinkedHashMap v = new LinkedHashMap();
+        v.put("update_time", System.currentTimeMillis());
+        v.put("val", loginTypeTv.getText().toString());
+        valueMap.put("default_login_type", v);
+        SPUtils.saveObject(this, KEY_DEFAULT_LOGIN_TYPE, valueMap.get("default_login_type"));
+
+
+        LinkedHashMap printerMap = new LinkedHashMap();
+        printerMap.put("update_time", System.currentTimeMillis());
+        printerMap.put("val", printerTv.getText().toString());
+        valueMap.put("printer_configuration", printerMap);
+        SPUtils.saveObject(this, KEY_PRINTER, valueMap.get("printer_configuration"));
+
+        LinkedHashMap buyerNumberMap = new LinkedHashMap();
+        buyerNumberMap.put("update_time", System.currentTimeMillis());
+        buyerNumberMap.put("val", printerTv.getText().toString());
+        valueMap.put("default_buyer_number", buyerNumberMap);
+        SPUtils.saveObject(this, KEY_BUYER_NUMBER, valueMap.get("default_buyer_number"));
+
+        LinkedHashMap balanceRoundingMap = new LinkedHashMap();
+        balanceRoundingMap.put("update_time", System.currentTimeMillis());
+        balanceRoundingMap.put("val", printerTv.getText().toString());
+        valueMap.put("balance_rounding", balanceRoundingMap);
+        SPUtils.saveObject(this, KEY_BUYER_NUMBER, valueMap.get("balance_rounding"));
+
+        LinkedHashMap priceingMethodMap = new LinkedHashMap();
+        priceingMethodMap.put("update_time", System.currentTimeMillis());
+        priceingMethodMap.put("val", printerTv.getText().toString());
+        valueMap.put("default_pricing_model", priceingMethodMap);
+        SPUtils.saveObject(this, KEY_PRICEING_METHOD, valueMap.get("default_pricing_model"));
+
+
+        LinkedHashMap weightRoundingMap = new LinkedHashMap();
+        weightRoundingMap.put("update_time", System.currentTimeMillis());
+        weightRoundingMap.put("val", printerTv.getText().toString());
+        valueMap.put("rounding_weight", weightRoundingMap);
+        SPUtils.saveObject(this, KEY_WEIGHT_ROUNDING, valueMap.get("rounding_weight"));
+
+        LinkedHashMap sellerNumberMap = new LinkedHashMap();
+        sellerNumberMap.put("update_time", System.currentTimeMillis());
+        sellerNumberMap.put("val", printerTv.getText().toString());
+        valueMap.put("default_seller_number", sellerNumberMap);
+        SPUtils.saveObject(this, KEY_SELLER_NUMBER, valueMap.get("default_seller_number"));
+
 
        /* if (!TextUtils.equals(buyerNumberTv.getText().toString(), ((LinkedTreeMap) SPUtils.get(this, KEY_BUYER_NUMBER, null)).get("default_buyer_number").toString())) {
             ((LinkedTreeMap) valueMap.get("default_buyer_number")).put("update_time", System.currentTimeMillis());
@@ -296,7 +314,7 @@ public class SystemSettingsActivity extends BaseActivity {
         if (!TextUtils.equals(balanceRoundingTv.getText().toString(), ((LinkedTreeMap) SPUtils.get(this, KEY_BALANCE_ROUNDING, null)).get("balance_rounding").toString())) {
             ((LinkedTreeMap) valueMap.get("balance_rounding")).put("update_time", System.currentTimeMillis());
             ((LinkedTreeMap) valueMap.get("balance_rounding")).put("val", balanceRoundingTv.getText().toString());
-            SPUtils.put(this, KEY_BALANCE_ROUNDING, valueMap.get("balance_rounding"));
+            SPUtils.put(this, KEY_BUYER_NUMBER, valueMap.get("balance_rounding"));
 
         }
         if (!TextUtils.equals(priceingMethodTv.getText().toString(), ((LinkedTreeMap) SPUtils.get(this, KEY_PRICEING_METHOD, null)).get("default_pricing_model").toString())) {
@@ -411,10 +429,10 @@ public class SystemSettingsActivity extends BaseActivity {
 
                             LinkedHashMap saveMap = (LinkedHashMap) SPUtils.readObject(SystemSettingsActivity.this, KEY_DEFAULT_LOGIN_TYPE);
                             if (saveMap != null) {
-                                Long loginDate = (Long)  saveMap.get("update_time");
+                                Long loginDate = (Long) saveMap.get("update_time");
                                 Long valueDate = ((Double) ((LinkedTreeMap) valueMap.get("default_login_type")).get("update_time")).longValue();
                                 if (loginDate.compareTo(valueDate) > 0) {
-                                    loginTypeTv.setText(((LinkedTreeMap) saveMap.get("val")).get("val").toString());
+                                    loginTypeTv.setText((saveMap.get("val")).toString());
                                 }
                             }
 //                            loginTypeTv.setText(loginTypeList.get(0).get("1"));
