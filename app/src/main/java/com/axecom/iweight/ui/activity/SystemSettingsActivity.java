@@ -275,34 +275,46 @@ public class SystemSettingsActivity extends BaseActivity {
 
         LinkedHashMap buyerNumberMap = new LinkedHashMap();
         buyerNumberMap.put("update_time", System.currentTimeMillis());
-        buyerNumberMap.put("val", printerTv.getText().toString());
+        buyerNumberMap.put("val", buyerNumberTv.getText().toString());
         valueMap.put("default_buyer_number", buyerNumberMap);
         SPUtils.saveObject(this, KEY_BUYER_NUMBER, valueMap.get("default_buyer_number"));
 
         LinkedHashMap balanceRoundingMap = new LinkedHashMap();
         balanceRoundingMap.put("update_time", System.currentTimeMillis());
-        balanceRoundingMap.put("val", printerTv.getText().toString());
+        balanceRoundingMap.put("val", balanceRoundingTv.getText().toString());
         valueMap.put("balance_rounding", balanceRoundingMap);
-        SPUtils.saveObject(this, KEY_BUYER_NUMBER, valueMap.get("balance_rounding"));
+        SPUtils.saveObject(this, KEY_BALANCE_ROUNDING, valueMap.get("balance_rounding"));
 
         LinkedHashMap priceingMethodMap = new LinkedHashMap();
         priceingMethodMap.put("update_time", System.currentTimeMillis());
-        priceingMethodMap.put("val", printerTv.getText().toString());
+        priceingMethodMap.put("val", priceingMethodTv.getText().toString());
         valueMap.put("default_pricing_model", priceingMethodMap);
         SPUtils.saveObject(this, KEY_PRICEING_METHOD, valueMap.get("default_pricing_model"));
 
 
         LinkedHashMap weightRoundingMap = new LinkedHashMap();
         weightRoundingMap.put("update_time", System.currentTimeMillis());
-        weightRoundingMap.put("val", printerTv.getText().toString());
+        weightRoundingMap.put("val", weightRoundingTv.getText().toString());
         valueMap.put("rounding_weight", weightRoundingMap);
         SPUtils.saveObject(this, KEY_WEIGHT_ROUNDING, valueMap.get("rounding_weight"));
 
         LinkedHashMap sellerNumberMap = new LinkedHashMap();
         sellerNumberMap.put("update_time", System.currentTimeMillis());
-        sellerNumberMap.put("val", printerTv.getText().toString());
+        sellerNumberMap.put("val", sellerNumberTv.getText().toString());
         valueMap.put("default_seller_number", sellerNumberMap);
         SPUtils.saveObject(this, KEY_SELLER_NUMBER, valueMap.get("default_seller_number"));
+
+        LinkedHashMap weightUnitMap = new LinkedHashMap();
+        weightUnitMap.put("update_time", System.currentTimeMillis());
+        weightUnitMap.put("val", weightUnitTv.getText().toString());
+        valueMap.put("screen_unit_display", weightUnitMap);
+        SPUtils.saveObject(this, KEY_WEIGHT_UNIT, valueMap.get("screen_unit_display"));
+
+        LinkedHashMap notClearPriceMap = new LinkedHashMap();
+        notClearPriceMap.put("update_time", System.currentTimeMillis());
+        notClearPriceMap.put("val", notClearPriceCtv.isChecked());
+        valueMap.put("price_after_saving", notClearPriceMap);
+        SPUtils.saveObject(this, KEY_NOT_CLEAR, valueMap.get("price_after_saving"));
 
 
        /* if (!TextUtils.equals(buyerNumberTv.getText().toString(), ((LinkedTreeMap) SPUtils.get(this, KEY_BUYER_NUMBER, null)).get("default_buyer_number").toString())) {
@@ -435,12 +447,71 @@ public class SystemSettingsActivity extends BaseActivity {
                                     loginTypeTv.setText((saveMap.get("val")).toString());
                                 }
                             }
+                            LinkedHashMap printerMap = (LinkedHashMap) SPUtils.readObject(SystemSettingsActivity.this, KEY_PRINTER);
+                            if (printerMap != null) {
+                                Long loginDate = (Long) printerMap.get("update_time");
+                                Long valueDate = ((Double) ((LinkedTreeMap) valueMap.get("printer_configuration")).get("update_time")).longValue();
+                                if (loginDate.compareTo(valueDate) > 0) {
+                                    printerTv.setText((printerMap.get("val")).toString());
+                                }
+                            }
+                            LinkedHashMap buyerNumberMap = (LinkedHashMap) SPUtils.readObject(SystemSettingsActivity.this, KEY_BUYER_NUMBER);
+                            if (buyerNumberMap != null) {
+                                Long loginDate = (Long) buyerNumberMap.get("update_time");
+                                Long valueDate = ((Double) ((LinkedTreeMap) valueMap.get("default_buyer_number")).get("update_time")).longValue();
+                                if (loginDate.compareTo(valueDate) > 0) {
+                                    buyerNumberTv.setText((buyerNumberMap.get("val")).toString());
+                                }
+                            }
+                            LinkedHashMap balanceRoundingMap = (LinkedHashMap) SPUtils.readObject(SystemSettingsActivity.this, KEY_BALANCE_ROUNDING);
+                            if (balanceRoundingMap != null) {
+                                Long loginDate = (Long) saveMap.get("update_time");
+                                Long valueDate = ((Double) ((LinkedTreeMap) valueMap.get("balance_rounding")).get("update_time")).longValue();
+                                if (loginDate.compareTo(valueDate) > 0) {
+                                    balanceRoundingTv.setText((balanceRoundingMap.get("val")).toString());
+                                }
+                            }
+                            LinkedHashMap priceingMethodMap = (LinkedHashMap) SPUtils.readObject(SystemSettingsActivity.this, KEY_PRICEING_METHOD);
+                            if (priceingMethodMap != null) {
+                                Long loginDate = (Long) priceingMethodMap.get("update_time");
+                                Long valueDate = ((Double) ((LinkedTreeMap) valueMap.get("default_pricing_model")).get("update_time")).longValue();
+                                if (loginDate.compareTo(valueDate) > 0) {
+                                    priceingMethodTv.setText((priceingMethodMap.get("val")).toString());
+                                }
+                            }
+                            LinkedHashMap weightRoundingMap = (LinkedHashMap) SPUtils.readObject(SystemSettingsActivity.this, KEY_WEIGHT_ROUNDING);
+                            if (weightRoundingMap != null) {
+                                Long loginDate = (Long) weightRoundingMap.get("update_time");
+                                Long valueDate = ((Double) ((LinkedTreeMap) valueMap.get("rounding_weight")).get("update_time")).longValue();
+                                if (loginDate.compareTo(valueDate) > 0) {
+                                    weightRoundingTv.setText((weightRoundingMap.get("val")).toString());
+                                }
+                            }
+                            LinkedHashMap sellerNumberMap = (LinkedHashMap) SPUtils.readObject(SystemSettingsActivity.this, KEY_SELLER_NUMBER);
+                            if (sellerNumberMap != null) {
+                                Long loginDate = (Long) sellerNumberMap.get("update_time");
+                                Long valueDate = ((Double) ((LinkedTreeMap) valueMap.get("default_seller_number")).get("update_time")).longValue();
+                                if (loginDate.compareTo(valueDate) > 0) {
+                                    sellerNumberTv.setText((sellerNumberMap.get("val")).toString());
+                                }
+                            }
+                            LinkedHashMap weightUnitMap = (LinkedHashMap) SPUtils.readObject(SystemSettingsActivity.this, KEY_WEIGHT_UNIT);
+                            if (weightUnitMap != null) {
+                                Long loginDate = (Long) weightUnitMap.get("update_time");
+                                Long valueDate = ((Double) ((LinkedTreeMap) valueMap.get("screen_unit_display")).get("update_time")).longValue();
+                                if (loginDate.compareTo(valueDate) > 0) {
+                                    weightUnitTv.setText((weightUnitMap.get("val")).toString());
+                                }
+                            }
+
+
+
 //                            loginTypeTv.setText(loginTypeList.get(0).get("1"));
-                            printerTv.setText(printerList.get(0).get("1"));
-                            balanceRoundingTv.setText(balanceRoundingList.get(0).get("1"));
-                            priceingMethodTv.setText(pricingModelList.get(0).get("1"));
-                            weightRoundingTv.setText(roundingWeightList.get(0).get("1"));
-                            weightUnitTv.setText(screenUnitList.get(0).get("1"));
+//                            printerTv.setText(printerList.get(0).get("1"));
+//                            balanceRoundingTv.setText(balanceRoundingList.get(0).get("1"));
+//                            priceingMethodTv.setText(pricingModelList.get(0).get("1"));
+//                            weightRoundingTv.setText(roundingWeightList.get(0).get("1"));
+//                            weightUnitTv.setText(screenUnitList.get(0).get("1"));
 
 
                             LinkedTreeMap priceAfterSaving = (LinkedTreeMap) valueMap.get("price_after_saving");
@@ -456,8 +527,8 @@ public class SystemSettingsActivity extends BaseActivity {
                             cashRoundingCtv.setChecked((Boolean) ((LinkedTreeMap) valueMap.get("cash_change_rounding")).get("val"));
                             stopCashCtv.setChecked((Boolean) ((LinkedTreeMap) valueMap.get("disable_cash_mode")).get("val"));
 
-                            buyerNumberTv.setText(((LinkedTreeMap) valueMap.get("default_buyer_number")).get("val") != null ? ((LinkedTreeMap) valueMap.get("default_buyer_number")).get("val").toString() : "");
-                            sellerNumberTv.setText(((LinkedTreeMap) valueMap.get("default_seller_number")).get("val") != null ? ((LinkedTreeMap) valueMap.get("default_seller_number")).get("val").toString() : "");
+//                            buyerNumberTv.setText(((LinkedTreeMap) valueMap.get("default_buyer_number")).get("val") != null ? ((LinkedTreeMap) valueMap.get("default_buyer_number")).get("val").toString() : "");
+//                            sellerNumberTv.setText(((LinkedTreeMap) valueMap.get("default_seller_number")).get("val") != null ? ((LinkedTreeMap) valueMap.get("default_seller_number")).get("val").toString() : "");
 
                         } else {
                             showLoading(settingDataBeanBaseEntity.getMsg());
