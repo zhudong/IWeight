@@ -503,8 +503,14 @@ public class SystemSettingsActivity extends BaseActivity {
                                     weightUnitTv.setText((weightUnitMap.get("val")).toString());
                                 }
                             }
-
-
+                            LinkedHashMap notClearPriceMap = (LinkedHashMap) SPUtils.readObject(SystemSettingsActivity.this, KEY_NOT_CLEAR);
+                            if (notClearPriceMap != null) {
+                                Long loginDate = (Long) notClearPriceMap.get("update_time");
+                                Long valueDate = ((Double) ((LinkedTreeMap) valueMap.get("price_after_saving")).get("update_time")).longValue();
+                                if (loginDate.compareTo(valueDate) > 0) {
+                                    notClearPriceCtv.setChecked((Boolean) notClearPriceMap.get("val"));
+                                }
+                            }
 
 //                            loginTypeTv.setText(loginTypeList.get(0).get("1"));
 //                            printerTv.setText(printerList.get(0).get("1"));
