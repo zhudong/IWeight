@@ -11,6 +11,7 @@ public class BusEvent {
     public static final int GO_HOME_PAGE = 42;
     public static final int USB_NEW_DATA = 1;
     public static final int PRINTER_LABEL = 2;
+    public static final int NET_WORK_AVAILABLE = 3;
 
 
     //图片下载完成

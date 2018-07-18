@@ -34,6 +34,7 @@ import com.axecom.iweight.manager.UpdateManager;
 import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.ui.view.SoftKeyborad;
 import com.axecom.iweight.utils.LogUtils;
+import com.axecom.iweight.utils.NetworkUtil;
 import com.axecom.iweight.utils.SerialPortUtils;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
@@ -92,8 +93,10 @@ public class HomeActivity extends BaseActivity {
 
     @Override
     public void initView() {
+        if(NetworkUtil.isConnected(this)){
+            getScalesIdByMac(MacManager.getInstace(this).getMac());
+        }
 //        getScalesIdByMac(MacManager.getInstace(HomeActivity.this).getMac());
-        getScalesIdByMac(MacManager.getInstace(this).getMac());
 //        commHandle = Function.API_OpenComm("dev/tty".getBytes(), 115200);
 //        if (commHandle == 0) {
 //            Toast.makeText(this, "can't open serial", Toast.LENGTH_SHORT).show();
@@ -115,6 +118,17 @@ public class HomeActivity extends BaseActivity {
         super.onPause();
         threadStatus = true;
         unregisterReceiver(usbReceiver);
+    }
+
+    @Override
+    public void onEventMainThread(BusEvent event) {
+        super.onEventMainThread(event);
+        if(event.getType() == BusEvent.NET_WORK_AVAILABLE){
+            boolean available = event.getBooleanParam();
+            if(available){
+                getScalesIdByMac(MacManager.getInstace(this).getMac());
+            }
+        }
     }
 
     public void usbOpen() {
@@ -331,14 +345,14 @@ public class HomeActivity extends BaseActivity {
                                     AccountManager.getInstance().saveScalesId(weightId + "");
                                 }
                             });
+                        }else {
+                            showLoading(baseEntity.getMsg());
                         }
                     }
 
 
                     @Override
                     public void onError(@NonNull Throwable e) {
-                        closeLoading();
-
                     }
 
                     @Override
