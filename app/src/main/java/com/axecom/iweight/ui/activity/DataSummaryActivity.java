@@ -18,6 +18,7 @@ import com.axecom.iweight.bean.OrderListResultBean;
 import com.axecom.iweight.bean.ReportResultBean;
 import com.axecom.iweight.conf.Constants;
 import com.axecom.iweight.manager.AccountManager;
+import com.axecom.iweight.manager.MacManager;
 import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.utils.LogUtils;
 
@@ -118,7 +119,7 @@ public class DataSummaryActivity extends BaseActivity {
 
     public void getReportsList(final String dateVal, String typeVal, String page, final String pNum) {
         RetrofitFactory.getInstance().API()
-                .getReportsList(AccountManager.getInstance().getAdminToken(), Constants.MAC_TEST, dateVal, typeVal, page, pNum)
+                .getReportsList(AccountManager.getInstance().getAdminToken(), MacManager.getInstace(this).getMac(), dateVal, typeVal, page, pNum)
                 .compose(this.<BaseEntity<ReportResultBean>>setThread())
                 .subscribe(new Observer<BaseEntity<ReportResultBean>>() {
                     @Override
@@ -159,7 +160,7 @@ public class DataSummaryActivity extends BaseActivity {
 
     public void getOrderList(String dateVal, String page, String pageNum) {
         RetrofitFactory.getInstance().API()
-                .getOrderList(AccountManager.getInstance().getAdminToken(), Constants.MAC_TEST, dateVal, page, pageNum)
+                .getOrderList(AccountManager.getInstance().getAdminToken(), MacManager.getInstace(this).getMac(), dateVal, page, pageNum)
                 .compose(this.<BaseEntity<OrderListResultBean>>setThread())
                 .subscribe(new Observer<BaseEntity<OrderListResultBean>>() {
                     @Override

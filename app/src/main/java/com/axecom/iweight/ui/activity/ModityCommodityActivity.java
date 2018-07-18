@@ -56,8 +56,8 @@ public class ModityCommodityActivity extends BaseActivity {
         bean = (CommodityBean) intent.getExtras().getSerializable("commodityBean");
         position = intent.getIntExtra("position", -1);
         nameTv.setText(bean.getHotKeyGoods().name);
-        idTv.setText(bean.getHotKeyGoods().id);
-        priceEt.setText(bean.getHotKeyGoods().price);
+        idTv.setText(bean.getHotKeyGoods().id + "");
+        priceEt.setText(bean.getHotKeyGoods().price + "");
         traceableEt.setText(bean.getHotKeyGoods().traceable_code);
         isDefaultCtv.setChecked(bean.getHotKeyGoods().is_default == 0 ? false : true);
         softKey.setOnItemClickListener(new AdapterView.OnItemClickListener() {

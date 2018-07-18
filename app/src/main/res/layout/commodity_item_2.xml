@@ -16,6 +16,7 @@
         <ImageView
             android:id="@+id/commodity_item_2_selected_iv"
             android:layout_width="20dp"
+            android:visibility="gone"
             android:layout_height="20dp"
             android:src="@drawable/u137" />
 

@@ -20,12 +20,14 @@ import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
 import com.axecom.iweight.bean.WifiBean;
 import com.axecom.iweight.ui.view.WifiPwdDialog;
+import com.axecom.iweight.utils.SPUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class WifiSettingsActivity extends BaseActivity {
 
+    public static final String KEY_SSID_WIFI_SAVED = "key_ssid_wifi_saved";
     private View rootView;
     private GridView wifiGridView;
     private WifiManager wifiManager;
@@ -90,6 +92,9 @@ public class WifiSettingsActivity extends BaseActivity {
                     //发现指定WiFi，并且这个WiFi以前连接成功过
                     mWifiConfiguration[0] = tempConfig;
                     boolean b = wifiManager.enableNetwork(mWifiConfiguration[0].networkId, true);
+                    if(b){
+                        SPUtils.putString(WifiSettingsActivity.this, KEY_SSID_WIFI_SAVED, mWifiList.get(position).SSID);
+                    }
                     updateListView(b, position, mWifiList.get(position).SSID);
                 }
             }

@@ -26,6 +26,7 @@ import com.axecom.iweight.bean.DetailItem;
 import com.axecom.iweight.manager.ClientManager;
 import com.axecom.iweight.ui.adapter.DeviceListAdapter;
 import com.axecom.iweight.ui.uiutils.BleUtil;
+import com.axecom.iweight.utils.SPUtils;
 import com.inuker.bluetooth.library.connect.listener.BluetoothStateListener;
 import com.inuker.bluetooth.library.connect.options.BleConnectOptions;
 import com.inuker.bluetooth.library.connect.response.BleConnectResponse;
@@ -52,6 +53,8 @@ import static com.inuker.bluetooth.library.Constants.REQUEST_SUCCESS;
 
 public class BTHelperDialog extends Dialog {
     private static final String TAG = "BTHelperDialog";
+
+    public static final String KEY_BT_ADDRESS = "key_bt_address";
     public static BtHelperClient btHelperClient;
 
     public BTHelperDialog(@NonNull Context context, int themeResId) {
@@ -63,13 +66,13 @@ public class BTHelperDialog extends Dialog {
     }
 
     public interface OnBtnClickListener {
-        void onConfirmed(BtHelperClient.STATUS mCurrStatus);
+        void onConfirmed(BtHelperClient.STATUS mCurrStatus, String deviceAddress);
 
         void onCanceled(String result);
     }
 
     public static class Builder implements View.OnClickListener {
-        private  final String[] DATA_DIGITAL = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "删除", "0", "."};
+        private final String[] DATA_DIGITAL = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "删除", "0", "."};
 
         private View contentView;
         private BTHelperDialog bluetoothDialog;
@@ -84,6 +87,7 @@ public class BTHelperDialog extends Dialog {
         private Context context;
         private ProgressBar mPbar;
         private BleGattProfile mProfile;
+
         public Builder(final Context context) {
             this.context = context;
             bluetoothDialog = new BTHelperDialog(context, R.style.dialog);
@@ -93,7 +97,7 @@ public class BTHelperDialog extends Dialog {
             mListView = view.findViewById(R.id.bluetooth_listview);
             mPbar = view.findViewById(R.id.bluetooth_pbar);
             scanBtn = view.findViewById(R.id.bluetooth_scan_btn);
-            confirmBtn = view.findViewById(R.id.bluetooth_confirm_btn);
+            confirmBtn = view.findViewById(R.id.bluetooth_cancel_btn);
 
             mDevices = new ArrayList<BluetoothDevice>();
             mAdapter = new BluetoothAdapter(context, mDevices);
@@ -101,7 +105,7 @@ public class BTHelperDialog extends Dialog {
             mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    btHelperConnect((BluetoothDevice) parent.getAdapter().getItem(position));
+                    btHelperConnect(((BluetoothDevice) parent.getAdapter().getItem(position)).getAddress());
                 }
             });
 
@@ -125,19 +129,19 @@ public class BTHelperDialog extends Dialog {
 
         @Override
         public void onClick(View v) {
-            switch (v.getId()){
+            switch (v.getId()) {
                 case R.id.bluetooth_scan_btn:
                     searchDevice();
                     break;
-                case R.id.bluetooth_confirm_btn:
+                case R.id.bluetooth_cancel_btn:
 //                    onBtnClickListener.onConfirmed("close");
-
+                    bluetoothDialog.dismiss();
                     break;
             }
         }
 
 
-        public void searchDevice(){
+        public void searchDevice() {
             btHelperClient.searchDevices(new OnSearchDeviceListener() {
                 @Override
                 public void onStartDiscovery() {
@@ -176,7 +180,25 @@ public class BTHelperDialog extends Dialog {
             });
         }
 
-        public void btHelperConnect(BluetoothDevice device){
+
+        public void btHelperConnect(final String deviceAddress) {
+            btHelperClient.connectDevice(deviceAddress, new IErrorListener() {
+                @Override
+                public void onError(Exception e) {
+
+                }
+
+                @Override
+                public void onConnected(BtHelperClient.STATUS mCurrStatus) {
+                    bluetoothDialog.dismiss();
+                    if (onBtnClickListener != null)
+                        onBtnClickListener.onConfirmed(mCurrStatus, deviceAddress);
+                }
+
+            });
+        }
+
+        public void btHelperConnect(final BluetoothDevice device) {
             btHelperClient.connectDevice(device.getAddress(), new IErrorListener() {
                 @Override
                 public void onError(Exception e) {
@@ -186,8 +208,7 @@ public class BTHelperDialog extends Dialog {
                 @Override
                 public void onConnected(BtHelperClient.STATUS mCurrStatus) {
                     bluetoothDialog.dismiss();
-                    onBtnClickListener.onConfirmed(mCurrStatus);
-
+//                    onBtnClickListener.onConfirmed(mCurrStatus);
                 }
 
             });
@@ -224,7 +245,7 @@ public class BTHelperDialog extends Dialog {
             });
         }
 
-        public void sendMsg(BluetoothDevice device){
+        public void sendMsg(BluetoothDevice device) {
             List<DetailItem> items = new ArrayList<DetailItem>();
             List<BleGattService> services = mProfile.getServices();
 
@@ -263,11 +284,12 @@ public class BTHelperDialog extends Dialog {
 //        btHelperClient.close();
     }
 
-    static class BluetoothAdapter extends BaseAdapter{
+    static class BluetoothAdapter extends BaseAdapter {
 
         private Context context;
         private List<BluetoothDevice> list;
-        public BluetoothAdapter(Context context, List<BluetoothDevice> list){
+
+        public BluetoothAdapter(Context context, List<BluetoothDevice> list) {
             this.context = context;
             this.list = list;
         }
@@ -289,29 +311,29 @@ public class BTHelperDialog extends Dialog {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder ;
-            if(convertView == null){
+            ViewHolder holder;
+            if (convertView == null) {
                 convertView = LayoutInflater.from(context).inflate(R.layout.bluetooth_item, null);
                 holder = new ViewHolder();
                 holder.nameTv = convertView.findViewById(R.id.bluetooth_item_name);
                 holder.addressTv = convertView.findViewById(R.id.bluetooth_item_address);
                 convertView.setTag(holder);
-            }else {
+            } else {
                 holder = (ViewHolder) convertView.getTag();
             }
 
             BluetoothDevice device = list.get(position);
-            if(TextUtils.isEmpty(device.getName())){
+            if (TextUtils.isEmpty(device.getName())) {
                 holder.nameTv.setText("unknow");
 
-            }else {
+            } else {
                 holder.nameTv.setText(device.getName());
             }
             holder.addressTv.setText(device.getAddress());
             return convertView;
         }
 
-        class ViewHolder{
+        class ViewHolder {
             TextView nameTv;
             TextView addressTv;
         }

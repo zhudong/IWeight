@@ -3,6 +3,7 @@ package com.axecom.iweight.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.usb.UsbManager;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,16 +18,19 @@ import com.axecom.iweight.bean.ChooseBean;
 import com.axecom.iweight.bean.LocalSettingsBean;
 import com.axecom.iweight.conf.Constants;
 import com.axecom.iweight.manager.AccountManager;
+import com.axecom.iweight.manager.MacManager;
 import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.ui.view.ChooseDialog;
 import com.axecom.iweight.ui.view.ChooseDialog2;
 import com.axecom.iweight.ui.view.SoftKeyborad;
 import com.axecom.iweight.utils.LogUtils;
 import com.axecom.iweight.utils.SPUtils;
+import com.google.gson.internal.LinkedTreeMap;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import io.reactivex.Observer;
@@ -34,7 +38,12 @@ import io.reactivex.disposables.Disposable;
 
 public class LocalSettingsActivity extends BaseActivity {
 
-    public static final String KEY_PRINTER_COUNT  = "printerCountTv";
+    public static final String KEY_PRINTER_PORT = "printer_port";
+    public static final String KEY_PRINTER_COUNT = "printer_count";
+    public static final String KEY_CLEAR_DATA = "clear_data";
+    public static final String KEY_READ_CARD_PORT = "read_card_port";
+    public static final String KEY_DATA_DAYS = "data_days";
+    public static final String KEY_SCREEN_SLEEP = "screen_sleep";
 
     private View rootView;
 
@@ -52,6 +61,9 @@ public class LocalSettingsActivity extends BaseActivity {
     private List<UsbSerialDriver> availableDrivers;
     private UsbManager manager;
     private ArrayList<ChooseBean> deviceList;
+
+    private LocalSettingsBean.Value valueMap;
+
 
     @Override
     public View setInitView() {
@@ -120,7 +132,7 @@ public class LocalSettingsActivity extends BaseActivity {
 //        }
     }
 
-    public void getUsbDevices(){
+    public void getUsbDevices() {
         manager = (UsbManager) getSystemService(Context.USB_SERVICE);
         availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager);
         if (availableDrivers.isEmpty()) {
@@ -137,7 +149,7 @@ public class LocalSettingsActivity extends BaseActivity {
 
     public void getScalesSettingData() {
         RetrofitFactory.getInstance().API()
-                .getScalesSettingData(AccountManager.getInstance().getAdminToken(), Constants.MAC_TEST)
+                .getScalesSettingData(AccountManager.getInstance().getAdminToken(), MacManager.getInstace(this).getMac())
                 .compose(this.<BaseEntity<LocalSettingsBean>>setThread())
                 .subscribe(new Observer<BaseEntity<LocalSettingsBean>>() {
                     @Override
@@ -149,61 +161,100 @@ public class LocalSettingsActivity extends BaseActivity {
                     public void onNext(BaseEntity<LocalSettingsBean> localSettingsBeanBaseEntity) {
                         if (localSettingsBeanBaseEntity.isSuccess()) {
                             Long saveDate = (Long) SPUtils.get(LocalSettingsActivity.this, "currentDate", null);
-                            if(saveDate !=  null){
-                                if (saveDate.compareTo(Long.parseLong(localSettingsBeanBaseEntity.getData().value.card_reader_type.update_time)) > 0){
+                            if (saveDate != null) {
+                                if (saveDate.compareTo(Long.parseLong(localSettingsBeanBaseEntity.getData().value.card_reader_type.update_time)) > 0) {
                                     LogUtils.d("111111111111111111111");
                                 }
                             }
+                            valueMap = localSettingsBeanBaseEntity.getData().value;
+
                             cardReaderTypeList.addAll(localSettingsBeanBaseEntity.getData().card_reader_type_list);
                             weightPorts.addAll(localSettingsBeanBaseEntity.getData().weight_port);
                             printerPorts.addAll(localSettingsBeanBaseEntity.getData().printer_port);
                             externalLedPorts.addAll(localSettingsBeanBaseEntity.getData().external_led_port);
                             cardReaderPorts.addAll(localSettingsBeanBaseEntity.getData().card_reader_port);
 
-                            weightPortChooseTv.setText(((LocalSettingsBean.WeightPort)localSettingsBeanBaseEntity.getData().weight_port.get(0)).val);
-                            String printerProt = SPUtils.getString(LocalSettingsActivity.this, printerPortChooseTv.getId() + "", "");
-                            String readCardPort = SPUtils.getString(LocalSettingsActivity.this, readCardPortChooseTv.getId() + "", "");
-                            String printerCount = SPUtils.getString(LocalSettingsActivity.this, KEY_PRINTER_COUNT, "");
-                            String dataDays = SPUtils.getString(LocalSettingsActivity.this, dataDaysTv.getId() + "", "");
-                            String transactionData = SPUtils.getString(LocalSettingsActivity.this, transactionDataTv.getId() + "", "");
-                            if(!TextUtils.isEmpty(printerProt)){
-                                printerPortChooseTv.setText(printerProt);
-                            }else {
-                                printerPortChooseTv.setText(((LocalSettingsBean.PrinterPort)localSettingsBeanBaseEntity.getData().printer_port.get(0)).val);
+                            LocalSettingsBean.Value.PrinterPort printerPort = (LocalSettingsBean.Value.PrinterPort) SPUtils.readObject(LocalSettingsActivity.this, KEY_PRINTER_PORT);
+                            if (printerPort != null) {
+                                Long loginDate = Long.parseLong(printerPort.update_time);
+                                Long valueDate = Long.parseLong(valueMap.printer_port.update_time);
+                                if (loginDate.compareTo(valueDate) > 0) {
+                                    printerPortChooseTv.setText(printerPort.val);
+                                } else {
+                                    printerPortChooseTv.setText(valueMap.printer_port.val);
+                                }
+                            } else {
+                                printerPortChooseTv.setText(valueMap.printer_port.val);
                             }
-                            if(!TextUtils.isEmpty(readCardPort)){
-                                readCardPortChooseTv.setText(readCardPort);
-                            }else {
-                                readCardPortChooseTv.setText(((LocalSettingsBean.CardReaderPort)localSettingsBeanBaseEntity.getData().card_reader_port.get(0)).val);
+                            LocalSettingsBean.Value.NumberOfPrintsConfiguration printCount = (LocalSettingsBean.Value.NumberOfPrintsConfiguration) SPUtils.readObject(LocalSettingsActivity.this, KEY_PRINTER_COUNT);
+                            if (printCount != null) {
+                                Long loginDate = Long.parseLong(printCount.update_time);
+                                Long valueDate = Long.parseLong(valueMap.number_of_prints_configuration.update_time);
+                                if (loginDate.compareTo(valueDate) > 0) {
+                                    printerCountTv.setText(printCount.val);
+                                } else {
+                                    printerCountTv.setText(valueMap.number_of_prints_configuration.val);
+                                }
+                            } else {
+                                printerCountTv.setText(valueMap.number_of_prints_configuration.val);
+                            }
+                            LocalSettingsBean.Value.ClearTransactionData clearData = (LocalSettingsBean.Value.ClearTransactionData) SPUtils.readObject(LocalSettingsActivity.this, KEY_CLEAR_DATA);
+                            if (clearData != null) {
+                                Long loginDate = Long.parseLong(clearData.update_time);
+                                Long valueDate = Long.parseLong(valueMap.clear_transaction_data.update_time);
+                                if (loginDate.compareTo(valueDate) > 0) {
+                                    transactionDataTv.setText(clearData.val);
+                                } else {
+                                    transactionDataTv.setText(valueMap.clear_transaction_data.val);
+                                }
+                            } else {
+                                transactionDataTv.setText(valueMap.clear_transaction_data.val);
+                            }
+                            LocalSettingsBean.Value.CardReaderPort readerPort = (LocalSettingsBean.Value.CardReaderPort) SPUtils.readObject(LocalSettingsActivity.this, KEY_READ_CARD_PORT);
+                            if (readerPort != null) {
+                                Long loginDate = Long.parseLong(readerPort.update_time);
+                                Long valueDate = Long.parseLong(valueMap.card_reader_port.update_time);
+                                if (loginDate.compareTo(valueDate) > 0) {
+                                    readCardPortChooseTv.setText(readerPort.val);
+                                } else {
+                                    readCardPortChooseTv.setText(valueMap.card_reader_port.val);
+                                }
+                            } else {
+                                readCardPortChooseTv.setText(valueMap.card_reader_port.val);
+                            }
+                            LocalSettingsBean.Value.LotValidityTime dataDays = (LocalSettingsBean.Value.LotValidityTime) SPUtils.readObject(LocalSettingsActivity.this, KEY_DATA_DAYS);
+                            if (dataDays != null) {
+                                Long loginDate = Long.parseLong(dataDays.update_time);
+                                Long valueDate = Long.parseLong(valueMap.lot_validity_time.update_time);
+                                if (loginDate.compareTo(valueDate) > 0) {
+                                    dataDaysTv.setText(dataDays.val);
+                                } else {
+                                    dataDaysTv.setText(valueMap.lot_validity_time.val);
+                                }
+                            } else {
+                                dataDaysTv.setText(valueMap.lot_validity_time.val);
+                            }
+                            LocalSettingsBean.Value.ScreenOff screenOff = (LocalSettingsBean.Value.ScreenOff) SPUtils.readObject(LocalSettingsActivity.this, KEY_SCREEN_SLEEP);
+                            if (screenOff != null) {
+                                Long loginDate = Long.parseLong(screenOff.update_time);
+                                Long valueDate = Long.parseLong(valueMap.screen_off.update_time);
+                                if (loginDate.compareTo(valueDate) > 0) {
+                                    sleepTimeTv.setText(screenOff.val);
+                                } else {
+                                    sleepTimeTv.setText(valueMap.screen_off.val);
+                                }
+                            } else {
+                                sleepTimeTv.setText(valueMap.screen_off.val);
                             }
 
-                            if(!TextUtils.isEmpty(printerCount)){
-                                printerCountTv.setText(printerCount);
-                            }else {
-                                printerCountTv.setText(((LocalSettingsBean.CardReaderPort)localSettingsBeanBaseEntity.getData().card_reader_port.get(0)).val);
-                            }
-                            if(!TextUtils.isEmpty(dataDays)){
-                                dataDaysTv.setText(dataDays);
-                            }else {
-                                dataDaysTv.setText(((LocalSettingsBean.CardReaderPort)localSettingsBeanBaseEntity.getData().card_reader_port.get(0)).val);
-                            }
-                            if(!TextUtils.isEmpty(transactionData)){
-                                transactionDataTv.setText(transactionData);
-                            }else {
-                                transactionDataTv.setText(((LocalSettingsBean.CardReaderPort)localSettingsBeanBaseEntity.getData().card_reader_port.get(0)).val);
-                            }
+                            weightPortChooseTv.setText(((LocalSettingsBean.WeightPort) localSettingsBeanBaseEntity.getData().weight_port.get(0)).val);
 
-                            ledPortChooseTv.setText(((LocalSettingsBean.ExternalLedPort)localSettingsBeanBaseEntity.getData().external_led_port.get(0)).val);
-                            readCardTypeChooseTv.setText(((LocalSettingsBean.CardReaderTypeList)localSettingsBeanBaseEntity.getData().card_reader_type_list.get(0)).val);
+                            ledPortChooseTv.setText(((LocalSettingsBean.ExternalLedPort) localSettingsBeanBaseEntity.getData().external_led_port.get(0)).val);
+                            readCardTypeChooseTv.setText(((LocalSettingsBean.CardReaderTypeList) localSettingsBeanBaseEntity.getData().card_reader_type_list.get(0)).val);
 
                             weightPortTv.setText(localSettingsBeanBaseEntity.getData().value.weight_port.val);
-                            printerPortTv.setText(localSettingsBeanBaseEntity.getData().value.printer_port.val);
-                            printerCountTv.setText(localSettingsBeanBaseEntity.getData().value.number_of_prints_configuration.val);
-                            transactionDataTv.setText(localSettingsBeanBaseEntity.getData().value.clear_transaction_data.val);
                             baudRateTv.setText(localSettingsBeanBaseEntity.getData().value.weighing_plate_baud_rate.val);
                             serverIPTv.setText(localSettingsBeanBaseEntity.getData().value.server_ip.val);
-                            dataDaysTv.setText(localSettingsBeanBaseEntity.getData().value.lot_validity_time.val);
-                            sleepTimeTv.setText(localSettingsBeanBaseEntity.getData().value.screen_off.val);
                             serverPortTv.setText(localSettingsBeanBaseEntity.getData().value.server_port.val);
                         } else {
                             showLoading(localSettingsBeanBaseEntity.getMsg());
@@ -224,19 +275,35 @@ public class LocalSettingsActivity extends BaseActivity {
     }
 
 
-    public void saveSettingsToSP(){
-        SPUtils.put(this, "currentDate", System.currentTimeMillis());
-        SPUtils.putString(this, printerPortChooseTv.getId() + "", printerPortChooseTv.getText().toString());
-        SPUtils.put(this, KEY_PRINTER_COUNT, Integer.parseInt(printerCountTv.getText().toString()));
-        SPUtils.putString(this, transactionDataTv.getId() + "", transactionDataTv.getText().toString());
-        SPUtils.putString(this, baudRateTv.getId() + "", baudRateTv.getText().toString());
-        SPUtils.putString(this, serverIPTv.getId() + "", serverIPTv.getText().toString());
-        SPUtils.putString(this, ledPortChooseTv.getId() + "", ledPortChooseTv.getText().toString());
-        SPUtils.putString(this, readCardPortChooseTv.getId() + "", readCardPortChooseTv.getText().toString());
-        SPUtils.putString(this, dataDaysTv.getId() + "", dataDaysTv.getText().toString());
-        SPUtils.putString(this, sleepTimeTv.getId() + "", sleepTimeTv.getText().toString());
-        SPUtils.putString(this, readCardTypeChooseTv.getId() + "", readCardTypeChooseTv.getText().toString());
-        SPUtils.putString(this, serverPortTv.getId() + "", serverPortTv.getText().toString());
+    public void saveSettingsToSP() {
+        if (valueMap == null)
+            return;
+
+        valueMap.printer_port.update_time = System.currentTimeMillis() + "";
+        valueMap.printer_port.val = printerPortChooseTv.getText().toString();
+        SPUtils.saveObject(this, KEY_PRINTER_PORT, valueMap.printer_port);
+
+        valueMap.number_of_prints_configuration.update_time = System.currentTimeMillis() + "";
+        valueMap.number_of_prints_configuration.val = printerCountTv.getText().toString();
+        SPUtils.saveObject(this, KEY_PRINTER_COUNT, valueMap.number_of_prints_configuration);
+
+        valueMap.clear_transaction_data.update_time = System.currentTimeMillis() + "";
+        valueMap.clear_transaction_data.val = transactionDataTv.getText().toString();
+        SPUtils.saveObject(this, KEY_CLEAR_DATA, valueMap.clear_transaction_data);
+
+        valueMap.card_reader_port.update_time = System.currentTimeMillis() + "";
+        valueMap.card_reader_port.val = readCardPortChooseTv.getText().toString();
+        SPUtils.saveObject(this, KEY_READ_CARD_PORT, valueMap.card_reader_port);
+
+        valueMap.lot_validity_time.update_time = System.currentTimeMillis() + "";
+        valueMap.lot_validity_time.val = dataDaysTv.getText().toString();
+        SPUtils.saveObject(this, KEY_DATA_DAYS, valueMap.lot_validity_time);
+
+        valueMap.screen_off.update_time = System.currentTimeMillis() + "";
+        valueMap.screen_off.val = sleepTimeTv.getText().toString();
+        SPUtils.saveObject(this, KEY_SCREEN_SLEEP, valueMap.screen_off);
+        Settings.System.putInt(getContentResolver(),android.provider.Settings.System.SCREEN_OFF_TIMEOUT,60 * 1000 * Integer.parseInt(sleepTimeTv.getText().toString()));
+        showLoading("保存成功");
     }
 
     @Override
@@ -305,7 +372,6 @@ public class LocalSettingsActivity extends BaseActivity {
                 break;
             case R.id.local_settings_save_btn:
                 saveSettingsToSP();
-                finish();
                 break;
             case R.id.local_settings_back_btn:
                 finish();

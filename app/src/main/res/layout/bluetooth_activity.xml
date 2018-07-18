@@ -42,16 +42,6 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/bluetooth_confirm_btn"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_weight="1"
-                android:background="@drawable/shape_weight_display_bg"
-                android:text="@string/string_confirm"
-                android:textSize="20sp" />
-
             <Button
                 android:id="@+id/bluetooth_scan_btn"
                 android:layout_width="match_parent"
@@ -60,6 +50,16 @@
                 android:background="@drawable/shape_weight_display_bg"
                 android:text="@string/scan"
                 android:textSize="20sp" />
+            <Button
+                android:id="@+id/bluetooth_cancel_btn"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_weight="1"
+                android:background="@drawable/shape_weight_display_bg"
+                android:text="@string/string_cancel"
+                android:textSize="20sp" />
+
+
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

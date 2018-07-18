@@ -52,7 +52,7 @@ public class BtHelperClient {
         FREE
     }
 
-    private volatile STATUS mCurrStatus = STATUS.FREE;
+    public volatile STATUS mCurrStatus = STATUS.FREE;
 
     private BluetoothAdapter mBluetoothAdapter;
 

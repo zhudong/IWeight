@@ -82,15 +82,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="20dp"
                 android:background="@drawable/shape_weight_display_bg"
                 android:gravity="center">
 
                 <TextView
                     android:id="@+id/main_weight_top_tv"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="0.000公斤"
+                    android:text="0.000"
+                    android:textColor="@color/black"
+                    android:textSize="50sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:layout_marginLeft="10dp"
+                    android:id="@+id/main_weight_msg_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="公斤"
                     android:textColor="@color/black"
                     android:textSize="50sp"
                     android:textStyle="bold" />
@@ -207,6 +219,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
+                    android:orientation="horizontal"
                     android:layout_weight="1">
 
                     <TextView
@@ -218,10 +231,17 @@
 
                     <EditText
                         android:id="@+id/main_count_et"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="1 件"
+                        android:text="1"
+                        android:textColor="@color/black"
+                        android:textSize="25sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="件"
+                        android:layout_marginRight="20dp"
                         android:textColor="@color/black"
                         android:textSize="25sp" />
                 </LinearLayout>
@@ -365,7 +385,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="总重："
+                    android:text="总重:"
                     android:textColor="@color/black"
                     android:textSize="25sp" />
 
@@ -375,13 +395,22 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/black"
                     android:textSize="30sp"
+                    android:text="0"
+                    android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="公斤"
+                    android:textColor="@color/black"
+                    android:textSize="30sp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="30dp"
-                    android:text="总货款："
+                    android:layout_marginLeft="20dp"
+                    android:text="总货款:"
                     android:textColor="@color/black"
                     android:textSize="25sp" />
 
@@ -390,8 +419,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/red_000"
+                    android:text="0.00"
                     android:textSize="30sp"
                     android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=" 元"
+                    android:textColor="@color/red_000"
+                    android:textSize="30sp" />
             </LinearLayout>
 
             <ImageView

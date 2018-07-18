@@ -2,9 +2,10 @@ package com.axecom.iweight.bean;
 
 import com.axecom.iweight.base.BaseEntity;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class LocalSettingsBean<T> extends BaseEntity {
+public class LocalSettingsBean<T> extends BaseEntity implements Serializable{
     public Value value;
 
     public List<CardReaderTypeList> card_reader_type_list;
@@ -13,7 +14,7 @@ public class LocalSettingsBean<T> extends BaseEntity {
     public List<ExternalLedPort> external_led_port;
     public List<CardReaderPort> card_reader_port;
 
-    public class Value {
+    public class Value implements Serializable {
         public NumberOfPrintsConfiguration number_of_prints_configuration;
         public LotValidityTime lot_validity_time;
         public ClearTransactionData clear_transaction_data;
@@ -22,55 +23,61 @@ public class LocalSettingsBean<T> extends BaseEntity {
         public CardReaderType card_reader_type;
         public ServerIp server_ip;
         public ServerPort server_port;
-        public ServerPort printer_port;
-        public ServerPort weight_port;
+        public PrinterPort printer_port;
+        public WeightPort weight_port;
+        public CardReaderPort card_reader_port;
 
 
-        public class NumberOfPrintsConfiguration {
+        public class NumberOfPrintsConfiguration implements Serializable {
             public String val;
             public String update_time;
         }
 
-        public class LotValidityTime {
+        public class LotValidityTime implements Serializable {
             public String val;
             public String update_time;
         }
-        public class WeightPort {
+        public class WeightPort implements Serializable {
             public String val;
             public String update_time;
         }
-        public class PrinterPort {
-            public String val;
-            public String update_time;
-        }
-
-        public class ClearTransactionData {
+        public class PrinterPort implements Serializable {
             public String val;
             public String update_time;
         }
 
-        public class ScreenOff {
+        public class ClearTransactionData  implements Serializable{
             public String val;
             public String update_time;
         }
 
-        public class WeighingPlateBaudRate {
+        public class ScreenOff implements Serializable {
             public String val;
             public String update_time;
         }
 
-        public class CardReaderType {
+        public class WeighingPlateBaudRate implements Serializable {
+            public String val;
+            public String update_time;
+        }
+
+        public class CardReaderType implements Serializable {
+            public String val;
+            public String update_time;
+        }
+
+        public class CardReaderPort implements Serializable {
             public String val;
             public String update_time;
         }
 
 
-        public class ServerIp {
+        public class ServerIp  implements Serializable{
             public String val;
             public String update_time;
         }
 
-        public class ServerPort {
+        public class ServerPort implements Serializable {
             public String val;
             public String update_time;
         }

@@ -1,8 +1,11 @@
 package com.axecom.iweight.ui.activity;
 
 import android.content.Context;
+import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiManager;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,14 +85,17 @@ public class SettingsActivity extends BaseActivity {
     private View rootView;
     private GridView settingsGV;
     private SettingsAdapter settingsAdapter;
-
+    private WifiManager wifiManager;
 
     @Override
     public View setInitView() {
         rootView = LayoutInflater.from(this).inflate(R.layout.settings_activity, null);
         settingsGV = rootView.findViewById(R.id.settings_grid_view);
 
-
+        wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        if(!wifiManager.isWifiEnabled()){
+            wifiManager.setWifiEnabled(true);
+        }
         return rootView;
     }
 
@@ -150,9 +156,34 @@ public class SettingsActivity extends BaseActivity {
                     boolean switchSimpleOrComplex = (boolean) SPUtils.get(SettingsActivity.this, KET_SWITCH_SIMPLE_OR_COMPLEX, false);
                     SPUtils.put(SettingsActivity.this, KET_SWITCH_SIMPLE_OR_COMPLEX, !switchSimpleOrComplex);
                     break;
+                case POSITION_RE_CONNECTING:
+                    String wifiSSID = SPUtils.getString(SettingsActivity.this, WifiSettingsActivity.KEY_SSID_WIFI_SAVED, "");
+                    if(!TextUtils.isEmpty(wifiSSID)){
+                        WifiConfiguration mWifiConfiguration;
+                        WifiConfiguration tempConfig = IsExsits(wifiSSID);
+                        if (tempConfig != null) {
+                            mWifiConfiguration = tempConfig;
+                            boolean b = wifiManager.enableNetwork(mWifiConfiguration.networkId, true);
+                            if(b){
+                                showLoading("连接成功");
+                            }
+                        }
+                    }
+                    break;
             }
         }
     };
+
+    public WifiConfiguration IsExsits(String SSID) {
+        List<WifiConfiguration> existingConfigs = wifiManager
+                .getConfiguredNetworks();
+        for (WifiConfiguration existingConfig : existingConfigs) {
+            if (existingConfig.SSID.equals("\"" + SSID + "\"")) {
+                return existingConfig;
+            }
+        }
+        return null;
+    }
 
     @Override
     public void onClick(View v) {

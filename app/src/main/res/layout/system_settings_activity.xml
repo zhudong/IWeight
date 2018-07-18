@@ -97,8 +97,9 @@
                     <Button
                         android:id="@+id/system_settings_printer_btn"
                         android:layout_width="wrap_content"
+                        android:enabled="false"
+                        android:background="@drawable/green_btn_selector"
                         android:layout_height="match_parent"
-                        android:background="@drawable/shape_green_bg"
                         android:text="@string/string_choose"
                         android:textColor="@color/white"
                         android:textSize="20sp" />
@@ -164,7 +165,8 @@
                         android:id="@+id/system_settings_balance_rounding_btn"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:background="@drawable/shape_green_bg"
+                        android:background="@drawable/green_btn_selector"
+                        android:enabled="false"
                         android:text="@string/string_choose"
                         android:textColor="@color/white"
                         android:textSize="20sp" />
@@ -311,7 +313,8 @@
                         android:id="@+id/system_settings_weight_unit_btn"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:background="@drawable/shape_green_bg"
+                        android:enabled="false"
+                        android:background="@drawable/green_btn_selector"
                         android:text="@string/string_choose"
                         android:textColor="@color/white"
                         android:textSize="20sp" />
@@ -365,7 +368,8 @@
                 android:drawableLeft="?android:listChoiceIndicatorMultiple"
                 android:gravity="center"
                 android:text="默认自动获取买卖方"
-                android:textColor="@color/black"
+                android:textColor="@color/gray_ccc"
+                android:enabled="false"
                 android:textSize="20sp" />
 
             <CheckedTextView
@@ -387,7 +391,8 @@
                 android:drawableLeft="?android:listChoiceIndicatorMultiple"
                 android:gravity="center"
                 android:text="客户开秤后不区分买卖方"
-                android:textColor="@color/black"
+                android:textColor="@color/gray_ccc"
+                android:enabled="false"
                 android:textSize="20sp" />
         </LinearLayout>
 
@@ -407,7 +412,8 @@
                 android:drawableLeft="?android:listChoiceIndicatorMultiple"
                 android:gravity="center"
                 android:text="IC卡结算时再刷卡"
-                android:textColor="@color/black"
+                android:textColor="@color/gray_ccc"
+                android:enabled="false"
                 android:textSize="20sp" />
 
             <CheckedTextView
@@ -469,7 +475,7 @@
                 android:layout_weight="1"
                 android:drawableLeft="?android:listChoiceIndicatorMultiple"
                 android:gravity="center"
-                android:text="用现金模式"
+                android:text="停用现金模式"
                 android:textColor="@color/black"
                 android:textSize="20sp" />
         </LinearLayout>

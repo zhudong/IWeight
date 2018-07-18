@@ -113,9 +113,9 @@ public class ChooseDialog extends Dialog {
                     holder.chooseCtv.setText(value);
                 }
                 if (pos == position) {
-                    holder.chooseCtv.setChecked(true);
+//                    holder.chooseCtv.setChecked(true);
                 } else {
-                    holder.chooseCtv.setChecked(false);
+//                    holder.chooseCtv.setChecked(false);
                 }
 
                 return convertView;

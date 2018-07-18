@@ -10,6 +10,7 @@ public class BusEvent {
     public static final int LOGIN_SUCCESS = 10;
     public static final int GO_HOME_PAGE = 42;
     public static final int USB_NEW_DATA = 1;
+    public static final int PRINTER_LABEL = 2;
 
 
     //图片下载完成
@@ -18,6 +19,7 @@ public class BusEvent {
     private Object mParam;
     private String mStrParam;
     private String mStrParam02;
+    private String mStrParam03;
     private int mIntParam;
     private long mLongParam;
     private boolean mBooleanParam;
@@ -30,6 +32,7 @@ public class BusEvent {
         this.mType = type;
         this.mLongParam = longparam;
     }
+
     public BusEvent(int type, byte[] byteParam) {
         this.mType = type;
         this.byteParam = byteParam;
@@ -55,6 +58,14 @@ public class BusEvent {
         mType = type;
         mParam = param;
         mStrParam = str;
+    }
+
+    public BusEvent(int type, Object param, String str, String mStrParam02, String mStrParam03) {
+        this.mType = type;
+        this.mParam = param;
+        this.mStrParam = str;
+        this.mStrParam02 = mStrParam02;
+        this.mStrParam03 = mStrParam03;
     }
 
     public BusEvent(int type, boolean booleanParam, Object param) {
@@ -123,6 +134,13 @@ public class BusEvent {
         mType = type;
         mStrParam = stringParam;
         mStrParam02 = strParam02;
+    }
+
+    public BusEvent(int type, String stringParam, String strParam02, String strParam03) {
+        mType = type;
+        mStrParam = stringParam;
+        mStrParam02 = strParam02;
+        mStrParam03 = strParam03;
     }
 
     public BusEvent(int type, boolean booleanParam, String stringParam) {
@@ -196,5 +214,16 @@ public class BusEvent {
     public int getIntValue02() {
         return mIntValue02;
     }
-    public byte[] getByteParam(){return byteParam; }
+
+    public byte[] getByteParam() {
+        return byteParam;
+    }
+
+    public String getmStrParam03() {
+        return mStrParam03;
+    }
+
+    public void setmStrParam03(String mStrParam03) {
+        this.mStrParam03 = mStrParam03;
+    }
 }

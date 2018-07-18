@@ -75,6 +75,7 @@ public class SubOrderReqBean implements Serializable{
         private String goods_name;
         private String goods_price;
         private String goods_number;
+        private String goods_weight;
         private String amount;
 
         public String getGoods_id() {
@@ -115,6 +116,14 @@ public class SubOrderReqBean implements Serializable{
 
         public void setGoods_amount(String goods_amount) {
             this.amount = goods_amount;
+        }
+
+        public String getGoods_weight() {
+            return goods_weight;
+        }
+
+        public void setGoods_weight(String goods_weight) {
+            this.goods_weight = goods_weight;
         }
     }
 }

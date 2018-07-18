@@ -174,7 +174,7 @@ public class CommodityManagementActivity extends BaseActivity {
                     goodsList.add(good);
                 }
                 goodsReqBean.setToken(AccountManager.getInstance().getAdminToken());
-                goodsReqBean.setMac(Constants.MAC_TEST);
+                goodsReqBean.setMac(MacManager.getInstace(this).getMac());
                 goodsReqBean.setGoods(goodsList);
                 storeGoodsData(goodsReqBean);
                 break;
@@ -239,7 +239,7 @@ public class CommodityManagementActivity extends BaseActivity {
 
     public void getGoodsData() {
         RetrofitFactory.getInstance().API()
-                .getGoodsData(AccountManager.getInstance().getAdminToken(), Constants.MAC_TEST)
+                .getGoodsData(AccountManager.getInstance().getAdminToken(), MacManager.getInstace(this).getMac())
                 .compose(this.<BaseEntity<ScalesCategoryGoods>>setThread())
                 .subscribe(new Observer<BaseEntity<ScalesCategoryGoods>>() {
                     @Override
@@ -446,6 +446,9 @@ public class CommodityManagementActivity extends BaseActivity {
         public void onBindViewHolder(DragViewHolder holder, final int position) {
             if (mItems.get(position).isShow()) {
                 holder.deleteTv.setVisibility(View.VISIBLE);
+            }
+            if(mItems.get(position).getHotKeyGoods().traceable_code >= 0){
+                holder.selectedTv.setVisibility(View.VISIBLE);
             }
             holder.nameTv.setText(mItems.get(position).getHotKeyGoods().name);
             holder.deleteTv.setOnClickListener(new View.OnClickListener() {

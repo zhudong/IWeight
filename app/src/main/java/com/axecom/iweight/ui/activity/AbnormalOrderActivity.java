@@ -16,10 +16,13 @@ import com.axecom.iweight.base.BaseEntity;
 import com.axecom.iweight.bean.UnusualOrdersBean;
 import com.axecom.iweight.conf.Constants;
 import com.axecom.iweight.manager.AccountManager;
+import com.axecom.iweight.manager.MacManager;
 import com.axecom.iweight.net.RetrofitFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.crypto.Mac;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -65,7 +68,7 @@ public class AbnormalOrderActivity extends BaseActivity {
 
     public void getOrders(String page, String pageNum, String typeVal){
         RetrofitFactory.getInstance().API()
-                .getOrders(AccountManager.getInstance().getAdminToken(), Constants.MAC_TEST, page, pageNum, typeVal)
+                .getOrders(AccountManager.getInstance().getAdminToken(), MacManager.getInstace(this).getMac(), page, pageNum, typeVal)
                 .compose(this.<BaseEntity<UnusualOrdersBean>>setThread())
                 .subscribe(new Observer<BaseEntity<UnusualOrdersBean>>() {
                     @Override
