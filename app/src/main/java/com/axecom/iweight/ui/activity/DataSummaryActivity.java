@@ -61,7 +61,7 @@ public class DataSummaryActivity extends BaseActivity {
     private String currentDay;
     private int typeVal = 1;
     private int pageNum = 9;
-    private int previousPos = 8;
+    private int previousPos = 10;
 
     @Override
     public View setInitView() {
@@ -181,9 +181,10 @@ public class DataSummaryActivity extends BaseActivity {
                     @Override
                     public void onNext(BaseEntity<OrderListResultBean> orderListResultBeanBaseEntity) {
                         if (orderListResultBeanBaseEntity.isSuccess()) {
-                            orderList.clear();
                             orderList.addAll(orderListResultBeanBaseEntity.getData().list);
                             salesAdapter.notifyDataSetChanged();
+                            scrollTo(salesDetailsListView,salesDetailsListView.getCount() - 1);
+
                             orderAmountTv.setText(orderListResultBeanBaseEntity.getData().total_amount);
                         } else {
                             showLoading(orderListResultBeanBaseEntity.getMsg());
@@ -321,10 +322,12 @@ public class DataSummaryActivity extends BaseActivity {
                 getReportsList(currentDay, typeVal + "", (currentPage = 1) + "", pageNum + "");
                 break;
             case R.id.data_summary_sales_details_prev_page_btn:
-                getOrderList(currentDay,  --currentPage <= 1 ? (currentPage=1)+"" : --currentPage + "", "10");
+                scrollTo(salesDetailsListView, salesDetailsListView.getFirstVisiblePosition() - previousPos <= 0 ? 0 : salesDetailsListView.getFirstVisiblePosition() - previousPos);
+
+//                getOrderList(currentDay,  --currentPage <= 1 ? (currentPage=1)+"" : --currentPage + "", "10");
                 break;
             case R.id.data_summary_sales_details_next_page_btn:
-                getOrderList(currentDay, ++currentPage + "", "10");
+                getOrderList(currentDay, ++currentPage + "", previousPos+"");
                 break;
             case R.id.data_summary_sales_details_prev_day_btn:
                 currentDay = getCurrentTime(currentDay, "yyyy-MM-dd", 3);
