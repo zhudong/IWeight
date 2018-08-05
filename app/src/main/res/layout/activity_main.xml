@@ -425,6 +425,7 @@
                 android:textSize="22sp" />
 
             <TextView
+                android:id="@+id/main_weight_number_tv"
                 android:layout_width="40dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/shape_green_bg"

@@ -97,6 +97,7 @@ public class MainActivity extends BaseActivity {
     private TextView grandTotalTv;
     private TextView weightTotalTv;
     private TextView weightTv;
+    private TextView weightNumberTv;
     private TextView priceTotalTv;
     private TextView operatorTv;
     private TextView stallNumberTv;
@@ -134,6 +135,7 @@ public class MainActivity extends BaseActivity {
         weightTv = rootView.findViewById(R.id.main_weight_tv);
         operatorTv = rootView.findViewById(R.id.main_operator_tv);
         stallNumberTv = rootView.findViewById(R.id.main_stall_number_tv);
+        weightNumberTv = rootView.findViewById(R.id.main_weight_number_tv);
         componyTitleTv = rootView.findViewById(R.id.main_compony_title_tv);
         priceTotalTv = rootView.findViewById(R.id.main_price_total_tv);
         weightTopTv = rootView.findViewById(R.id.main_weight_top_tv);
@@ -186,7 +188,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void initView() {
-
+        weightNumberTv.setText(AccountManager.getInstance().getScalesId());
         hotKeyGoodsList = new ArrayList<>();
         seledtedGoodsList = new ArrayList<>();
         commodityAdapter = new CommodityAdapter(this, seledtedGoodsList);
