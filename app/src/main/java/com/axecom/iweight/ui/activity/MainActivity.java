@@ -680,7 +680,7 @@ public class MainActivity extends BaseActivity {
             weightTopTv.setText("0.000");
             weightTv.setText("");
             weightTotalTv.setText("0");
-            grandTotalTv.setText("");
+            grandTotalTv.setText("0.0");
             priceTotalTv.setText("0.00");
             seledtedGoodsList.clear();
             commodityAdapter = new CommodityAdapter(this, seledtedGoodsList);
