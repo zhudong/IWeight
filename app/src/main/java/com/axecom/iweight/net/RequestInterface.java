@@ -2,6 +2,7 @@ package com.axecom.iweight.net;
 
 
 import com.axecom.iweight.base.BaseEntity;
+import com.axecom.iweight.bean.Advertis;
 import com.axecom.iweight.bean.CalibrationBean;
 import com.axecom.iweight.bean.LocalSettingsBean;
 import com.axecom.iweight.bean.LoginData;
@@ -192,4 +193,7 @@ public interface RequestInterface {
 
     @POST("getPayNotice")
     Observable<BaseEntity<PayNoticeBean>> getPayNotice(@Query("order_no") String order_no);
+
+    @GET("advertising")
+    Observable<BaseEntity<Advertis>> advertising();
 }

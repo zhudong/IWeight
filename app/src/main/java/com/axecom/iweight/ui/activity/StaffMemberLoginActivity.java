@@ -217,7 +217,7 @@ public class StaffMemberLoginActivity extends BaseActivity {
             super.run();
             //判断进程是否在运行，更安全的结束进程
             while (!threadStatus) {
-                LogUtils.d("进入线程run");
+//                LogUtils.d("进入线程run");
                 //64   1024
                 byte[] buffer = new byte[32];
                 int size; //读取数据的大小
@@ -228,7 +228,7 @@ public class StaffMemberLoginActivity extends BaseActivity {
                         for (byte b : buffer) {
                             s += String.format("%02x ", b);
                         }
-                        LogUtils.d("Read " + s + " bytes.");
+//                        LogUtils.d("Read " + s + " bytes.");
                         String[] cards = s.split(" ");
                         String cardNo="";
                         for (int i = 9; i > 5; i--) {

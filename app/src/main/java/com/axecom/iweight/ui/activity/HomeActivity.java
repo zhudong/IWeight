@@ -5,18 +5,18 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.hardware.display.DisplayManager;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
@@ -25,29 +25,21 @@ import com.axecom.iweight.base.BusEvent;
 import com.axecom.iweight.base.SysApplication;
 import com.axecom.iweight.bean.LoginData;
 import com.axecom.iweight.bean.WeightBean;
-import com.axecom.iweight.conf.Constants;
 import com.axecom.iweight.manager.AccountManager;
-import com.axecom.iweight.manager.GPprinterManager;
 import com.axecom.iweight.manager.MacManager;
-import com.axecom.iweight.manager.TemperatureUsbControl;
+import com.axecom.iweight.manager.PrinterManager;
 import com.axecom.iweight.manager.UpdateManager;
 import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.ui.view.SoftKeyborad;
+import com.axecom.iweight.utils.ButtonUtils;
 import com.axecom.iweight.utils.LogUtils;
 import com.axecom.iweight.utils.NetworkUtil;
-import com.axecom.iweight.utils.SerialPortUtils;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
-import com.syc.function.Function;
-
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
-import android_serialport_api.SerialPort;
-import android_serialport_api.SerialPortFinder;
 import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
@@ -66,11 +58,10 @@ public class HomeActivity extends BaseActivity {
     private TextView weightTv;
     private int weightId;
     private CheckedTextView savePwdCtv;
-    private int commHandle = 0;
-    private GPprinterManager gPprinterManager;
     UsbManager manager;
-    public boolean threadStatus = false; //线程状态，为了安全终止线程
+    public boolean threadStatus = false;
     UsbSerialPort port;
+    public BannerActivity banner = null;
 
     @Override
     public View setInitView() {
@@ -88,19 +79,22 @@ public class HomeActivity extends BaseActivity {
         cardNumberTv.setOnClickListener(this);
         confirmBtn.setOnClickListener(this);
         savePwdCtv.setOnClickListener(this);
+                DisplayManager displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
+        //获取屏幕数量
+        Display[] presentationDisplays = displayManager.getDisplays();
+        LogUtils.d("------------: " + presentationDisplays.length + "  --- " + presentationDisplays[1].getName());
+        if (presentationDisplays.length > 1) {
+            banner = new BannerActivity(this, presentationDisplays[1]);
+        }
+        banner.show();
         return rootView;
     }
 
     @Override
     public void initView() {
-        if(NetworkUtil.isConnected(this)){
+        if (NetworkUtil.isConnected(this)) {
             getScalesIdByMac(MacManager.getInstace(this).getMac());
         }
-//        getScalesIdByMac(MacManager.getInstace(HomeActivity.this).getMac());
-//        commHandle = Function.API_OpenComm("dev/tty".getBytes(), 115200);
-//        if (commHandle == 0) {
-//            Toast.makeText(this, "can't open serial", Toast.LENGTH_SHORT).show();
-//        }
         usbOpen();
     }
 
@@ -123,12 +117,14 @@ public class HomeActivity extends BaseActivity {
     @Override
     public void onEventMainThread(BusEvent event) {
         super.onEventMainThread(event);
-        if(event.getType() == BusEvent.NET_WORK_AVAILABLE){
+        if (event.getType() == BusEvent.NET_WORK_AVAILABLE) {
             boolean available = event.getBooleanParam();
-            if(available){
+            if (available) {
                 getScalesIdByMac(MacManager.getInstace(this).getMac());
+//                getScalesIdByMac("80:5e:4f:85:57:9d");
             }
         }
+
     }
 
     public void usbOpen() {
@@ -146,26 +142,23 @@ public class HomeActivity extends BaseActivity {
                 UsbDeviceConnection connection = null;
 
                 if (manager.hasPermission(driver.getDevice())) {
-                    //if has already got permission, just goto connect it
-                    //that means: user has choose yes for your previously popup window asking for grant perssion for this usb device
-                    //and also choose option: not ask again
                     connection = manager.openDevice(driver.getDevice());
                 } else {
-                    //this line will let android popup window, ask user whether to allow this app to have permission to operate this usb device
                     manager.requestPermission(driver.getDevice(), mPermissionIntent);
                 }
 
                 if (connection == null) {
-                    // You probably need to call UsbManager.requestPermission(driver.getDevice(), ..)
-                    return;
+//                    return;
                 }
+
+                connection = manager.openDevice(driver.getDevice());
+
                 port = driver.getPorts().get(0);
                 try {
                     port.open(connection);
                     port.setParameters(115200, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
                     new ReadThread().start();
                 } catch (IOException e) {
-                    // Deal with error.
                 } finally {
                 }
             }
@@ -180,12 +173,8 @@ public class HomeActivity extends BaseActivity {
         if (SysApplication.getInstances().getGpDriver() == null) {
             showLoading("没有插入打印机，请检查设备");
         }
-// Read some data! Most have just one port (port 0).
-
     }
 
-
-//    ReadThread readThread = new ReadThread();
 
     /**
      * 单开一线程，来读数据
@@ -202,8 +191,6 @@ public class HomeActivity extends BaseActivity {
             super.run();
             //判断进程是否在运行，更安全的结束进程
             while (!threadStatus) {
-                LogUtils.d("进入线程run");
-                //64   1024
                 byte[] buffer = new byte[32];
                 int size; //读取数据的大小
                 try {
@@ -215,15 +202,21 @@ public class HomeActivity extends BaseActivity {
                         }
                         LogUtils.d("Read " + s + " bytes.");
                         String[] cards = s.split(" ");
-                        String cardNo="";
+                        String cardNo = "";
                         for (int i = 9; i > 5; i--) {
-                            cardNo+=cards[i];
+                            cardNo += cards[i];
                         }
                         final String finalCardNo = cardNo;
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 cardNumberTv.setText(finalCardNo.toUpperCase());
+                                if (AccountManager.getInstance().getPwdBySerialNumber(finalCardNo.toUpperCase()) != null) {
+                                    pwdTv.setText(AccountManager.getInstance().getPwdBySerialNumber(finalCardNo.toUpperCase()));
+                                    savePwdCtv.setChecked(true);
+                                } else {
+                                    savePwdCtv.setChecked(false);
+                                }
                             }
                         });
                     }
@@ -245,9 +238,6 @@ public class HomeActivity extends BaseActivity {
                 if (device != null) {
                     if (device.getVendorId() == 6790 && device.getProductId() == 29987) {
                         showLoading("读卡器被拔出，请检查设备");
-//                        if(readThread != null){
-//                            readThread.interrupt();
-//                        }
                     }
                     if (device.getVendorId() == 26728 && device.getProductId() == 1280) {
                         showLoading("打印机被拔出，请检查设备");
@@ -278,11 +268,8 @@ public class HomeActivity extends BaseActivity {
     private Runnable task = new Runnable() {
         @Override
         public void run() {
-            /**
-             * 此处执行任务
-             * */
             mHanlder.sendEmptyMessage(1);
-            mHanlder.postDelayed(this, 60 * 1000 * 5);//延迟5秒,再次执行task本身,实现了循环的效果
+            mHanlder.postDelayed(this, 60 * 1000 * 5);
         }
     };
 
@@ -291,32 +278,37 @@ public class HomeActivity extends BaseActivity {
         SoftKeyborad.Builder builder = new SoftKeyborad.Builder(HomeActivity.this);
         switch (v.getId()) {
             case R.id.home_login_tv:
+//                openGpinter();
+                break;
             case R.id.home_confirm_btn:
-//                getScalesIdByMac(MacManager.getInstace(HomeActivity.this).getMac());
                 clientLogin(weightId + "", cardNumberTv.getText().toString(), pwdTv.getText().toString());
-//                clientLogin("4", cardNumberTv.getText().toString(), pwdTv.getText().toString());
                 break;
             case R.id.home_card_number_tv:
-                builder.create(new SoftKeyborad.OnConfirmedListener() {
-                    @Override
-                    public void onConfirmed(String result) {
-                        cardNumberTv.setText(result);
-                        if (AccountManager.getInstance().getPwdBySerialNumber(result) != null) {
-                            pwdTv.setText(AccountManager.getInstance().getPwdBySerialNumber(result));
-                            savePwdCtv.setChecked(true);
-                        } else {
-                            savePwdCtv.setChecked(false);
+                if (!ButtonUtils.isFastDoubleClick(R.id.home_card_number_tv)) {
+                    builder.create(new SoftKeyborad.OnConfirmedListener() {
+                        @Override
+                        public void onConfirmed(String result) {
+                            cardNumberTv.setText(result);
+                            if (AccountManager.getInstance().getPwdBySerialNumber(result) != null) {
+                                pwdTv.setText(AccountManager.getInstance().getPwdBySerialNumber(result));
+                                savePwdCtv.setChecked(true);
+                            } else {
+                                savePwdCtv.setChecked(false);
+                            }
                         }
-                    }
-                }).show();
+                    }).show();
+                }
+
                 break;
             case R.id.home_pwd_tv:
-                builder.create(new SoftKeyborad.OnConfirmedListener() {
-                    @Override
-                    public void onConfirmed(String result) {
-                        pwdTv.setText(result);
-                    }
-                }).show();
+                if (!ButtonUtils.isFastDoubleClick(R.id.home_pwd_tv)) {
+                    builder.create(new SoftKeyborad.OnConfirmedListener() {
+                        @Override
+                        public void onConfirmed(String result) {
+                            pwdTv.setText(result);
+                        }
+                    }).show();
+                }
                 break;
             case R.id.home_save_pwd_ctv:
                 savePwdCtv.setChecked(!savePwdCtv.isChecked());
@@ -331,7 +323,6 @@ public class HomeActivity extends BaseActivity {
                 .subscribe(new Observer<BaseEntity<WeightBean>>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
-                        showLoading();
                     }
 
                     @Override
@@ -345,7 +336,7 @@ public class HomeActivity extends BaseActivity {
                                     AccountManager.getInstance().saveScalesId(weightId + "");
                                 }
                             });
-                        }else {
+                        } else {
                             showLoading(baseEntity.getMsg());
                         }
                     }
@@ -382,8 +373,7 @@ public class HomeActivity extends BaseActivity {
                             } else {
                                 AccountManager.getInstance().savePwd(serialNumber, null);
                             }
-                            mHanlder.postDelayed(task, 1000);
-//                            AccountManager.getInstance().savePwdChecked(serialNumber, savePwdCtv.isChecked());
+//                            mHanlder.postDelayed(task, 1000);
                             startDDMActivity(MainActivity.class, false);
                         } else {
                             showLoading(loginDataBaseEntity.getMsg());
@@ -404,35 +394,6 @@ public class HomeActivity extends BaseActivity {
                 });
     }
 
-    public void isOnline() {
-        RetrofitFactory.getInstance().API()
-                .isOnline(AccountManager.getInstance().getToken(), AccountManager.getInstance().getScalesId())
-                .compose(this.<BaseEntity>setThread())
-                .subscribe(new Observer<BaseEntity>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        showLoading();
-                    }
-
-                    @Override
-                    public void onNext(BaseEntity baseEntity) {
-                        if (baseEntity.isSuccess()) {
-
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        closeLoading();
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        closeLoading();
-                    }
-                });
-    }
 
     @Override
     public void onBackPressed() {

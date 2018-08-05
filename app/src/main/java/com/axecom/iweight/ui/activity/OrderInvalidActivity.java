@@ -43,7 +43,7 @@ public class OrderInvalidActivity extends BaseActivity {
     private ListView orderListView;
     private OrderAdapter orderAdapter;
     private Button previousBtn, nextBtn, backBtn;
-    private int previousPos = 8;
+    private int previousPos = 16;
     private int nextPos = 16;
     private CustomDialog mDialog;
     private CustomDialog.Builder builder;

@@ -12,6 +12,11 @@ public class BusEvent {
     public static final int USB_NEW_DATA = 1;
     public static final int PRINTER_LABEL = 2;
     public static final int NET_WORK_AVAILABLE = 3;
+    public static final int SUB_ORDER_SUCCESS = 4;
+    public static final int REPORT_DEVICE_IS_ONLINE = 5;
+    public static final int SAVE_COMMODITY_SUCCESS = 6;
+    public static final int SAVE_LOCAL_SUCCESS = 7;
+    public static final int POSITION_PATCH = 9;
 
 
     //图片下载完成

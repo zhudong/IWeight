@@ -18,6 +18,11 @@ public class BootReceiver extends BroadcastReceiver {
             Intent mBootIntent = new Intent(context, HomeActivity.class);
             mBootIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(mBootIntent);
+
+        }
+        if(intent.getAction().equals("com.axecom.destroy")){
+            Intent sevice = new Intent(context, BannerService.class);
+            context.startService(sevice);
         }
     }
 }

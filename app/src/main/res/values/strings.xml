@@ -42,6 +42,9 @@
     <string name="string_variety_txt">品种：</string>
     <string name="string_grand_total_txt2">单价：</string>
     <string name="string_amount_txt2">金额：</string>
+    <string name="string_amount_txt3">金额：%1$.2f 元</string>
+    <string name="string_weight_unit_g">%1$s克</string>
+    <string name="string_weight_unit_kg">%1$skg</string>
 
     <string name="string_switching_setting_txt">切换计重模式</string>
     <string name="string_patch_setting_txt">补打上笔</string>
@@ -73,4 +76,10 @@
     <string name="app_update_found_version">发现新版本</string>
     <string name="app_update_now">立即更新</string>
     <string name="app_update_ignore">稍后更新</string>
+
+    <string name="str_printer_conn_normal">打印机连接正常</string>
+    <string name="str_printer_out_of_paper">打印机缺纸</string>
+    <string name="str_printer_open_cover">打印机开盖</string>
+    <string name="str_printer_error">打印机出错</string>
+    <string name="str_state">状态：</string>
 </resources>

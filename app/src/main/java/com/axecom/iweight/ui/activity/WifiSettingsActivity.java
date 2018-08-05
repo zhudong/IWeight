@@ -1,16 +1,23 @@
 package com.axecom.iweight.ui.activity;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,9 +25,13 @@ import android.widget.Toast;
 
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
+import com.axecom.iweight.base.BusEvent;
 import com.axecom.iweight.bean.WifiBean;
 import com.axecom.iweight.ui.view.WifiPwdDialog;
+import com.axecom.iweight.utils.LogUtils;
 import com.axecom.iweight.utils.SPUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +39,8 @@ import java.util.List;
 public class WifiSettingsActivity extends BaseActivity {
 
     public static final String KEY_SSID_WIFI_SAVED = "key_ssid_wifi_saved";
+    private static final String ACTION_NET_CHANGE = "android.net.conn.CONNECTIVITY_CHANGE";
+
     private View rootView;
     private GridView wifiGridView;
     private WifiManager wifiManager;
@@ -35,20 +48,38 @@ public class WifiSettingsActivity extends BaseActivity {
     private List<WifiConfiguration> mWifiConfiguration;
     private WifiAdapter wifiAdapter;
     private int linkingID;
-    private List<WifiBean> wifiSSIDList = new ArrayList<>();;
+    private List<WifiBean> wifiSSIDList = new ArrayList<>();
+    ;
+    private Button backBtn, saveBtn;
 
     @Override
     public View setInitView() {
         rootView = LayoutInflater.from(this).inflate(R.layout.wifi_settings_activity, null);
         wifiGridView = rootView.findViewById(R.id.wifi_settings_grid_view);
+        backBtn = rootView.findViewById(R.id.wifi_settings_back_btn);
+        saveBtn = rootView.findViewById(R.id.wifi_settings_save_btn);
+
         wifiAdapter = new WifiAdapter(this, wifiSSIDList);
         wifiGridView.setAdapter(wifiAdapter);
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        if(!wifiManager.isWifiEnabled()){
+        if (!wifiManager.isWifiEnabled()) {
             wifiManager.setWifiEnabled(true);
         }
-
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isAvailable()) {
+            SPUtils.putString(WifiSettingsActivity.this, KEY_SSID_WIFI_SAVED, networkInfo.getExtraInfo().subSequence(1, networkInfo.getExtraInfo().length() - 1).toString());
+        }
+        registerReceiver(netWorkReceiver, new IntentFilter(ACTION_NET_CHANGE));
+        backBtn.setOnClickListener(this);
+        saveBtn.setOnClickListener(this);
         return rootView;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(netWorkReceiver);
     }
 
     @Override
@@ -58,9 +89,9 @@ public class WifiSettingsActivity extends BaseActivity {
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         for (int i = 0; i < mWifiList.size(); i++) {
             wifiBean = new WifiBean();
-            if(wifiInfo.getBSSID().equals(mWifiList.get(i).BSSID)){
+            if (wifiInfo.getBSSID().equals(mWifiList.get(i).BSSID)) {
                 wifiBean.setConnected(true);
-            }else {
+            } else {
                 wifiBean.setConnected(false);
             }
             wifiBean.setSsid(mWifiList.get(i).SSID);
@@ -84,49 +115,63 @@ public class WifiSettingsActivity extends BaseActivity {
                             mWifiConfiguration[0] = createWifiInfo(mWifiList.get(position).SSID, pwd, 3);
                             int wcgID = wifiManager.addNetwork(mWifiConfiguration[0]);
                             boolean b = wifiManager.enableNetwork(wcgID, true);
-                            updateListView(b, position, mWifiList.get(position).SSID);
-
+                            ssid = mWifiList.get(position).SSID;
+                            pos = position;
                         }
                     }).show();
                 } else {
                     //发现指定WiFi，并且这个WiFi以前连接成功过
                     mWifiConfiguration[0] = tempConfig;
                     boolean b = wifiManager.enableNetwork(mWifiConfiguration[0].networkId, true);
-                    if(b){
-                        SPUtils.putString(WifiSettingsActivity.this, KEY_SSID_WIFI_SAVED, mWifiList.get(position).SSID);
-                    }
-                    updateListView(b, position, mWifiList.get(position).SSID);
+//                    updateListView(b, position, mWifiList.get(position).SSID);
                 }
             }
         });
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                wifiManager.startScan();
-//                List<ScanResult> resultList = wifiManager.getScanResults();
-//                StringBuilder stringBuilder = new StringBuilder();
-//                for (int i = 0; i < resultList.size(); i++) {
-//                    stringBuilder
-//                            .append("Index_" + new Integer(i + 1).toString() + ":");
-//                    // 将ScanResult信息转换成一个字符串包
-//                    // 其中把包括：BSSID、SSID、capabilities、frequency、level
-//                    stringBuilder.append((resultList.get(i)).toString());
-//                    stringBuilder.append("/n");
-//                }
-//
-//            }
-//        }).run();
     }
 
-    public void updateListView(boolean flag, int position, String SSID){
+    String ssid = "";
+    int pos;
+
+    private BroadcastReceiver netWorkReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(ACTION_NET_CHANGE)) {
+                ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+                if (networkInfo != null && networkInfo.isAvailable()) {
+                    SPUtils.putString(WifiSettingsActivity.this, KEY_SSID_WIFI_SAVED,networkInfo.getExtraInfo().subSequence(1, networkInfo.getExtraInfo().length()-1).toString());
+
+                    updateListView(true, pos, networkInfo.getExtraInfo());
+                } else {
+                    updateListView(false, pos, ssid);
+                    Toast.makeText(context, "连接失败", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    };
+
+
+    public void updateListView(boolean flag, int position, String SSID) {
         WifiBean bean;
         for (int i = 0; i < wifiSSIDList.size(); i++) {
             bean = new WifiBean();
             bean.setSsid(wifiSSIDList.get(i).getSsid());
-            if(position == i){
-                bean.setConnected(true);
-            }else {
-                bean.setConnected(false);
+            if(!flag){
+                bean.setConnected(flag);
+            }else if (!TextUtils.isEmpty(SSID)) {
+                String s = SSID.subSequence(1, SSID.length()-1).toString();
+                if (wifiSSIDList.get(i).getSsid().equals(s)) {
+                    bean.setConnected(true);
+                } else {
+                    bean.setConnected(false);
+                }
+            } else {
+                if (position == i) {
+                    bean.setConnected(true);
+                } else {
+                    bean.setConnected(false);
+                }
             }
             wifiSSIDList.set(i, bean);
         }
@@ -203,7 +248,7 @@ public class WifiSettingsActivity extends BaseActivity {
         if (tempConfig == null) {
             //创建一个新的WifiConfiguration ，CreateWifiInfo()需要自己实现
             mWifiConfiguration = createWifiInfo(SSID, password, 3);
-            int wcgID = wifiManager.addNetwork(mWifiConfiguration );
+            int wcgID = wifiManager.addNetwork(mWifiConfiguration);
             boolean b = wifiManager.enableNetwork(wcgID, true);
         } else {
             //发现指定WiFi，并且这个WiFi以前连接成功过
@@ -227,31 +272,34 @@ public class WifiSettingsActivity extends BaseActivity {
 
     @SuppressLint("WrongConstant")
     public void startScan(Context context) {
+
         wifiManager.startScan();
         //得到扫描结果
         List<ScanResult> results = wifiManager.getScanResults();
         // 得到配置好的网络连接
         mWifiConfiguration = wifiManager.getConfiguredNetworks();
         if (results == null) {
-            if(wifiManager.getWifiState()== 3){
-                Toast.makeText(context,"当前区域没有无线网络",Toast.LENGTH_SHORT).show();
-            }else if(wifiManager.getWifiState() == 2){
-                Toast.makeText(context,"wifi正在开启，请稍后扫描", Toast.LENGTH_SHORT).show();
-            }else{Toast.makeText(context,"WiFi没有开启", Toast.LENGTH_SHORT).show();
+            if (wifiManager.getWifiState() == 3) {
+                Toast.makeText(context, "当前区域没有无线网络", Toast.LENGTH_SHORT).show();
+            } else if (wifiManager.getWifiState() == 2) {
+                Toast.makeText(context, "wifi正在开启，请稍后扫描", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, "WiFi没有开启", Toast.LENGTH_SHORT).show();
             }
         } else {
             mWifiList = new ArrayList();
-            for(ScanResult result : results){
+            for (ScanResult result : results) {
                 if (result.SSID == null || result.SSID.length() == 0 || result.capabilities.contains("[IBSS]")) {
                     continue;
                 }
                 boolean found = false;
-                for(ScanResult item:mWifiList){
-                    if(item.SSID.equals(result.SSID)&&item.capabilities.equals(result.capabilities)){
-                        found = true;break;
+                for (ScanResult item : mWifiList) {
+                    if (item.SSID.equals(result.SSID) && item.capabilities.equals(result.capabilities)) {
+                        found = true;
+                        break;
                     }
                 }
-                if(!found){
+                if (!found) {
                     mWifiList.add(result);
                 }
             }
@@ -261,14 +309,19 @@ public class WifiSettingsActivity extends BaseActivity {
 
     @Override
     public void onClick(View v) {
-
+        switch (v.getId()) {
+            case R.id.wifi_settings_back_btn:
+            case R.id.wifi_settings_save_btn:
+                finish();
+                break;
+        }
     }
 
-    class WifiAdapter extends BaseAdapter{
+    class WifiAdapter extends BaseAdapter {
         private Context context;
         private List<WifiBean> ssidList;
 
-        public WifiAdapter(Context context, List<WifiBean> ssidList){
+        public WifiAdapter(Context context, List<WifiBean> ssidList) {
             this.context = context;
             this.ssidList = ssidList;
         }
@@ -291,20 +344,20 @@ public class WifiSettingsActivity extends BaseActivity {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder holder;
-            if(convertView == null){
+            if (convertView == null) {
                 convertView = LayoutInflater.from(context).inflate(R.layout.wifi_settings_item, null);
                 holder = new ViewHolder();
                 holder.SSIDTv = convertView.findViewById(R.id.wifi_settings_ssid_tv);
                 holder.connectedIv = convertView.findViewById(R.id.wifi_settings_connected_iv);
                 convertView.setTag(holder);
-            }else {
+            } else {
                 holder = (ViewHolder) convertView.getTag();
             }
 
             WifiBean item = ssidList.get(position);
-            if(item.isConnected()){
+            if (item.isConnected()) {
                 holder.connectedIv.setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 holder.connectedIv.setVisibility(View.GONE);
             }
             holder.SSIDTv.setText(item.getSsid());
@@ -312,7 +365,7 @@ public class WifiSettingsActivity extends BaseActivity {
             return convertView;
         }
 
-        class ViewHolder{
+        class ViewHolder {
             TextView SSIDTv;
             ImageView connectedIv;
         }

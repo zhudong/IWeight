@@ -13,7 +13,7 @@
             android:id="@+id/order_item_number_tv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="3"
             android:gravity="center"
             android:text="ax0382018042716005"
             android:textColor="@color/black"

@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
 import com.axecom.iweight.base.BaseEntity;
+import com.axecom.iweight.base.BusEvent;
 import com.axecom.iweight.bean.ChooseBean;
 import com.axecom.iweight.bean.LocalSettingsBean;
 import com.axecom.iweight.conf.Constants;
@@ -28,6 +29,8 @@ import com.axecom.iweight.utils.SPUtils;
 import com.google.gson.internal.LinkedTreeMap;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -61,6 +64,7 @@ public class LocalSettingsActivity extends BaseActivity {
     private List<UsbSerialDriver> availableDrivers;
     private UsbManager manager;
     private ArrayList<ChooseBean> deviceList;
+    private ArrayList<ChooseBean> printerList;
 
     private LocalSettingsBean.Value valueMap;
 
@@ -140,11 +144,23 @@ public class LocalSettingsActivity extends BaseActivity {
         }
         ChooseBean chooseBean;
         deviceList = new ArrayList();
+        printerList = new ArrayList<>();
+        chooseBean = new ChooseBean();
+        chooseBean.setChooseItem("内置打印机：/dev/ttyS4");
+        printerList.add(chooseBean);
         for (int i = 0; i < availableDrivers.size(); i++) {
-            chooseBean = new ChooseBean();
-            chooseBean.setChooseItem(availableDrivers.get(i).getDevice().getDeviceName());
-            deviceList.add(chooseBean);
+            if (availableDrivers.get(i).getDevice().getVendorId() == 26728 && availableDrivers.get(i).getDevice().getProductId() == 1280) {
+                chooseBean = new ChooseBean();
+                chooseBean.setChooseItem("外部打印机：" + availableDrivers.get(i).getDevice().getDeviceName());
+                printerList.add(chooseBean);
+            }
+            if (availableDrivers.get(i).getDevice().getVendorId() == 6790 && availableDrivers.get(i).getDevice().getProductId() == 29987) {
+                chooseBean = new ChooseBean();
+                chooseBean.setChooseItem("外部读卡器：" + availableDrivers.get(i).getDevice().getDeviceName());
+                deviceList.add(chooseBean);
+            }
         }
+
     }
 
     public void getScalesSettingData() {
@@ -163,7 +179,6 @@ public class LocalSettingsActivity extends BaseActivity {
                             Long saveDate = (Long) SPUtils.get(LocalSettingsActivity.this, "currentDate", null);
                             if (saveDate != null) {
                                 if (saveDate.compareTo(Long.parseLong(localSettingsBeanBaseEntity.getData().value.card_reader_type.update_time)) > 0) {
-                                    LogUtils.d("111111111111111111111");
                                 }
                             }
                             valueMap = localSettingsBeanBaseEntity.getData().value;
@@ -279,9 +294,11 @@ public class LocalSettingsActivity extends BaseActivity {
         if (valueMap == null)
             return;
 
-        valueMap.printer_port.update_time = System.currentTimeMillis() + "";
-        valueMap.printer_port.val = printerPortChooseTv.getText().toString();
-        SPUtils.saveObject(this, KEY_PRINTER_PORT, valueMap.printer_port);
+        if (!TextUtils.isEmpty(printerPortChooseTv.getText())) {
+            valueMap.printer_port.update_time = System.currentTimeMillis() + "";
+            valueMap.printer_port.val = printerPortChooseTv.getText().toString().split("：")[1];
+            SPUtils.saveObject(this, KEY_PRINTER_PORT, valueMap.printer_port);
+        }
 
         valueMap.number_of_prints_configuration.update_time = System.currentTimeMillis() + "";
         valueMap.number_of_prints_configuration.val = printerCountTv.getText().toString();
@@ -302,7 +319,8 @@ public class LocalSettingsActivity extends BaseActivity {
         valueMap.screen_off.update_time = System.currentTimeMillis() + "";
         valueMap.screen_off.val = sleepTimeTv.getText().toString();
         SPUtils.saveObject(this, KEY_SCREEN_SLEEP, valueMap.screen_off);
-        Settings.System.putInt(getContentResolver(),android.provider.Settings.System.SCREEN_OFF_TIMEOUT,60 * 1000 * Integer.parseInt(sleepTimeTv.getText().toString()));
+        Settings.System.putInt(getContentResolver(), android.provider.Settings.System.SCREEN_OFF_TIMEOUT, 60 * 1000 * Integer.parseInt(sleepTimeTv.getText().toString()));
+        EventBus.getDefault().post(new BusEvent(BusEvent.SAVE_LOCAL_SUCCESS, true));
         showLoading("保存成功");
     }
 
@@ -321,7 +339,7 @@ public class LocalSettingsActivity extends BaseActivity {
                 }).show();
                 break;
             case R.id.local_settings_printer_port_choose_btn:
-                chooseBuilder.create(deviceList, printerPos, new ChooseDialog2.OnSelectedListener() {
+                chooseBuilder.create(printerList, printerPos, new ChooseDialog2.OnSelectedListener() {
                     @Override
                     public void onSelected(AdapterView<?> parent, View view, int position, long id) {
                         printerPos = position;

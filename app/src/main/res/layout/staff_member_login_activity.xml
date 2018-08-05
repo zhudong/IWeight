@@ -114,7 +114,7 @@
                 android:layout_marginLeft="2dp"
                 android:layout_weight="1"
                 android:background="@drawable/shape_weight_display_bg"
-                android:text="返回设置"
+                android:text="返回"
                 android:textColor="@color/black"
                 android:textSize="20sp" />
         </LinearLayout>

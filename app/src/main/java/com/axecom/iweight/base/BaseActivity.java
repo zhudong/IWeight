@@ -1,18 +1,29 @@
 package com.axecom.iweight.base;
 
 import android.annotation.SuppressLint;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.hardware.display.DisplayManager;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Looper;
+import android.os.RemoteException;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.PagerAdapter;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,33 +31,59 @@ import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import com.axecom.iweight.R;
+import com.axecom.iweight.bean.Advertis;
+import com.axecom.iweight.bean.SubOrderBean;
+import com.axecom.iweight.bean.SubOrderReqBean;
+import com.axecom.iweight.manager.AccountManager;
 import com.axecom.iweight.manager.ActivityController;
+import com.axecom.iweight.manager.BannerService;
+import com.axecom.iweight.manager.DeviceConnFactoryManager;
+import com.axecom.iweight.net.RetrofitFactory;
+import com.axecom.iweight.ui.activity.BannerActivity;
 import com.axecom.iweight.ui.activity.HomeActivity;
 import com.axecom.iweight.ui.activity.MainActivity;
+import com.axecom.iweight.ui.activity.UseCashActivity;
+import com.axecom.iweight.ui.uiutils.ImageLoaderHelper;
 import com.axecom.iweight.ui.uiutils.ViewUtils;
 import com.axecom.iweight.utils.LogUtils;
+import com.axecom.iweight.utils.SPUtils;
+import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
+import com.bigkoo.convenientbanner.holder.Holder;
+import com.bumptech.glide.Glide;
+import com.gprinter.aidl.GpService;
+//import com.gprinter.io.PortParameters;
+//import com.gprinter.service.GpPrintService;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.ObservableTransformer;
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 
@@ -64,34 +101,35 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
     private SweetAlertDialog mSweetAlertDialog;
     private UsbSerialDriver gpDriver;
 
+
     @SuppressLint("InlinedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         super.onCreate(savedInstanceState);
         this.getWindow().setFlags(FLAG_HOMEKEY_DISPATCHED, FLAG_HOMEKEY_DISPATCHED);//关键代码
-        //注册EventBus
         EventBus.getDefault().register(this);
-        //沉浸式标题栏
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-        //getSupportActionBar().hide();
+//        DisplayManager displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
+//        //获取屏幕数量
+//        Display[] presentationDisplays = displayManager.getDisplays();
+//        LogUtils.d("------------: " + presentationDisplays.length + "  --- " + presentationDisplays[1].getName());
+//        if (presentationDisplays.length > 1) {
+//            banner = new BannerActivity(this, presentationDisplays[1]);
+//        }
+//        banner.show();
+//        advertising();
+        Intent bannerIntent = new Intent(this, BannerService.class);
+        startService(bannerIntent);
         if (Integer.parseInt(android.os.Build.VERSION.SDK) > 19) {
-            /*// 透明状态栏
-            getWindow().addFlags(
-                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            // 透明导航栏
-            getWindow().addFlags(
-                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);*/
             getWindow().setStatusBarColor(getResources().getColor(R.color.black));
-            //view.setPadding(0, 20, 0, 0);
         }
         //
-        //mSweetAlertDialog = new SweetAlertDialog(this);
         View view = setInitView();
         setContentView(view);
         //这里这一段会影响弹出的dialog型的Activity，故暂时注释掉
         //getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+
 
         ButterKnife.bind(this);
         mViewUtils = new ViewUtils(this);
@@ -100,19 +138,58 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         SysApplication.mWidthPixels = dm.widthPixels;
         SysApplication.mHeightPixels = dm.heightPixels;
-//        mMenuRoot = View.inflate(this, R.layout.menu_layout, null);
-//        mMenuRoot.findViewById(R.id.ll_menu_2home_page).setOnClickListener(new MenuClickLintener());
-//        mMenuRoot.findViewById(R.id.ll_menu__share).setOnClickListener(new MenuClickLintener());
-
-        //PushAgent.getInstance(this).onAppStart();
         ActivityController.addActivity(this);
         initView();
     }
 
 
-    /**
-     * 初始化视图(例如一系列的注册控件之类的)的方法,重写它就可以了
-     */
+
+    public void isOnline() {
+        RetrofitFactory.getInstance().API()
+                .isOnline(AccountManager.getInstance().getToken(), AccountManager.getInstance().getScalesId())
+                .compose(this.<BaseEntity>setThread())
+                .subscribe(new Observer<BaseEntity>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
+
+                    @Override
+                    public void onNext(BaseEntity baseEntity) {
+                        if (baseEntity.isSuccess()) {
+
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                    }
+                });
+    }
+
+    public class NetworkImageHolderView implements Holder<String> {
+        private ImageView imageView;
+
+        @Override
+        public View createView(Context context) {
+            imageView = new ImageView(context);
+            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+            return imageView;
+        }
+
+        @Override
+        public void UpdateUI(Context context, int position, String data) {
+            imageView.setImageResource(R.drawable.logo);
+//            ImageLoader imageLoader = ImageLoader.getInstance();
+//            imageLoader.displayImage(data, imageView);
+            Glide.with(context).load(data).into(imageView);
+        }
+    }
+
     public void initView() {
 
     }
@@ -127,15 +204,12 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         super.onActivityResult(requestCode, resultCode, data);
-
     }
 
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
     }
 
 
@@ -151,9 +225,7 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
     protected void onDestroy() {
         // TODO Auto-generated method stub
         super.onDestroy();
-        //ActivityController.removeActivity(this);
         EventBus.getDefault().unregister(this);
-        //ButterKnife.unbind(this);
     }
 
 
@@ -166,21 +238,6 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
     protected void onPause() {
         super.onPause();
     }
-
-    /* public String getMachineCode() {
-     *//*  final TelephonyManager tm = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
-        final String tmDevice, tmSerial, tmPhone, androidId;
-        tmDevice = "" + tm.getDeviceId();
-        tmSerial = "" + tm.getSimSerialNumber();
-        androidId = "" + android.provider.Settings.Secure.getString(getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
-        UUID deviceUuid = new UUID(androidId.hashCode(), ((long) tmDevice.hashCode() << 32) | tmSerial.hashCode());
-        String uniqueId = deviceUuid.toString();*//*
-        //LogUtils.e("这是机器码:" + uniqueId);
-        //SysApplication.machineCode = uniqueId;
-        //NetEngine.setUuid(uniqueId);
-        return uniqueId;
-    }
-*/
 
     /**
      * @param et 隐藏软键盘
@@ -195,7 +252,6 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
                     getCurrentFocus().getWindowToken(),
                     InputMethodManager.HIDE_NOT_ALWAYS);
         }
-
     }
 
     public void showSoftInput(EditText editText) {
@@ -222,11 +278,7 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
 
     }
 
-    /**
-     * 因为我们不知道继承这个类的Activity长什么样子,这里我们就定义为抽象方法让其进行返回来设置
-     *
-     * @return View
-     */
+
     public abstract View setInitView();
 
 
@@ -264,10 +316,17 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
         }
     }
 
+    public void showLoading(String titleText, int type) {
+        mSweetAlertDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        mSweetAlertDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        mSweetAlertDialog.setTitleText(titleText);
+        mSweetAlertDialog.setCancelable(true);
+        mSweetAlertDialog.show();
+    }
+
     public void showLoading() {
         mSweetAlertDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         mSweetAlertDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
-//        mSweetAlertDialog.setTitleText("Loading");
         mSweetAlertDialog.setCancelable(true);
         mSweetAlertDialog.show();
     }
@@ -339,9 +398,12 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
         }
     }
 
-    public void reBootApp() {
-        if (!(this instanceof HomeActivity)) {
-            finish();
+    public void setEditText(EditText editText, int position, String text, int type) {
+        if (position == 9) {
+            if (!TextUtils.isEmpty(editText.getText()))
+                editText.setText(editText.getText().subSequence(0, editText.getText().length() - 1));
+        } else {
+            editText.setText(editText.getText() + text);
         }
     }
 
@@ -372,6 +434,7 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
         Date m = c.getTime();
         return simpleDateFormat.format(m);
     }
+
     public String getCurrentTime(String specifiedDay, String format, int type) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);// HH:mm:ss
         Calendar c = Calendar.getInstance();
@@ -407,12 +470,6 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
     @Subscribe
     public void onEventMainThread(BusEvent event) {
         LogUtils.d("main", this.getClass().getSimpleName());
-        /*if (event.getType() == BusEvent.GO_ADD_MERCHAND_CODE) {
-            if (!(this instanceof MainActivity)) {
-                finish();
-            }
-        }*/
-
         if (event.getType() == BusEvent.GO_HOME_CODE || event.getType() == BusEvent.LOGIN_SUCCESS) {
             if (!(this instanceof MainActivity)) {
                 finish();
@@ -423,57 +480,51 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
                 finish();
             }
         }
-
-        /*if (event.getType() == BusEvent.PARCEL_APPEND) {
-            if (!(this instanceof MainActivity)) {
-                finish();
+        if (event.getType() == BusEvent.NET_WORK_AVAILABLE) {
+            if (event.getBooleanParam()) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        List<SubOrderReqBean> orders = (List<SubOrderReqBean>) SPUtils.readObject(BaseActivity.this, "local_order");
+                        for (int i = 0; i < orders.size(); i++) {
+                            submitOrder(orders.get(i));
+                        }
+                    }
+                }).start();
             }
-        }*/
-
-        /*if (event.getType() == BusEvent.GO_EDIT_MERHAND_CODE) {
-            if (this instanceof ChooseClassifyChildActivity || this instanceof ChooseClassifyGroupActivity) {
-                finish();
-            }
-        }*/
-//        if (event.getType() == BusEvent.LOGOUT) {
-//            if (!(this instanceof LoginByPhoneActivity)) {
-//                finish();
-//            }
-//        }
-
-//        if (event.getType() == BusEvent.SEND_DOWNLOAD_IMAGES_PROGRESS) {
-//            if (!((this.hashCode() + "").equals(event.getStrParam())))
-//                return;
-//            int temp = event.getIntValue();
-//            KLog.i("downlaod " + temp);
-//            if (temp == 0) {
-//                //出现下载进度条提示
-//                showProgressDiaLog(SweetAlertDialog.PROGRESS_TYPE, getTitleString(temp));
-//                getSweetAlertDialog().setCancelable(true);
-//            }
-//            getSweetAlertDialog().setTitleText(getTitleString(temp));
-//            if (ShareManager.urls != null && ShareManager.urls.size() == temp) {
-//                //下载完毕，显示选择分享方式activity
-//                getSweetAlertDialog().changeAlertType(SweetAlertDialog.SUCCESS_TYPE);
-////                getSweetAlertDialog().setTitleText(getString(R.string.item_name_has_been_copy));
-//                dissMissProgressDiaLog(1000L);
-//                toActivity(ShareSelectActiviy.class);
-//            } else {
-//                //更改下载进度条提示
-//
-//            }
-////            }
-//        }
+        }
+        if (event.getType() == BusEvent.REPORT_DEVICE_IS_ONLINE) {
+            isOnline();
+        }
     }
 
+    public void submitOrder(SubOrderReqBean subOrderReqBean) {
+        RetrofitFactory.getInstance().API()
+                .submitOrder(subOrderReqBean)
+                .compose(this.<BaseEntity<SubOrderBean>>setThread())
+                .subscribe(new Observer<BaseEntity<SubOrderBean>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
 
+                    @Override
+                    public void onNext(final BaseEntity<SubOrderBean> subOrderBeanBaseEntity) {
+                        if (subOrderBeanBaseEntity.isSuccess()) {
+                            LogUtils.d("提交成功");
+                        } else {
+                        }
+                    }
 
-    /*public String getTitleString(int temp) {
-        if (ShareManager.urls == null) {
-            return "null";
-        }
-        return getString(R.string.pictures_downing) + temp + "/" + ShareManager.urls.size();
-    }*/
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                    }
+                });
+    }
 
     public void toActivity(Class target) {
         this.startActivity(new Intent(this, target));
@@ -497,7 +548,6 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
             this.overridePendingTransition(R.anim.activity_translate_x_in, R.anim.activity_translate_x_out);
         }
     }
-
 
     protected void share() {
 

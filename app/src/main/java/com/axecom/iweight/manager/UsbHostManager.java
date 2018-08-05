@@ -84,9 +84,9 @@ public class UsbHostManager {
         if (SysApplication.getInstances().getCardDevice() == null) {
 //            showLoading("没有插入读卡器，请检查设备");
         }
-        if (SysApplication.getInstances().getGpDriver() == null) {
+//        if (SysApplication.getInstances().getGpDriver() == null) {
 //            showLoading("没有插入打印机，请检查设备");
-        }
+//        }
 // Read some data! Most have just one port (port 0).
 
     }

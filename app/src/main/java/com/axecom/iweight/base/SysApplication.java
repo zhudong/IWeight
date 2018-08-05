@@ -18,6 +18,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+import com.raizlabs.android.dbflow.config.FlowConfig;
+import com.raizlabs.android.dbflow.config.FlowManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -86,7 +88,6 @@ public class SysApplication extends MultiDexApplication {
     public void onCreate() {// 程序的入口方法
 
         instance = this;
-        //登录
 
         // 1.上下文
         mContext = getApplicationContext();
@@ -96,12 +97,6 @@ public class SysApplication extends MultiDexApplication {
 
         // 3.得到主线程的id
         mMainThreadId = android.os.Process.myTid();
-        /**
-         myTid: thread
-         myPid: process
-         myUid: user
-         */
-        //
 
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
@@ -109,6 +104,7 @@ public class SysApplication extends MultiDexApplication {
                 ex.printStackTrace();
             }
         });
+        FlowManager.init(new FlowConfig.Builder(this).build());
 
         //初始化Facebook登录
         mImageLoader = ImageLoader.getInstance();
@@ -118,17 +114,7 @@ public class SysApplication extends MultiDexApplication {
         //极光推送
         JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
-//        gPprinterManager = new GPprinterManager(this);
 
-        //集成友盟统计
-        //MobclickAgent.startWithConfigure(new MobclickAgent.UMAnalyticsConfig(this, "57ce5fea67e58ebf39000507", getChanl()));
-        //    NetEngine.setmChannelName(getChanl());
-//        uuid = getMachineCode();
-        //KLog.i("uuid = " + uuid);
-        //AccountManager.getInstance().login();
-//        AccountManager.getInstance().getSession();
-        // TODO: 2017/2/8 集成网易七鱼
-        //这里只是简单的设置了一个圆角的ImageLoader
         options02 = new DisplayImageOptions.Builder().resetViewBeforeLoading(true).displayer(new FadeInBitmapDisplayer(100)).displayer(new RoundedBitmapDisplayer(10)).cacheInMemory(true).cacheOnDisk(true).showImageOnLoading(R.drawable.shape_bg_for_home_head).build();
         super.onCreate();
     }
@@ -155,72 +141,6 @@ public class SysApplication extends MultiDexApplication {
         return mSerachHistoryList;
     }
 
-    //private Map<String, GeneratedMessage> mProtocolMap = new HashMap<>();
-
-    /*public Map<String, GeneratedMessage> getProtocolMap() {
-        return mProtocolMap;
-    }*/
-
-    public int getQtyCount() {
-        return qtyCount;
-    }
-
-    public void setQtyCount(int qtyCount) {
-
-        //LogUtils.d("--------------app count " + qtyCount);
-        SysApplication.this.qtyCount = qtyCount;
-    }
-
-    public int getShippingScheme() {
-        return shippingScheme;
-    }
-
-    public void setShippingScheme(int shippingScheme) {
-        this.shippingScheme = shippingScheme;
-    }
-
-    public String getOrderNumber() {
-        return orderNumber;
-    }
-
-    public void setOrderNumber(String orderNumber) {
-        this.orderNumber = orderNumber;
-    }
-
-    public int getPaymentRequestCode() {
-        return paymentRequestCode;
-    }
-
-    public void setPaymentRequestCode(int paymentRequestCode) {
-        this.paymentRequestCode = paymentRequestCode;
-    }
-
-    public String getGiftCardOrderNo() {
-        return giftCardOrderNo;
-    }
-
-
-    public void setGiftCardOrderNo(String giftCardOrderNo) {
-        this.giftCardOrderNo = giftCardOrderNo;
-    }
-
-    public long getGiftCardOrderId() {
-        return giftCardOrderId;
-    }
-
-    public void setGiftCardOrderId(long giftCardOrderId) {
-        this.giftCardOrderId = giftCardOrderId;
-    }
-
-    public int getOrderType() {
-        return orderType;
-    }
-
-    public void setOrderType(int orderType) {
-        this.orderType = orderType;
-    }
-
-
     public String getMachineCode() {
         final TelephonyManager tm = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
         final String tmDevice, tmSerial, tmPhone, androidId;
@@ -242,14 +162,6 @@ public class SysApplication extends MultiDexApplication {
             e.printStackTrace();
         }
         return channel;
-    }
-
-    public long getParcelId() {
-        return parcelId;
-    }
-
-    public void setParcelId(long parcelId) {
-        this.parcelId = parcelId;
     }
 
     public static ImageLoader getImageLoader() {

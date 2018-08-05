@@ -58,7 +58,7 @@ public class ModityCommodityActivity extends BaseActivity {
         nameTv.setText(bean.getHotKeyGoods().name);
         idTv.setText(bean.getHotKeyGoods().id + "");
         priceEt.setText(bean.getHotKeyGoods().price + "");
-        traceableEt.setText(bean.getHotKeyGoods().traceable_code);
+        traceableEt.setText(bean.getHotKeyGoods().traceable_code + "");
         isDefaultCtv.setChecked(bean.getHotKeyGoods().is_default == 0 ? false : true);
         softKey.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -89,6 +89,7 @@ public class ModityCommodityActivity extends BaseActivity {
             case R.id.modity_commodity_confirm_btn:
                 ScalesCategoryGoods.HotKeyGoods goods = new ScalesCategoryGoods.HotKeyGoods();
                 goods.id = bean.getHotKeyGoods().id;
+                goods.cid = bean.getHotKeyGoods().cid;
                 goods.name = bean.getHotKeyGoods().name;
                 goods.price = priceEt.getText().toString();
                 goods.traceable_code = Integer.parseInt(traceableEt.getText().toString());

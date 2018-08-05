@@ -107,11 +107,11 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:id="@+id/calibration_weight_tv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="3532"
                     android:textColor="@color/black"
                     android:textSize="70sp"
                     android:textStyle="bold" />
@@ -179,7 +179,6 @@
                         android:id="@+id/calibration_standard_weighing_tv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="1"
                         android:textColor="@color/black"
                         android:textSize="50sp"
                         android:textStyle="bold" />

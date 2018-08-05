@@ -1,6 +1,12 @@
 package com.axecom.iweight.ui.activity;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Handler;
@@ -14,11 +20,13 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
 import com.axecom.iweight.base.BusEvent;
 import com.axecom.iweight.bean.SettingsBean;
+import com.axecom.iweight.manager.PrinterManager;
 import com.axecom.iweight.ui.view.CustomDialog;
 import com.axecom.iweight.utils.SPUtils;
 
@@ -33,6 +41,7 @@ import java.util.List;
 
 public class SettingsActivity extends BaseActivity {
     public static final String KET_SWITCH_SIMPLE_OR_COMPLEX = "key_switch_simple_or_complex";
+    private static final String ACTION_NET_CHANGE = "android.net.conn.CONNECTIVITY_CHANGE";
 
     private static final int POSITION_SWITCH = 0;
     private static final int POSITION_PATCH = 1;
@@ -96,7 +105,15 @@ public class SettingsActivity extends BaseActivity {
         if(!wifiManager.isWifiEnabled()){
             wifiManager.setWifiEnabled(true);
         }
+        registerReceiver(netWorkReceiver, new IntentFilter(ACTION_NET_CHANGE));
+
         return rootView;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(netWorkReceiver);
     }
 
     @Override
@@ -117,6 +134,10 @@ public class SettingsActivity extends BaseActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             switch (position) {
+                case POSITION_PATCH:
+                    EventBus.getDefault().post(new BusEvent(BusEvent.POSITION_PATCH, SPUtils.getString(SettingsActivity.this, "print_orderno", ""), SPUtils.getString(SettingsActivity.this, "print_payid", "")));
+//                    finish();
+                    break;
                 case POSITION_REPORTS:
                     startDDMActivity(DataSummaryActivity.class, false);
                     break;
@@ -145,8 +166,8 @@ public class SettingsActivity extends BaseActivity {
                     startDDMActivity(SystemSettingsActivity.class, false);
                     break;
                 case POSITION_RE_BOOT:
-                    EventBus.getDefault().post(new BusEvent(BusEvent.GO_HOME_PAGE, true));
-//                    startDDMActivity(HomeActivity.class, false);
+//                    EventBus.getDefault().post(new BusEvent(BusEvent.GO_HOME_PAGE, true));
+                    startDDMActivity(HomeActivity.class, false);
                     break;
                 case POSITION_WEIGHT:
                     finish();
@@ -157,6 +178,7 @@ public class SettingsActivity extends BaseActivity {
                     SPUtils.put(SettingsActivity.this, KET_SWITCH_SIMPLE_OR_COMPLEX, !switchSimpleOrComplex);
                     break;
                 case POSITION_RE_CONNECTING:
+                    showLoading();
                     String wifiSSID = SPUtils.getString(SettingsActivity.this, WifiSettingsActivity.KEY_SSID_WIFI_SAVED, "");
                     if(!TextUtils.isEmpty(wifiSSID)){
                         WifiConfiguration mWifiConfiguration;
@@ -165,11 +187,29 @@ public class SettingsActivity extends BaseActivity {
                             mWifiConfiguration = tempConfig;
                             boolean b = wifiManager.enableNetwork(mWifiConfiguration.networkId, true);
                             if(b){
-                                showLoading("连接成功");
+//                                showLoading("连接成功");
+                                closeLoading();
                             }
                         }
                     }
                     break;
+            }
+        }
+    };
+
+    private BroadcastReceiver netWorkReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(ACTION_NET_CHANGE)) {
+                closeLoading();
+                ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+                if (networkInfo != null && networkInfo.isAvailable()) {
+                    Toast.makeText(context, "连接成功", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context, "连接失败", Toast.LENGTH_SHORT).show();
+                }
             }
         }
     };

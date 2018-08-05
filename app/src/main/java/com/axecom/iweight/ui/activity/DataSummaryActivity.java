@@ -104,7 +104,7 @@ public class DataSummaryActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        currentDay = getCurrentTime("2018-06-17", "yyyy-MM-dd", 0);
+        currentDay = getCurrentTime( "yyyy-MM-dd");
         getReportsList(currentDay, typeVal + "", currentPage + "", pageNum + "");
         dataList = new ArrayList<>();
         dataAdapter = new DataAdapter(this, dataList);
@@ -245,7 +245,7 @@ public class DataSummaryActivity extends BaseActivity {
                 dayReportTv.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_white_btn_bg));
                 monthReportTv.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_white_btn_bg));
                 salesDetailsReportTv.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_gray_btn_bg));
-                getOrderList(getCurrentTime("2018-06-17", "yyyy-MM-dd", 0), "1", "10");
+                getOrderList(getCurrentTime("yyyy-MM-dd"), "1", "10");
                 break;
             case R.id.data_summary_back_tv:
                 finish();

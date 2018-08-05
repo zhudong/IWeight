@@ -20,12 +20,12 @@ import com.axecom.iweight.R;
 import com.axecom.iweight.utils.LogUtils;
 import com.gprinter.aidl.GpService;
 import com.gprinter.command.EscCommand;
-import com.gprinter.command.GpCom;
+//import com.gprinter.command.GpCom;
 import com.gprinter.command.GpUtils;
 import com.gprinter.command.LabelCommand;
-import com.gprinter.io.GpDevice;
-import com.gprinter.io.PortParameters;
-import com.gprinter.service.GpPrintService;
+//import com.gprinter.io.GpDevice;
+//import com.gprinter.io.PortParameters;
+//import com.gprinter.service.GpPrintService;
 
 import java.util.Map;
 import java.util.Vector;
@@ -52,8 +52,8 @@ public class GPprinterManager {
         conn = new PrinterServiceConnection();
         registerBroadcast();
 
-        Intent intent = new Intent(context, GpPrintService.class);
-        context.bindService(intent, conn, context.BIND_AUTO_CREATE);
+//        Intent intent = new Intent(context, GpPrintService.class);
+//        context.bindService(intent, conn, context.BIND_AUTO_CREATE);
     }
 
     class PrinterServiceConnection implements ServiceConnection {
@@ -70,7 +70,7 @@ public class GPprinterManager {
 
     private void registerBroadcast() {
         IntentFilter filter = new IntentFilter();
-        filter.addAction(GpCom.ACTION_CONNECT_STATUS);
+//        filter.addAction(GpCom.ACTION_CONNECT_STATUS);
         context.registerReceiver(PrinterStatusBroadcastReceiver, filter);
     }
     /**
@@ -80,17 +80,17 @@ public class GPprinterManager {
     private BroadcastReceiver PrinterStatusBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (GpCom.ACTION_CONNECT_STATUS.equals(intent.getAction())) {
-                int type = intent.getIntExtra(GpPrintService.CONNECT_STATUS, 0);
-                int id = intent.getIntExtra(GpPrintService.PRINTER_ID, 0);
-                Log.d(TAG, "connect status " + type);
-                if (type == GpDevice.STATE_CONNECTING) {
-
-                } else if (type == GpDevice.STATE_NONE) {
-                } else if (type == GpDevice.STATE_VALID_PRINTER) {
-                } else if (type == GpDevice.STATE_INVALID_PRINTER) {
-                }
-            }
+//            if (GpCom.ACTION_CONNECT_STATUS.equals(intent.getAction())) {
+//                int type = intent.getIntExtra(GpPrintService.CONNECT_STATUS, 0);
+//                int id = intent.getIntExtra(GpPrintService.PRINTER_ID, 0);
+//                Log.d(TAG, "connect status " + type);
+//                if (type == GpDevice.STATE_CONNECTING) {
+//
+//                } else if (type == GpDevice.STATE_NONE) {
+//                } else if (type == GpDevice.STATE_VALID_PRINTER) {
+//                } else if (type == GpDevice.STATE_INVALID_PRINTER) {
+//                }
+//            }
         }
     };
 //        @Override
@@ -119,12 +119,12 @@ public class GPprinterManager {
      */
     public void openConnect(String deviceAddress) {
         //id为打印服务操作的打印机的id，最大可以操作3台
-        try {
+//        try {
             Toast.makeText(context, "openConnect", Toast.LENGTH_SHORT).show();;
-            mService.openPort(mPrinterId, PortParameters.USB, deviceAddress, 0);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+//            mService.openPort(mPrinterId, PortParameters.USB, deviceAddress, 0);
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//        }
 
     }
 
@@ -162,11 +162,11 @@ public class GPprinterManager {
     public void getCommandTypes() {
         try {
             final int type = mService.getPrinterCommandType(mPrinterId);
-            if(type == GpCom.ESC_COMMAND){
-                LogUtils.d("ESC Command");
-            }else {
-                LogUtils.d("TSC Command");
-            }
+//            if(type == GpCom.ESC_COMMAND){
+//                LogUtils.d("ESC Command");
+//            }else {
+//                LogUtils.d("TSC Command");
+//            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -241,10 +241,10 @@ public class GPprinterManager {
         int rs;
         try {
             rs = mService.sendEscCommand(mPrinterIndex, sss);
-            GpCom.ERROR_CODE r = GpCom.ERROR_CODE.values()[rs];
-            if (r != GpCom.ERROR_CODE.SUCCESS) {
-                Toast.makeText(context, GpCom.getErrorText(r), Toast.LENGTH_SHORT).show();
-            }
+//            GpCom.ERROR_CODE r = GpCom.ERROR_CODE.values()[rs];
+//            if (r != GpCom.ERROR_CODE.SUCCESS) {
+//                Toast.makeText(context, GpCom.getErrorText(r), Toast.LENGTH_SHORT).show();
+//            }
         } catch (RemoteException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -281,15 +281,15 @@ public class GPprinterManager {
         byte[] bytes = GpUtils.ByteTo_byte(datas);
         String str = Base64.encodeToString(bytes, Base64.DEFAULT);
         int rel;
-        try {
-            rel = mService.sendLabelCommand(mPrinterIndex, str);
-            GpCom.ERROR_CODE r = GpCom.ERROR_CODE.values()[rel];
-            if (r != GpCom.ERROR_CODE.SUCCESS) {
-                Toast.makeText(context, GpCom.getErrorText(r), Toast.LENGTH_SHORT).show();
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            rel = mService.sendLabelCommand(mPrinterIndex, str);
+//            GpCom.ERROR_CODE r = GpCom.ERROR_CODE.values()[rel];
+//            if (r != GpCom.ERROR_CODE.SUCCESS) {
+//                Toast.makeText(context, GpCom.getErrorText(r), Toast.LENGTH_SHORT).show();
+//            }
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//        }
     }
 
 }

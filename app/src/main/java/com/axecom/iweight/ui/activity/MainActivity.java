@@ -1,28 +1,20 @@
 package com.axecom.iweight.ui.activity;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
+import android.bluetooth.BluetoothSocket;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.hardware.usb.UsbManager;
+import android.hardware.display.DisplayManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
-import android.os.Looper;
 import android.os.Message;
-import android.os.RemoteException;
+import android.text.Editable;
 import android.text.TextUtils;
-import android.util.Base64;
-import android.util.Log;
+import android.text.TextWatcher;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,57 +26,39 @@ import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
 import com.axecom.iweight.base.BaseEntity;
 import com.axecom.iweight.base.BusEvent;
-import com.axecom.iweight.base.SysApplication;
+import com.axecom.iweight.bean.Advertis;
+import com.axecom.iweight.bean.LocalSettingsBean;
 import com.axecom.iweight.bean.LoginInfo;
 import com.axecom.iweight.bean.ScalesCategoryGoods;
-import com.axecom.iweight.bean.SubOrderBean;
 import com.axecom.iweight.bean.SubOrderReqBean;
-import com.axecom.iweight.conf.Constants;
 import com.axecom.iweight.manager.AccountManager;
 import com.axecom.iweight.manager.ClientManager;
-import com.axecom.iweight.manager.GPprinterManager;
 import com.axecom.iweight.manager.MacManager;
+import com.axecom.iweight.manager.PrinterManager;
+import com.axecom.iweight.manager.ThreadPool;
 import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.ui.adapter.DigitalAdapter;
 import com.axecom.iweight.ui.adapter.GridAdapter;
 import com.axecom.iweight.ui.view.BTHelperDialog;
-import com.axecom.iweight.ui.view.BluetoothDialog;
+import com.axecom.iweight.utils.ButtonUtils;
 import com.axecom.iweight.utils.LogUtils;
+import com.axecom.iweight.utils.MoneyTextWatcher;
 import com.axecom.iweight.utils.NetworkUtil;
 import com.axecom.iweight.utils.SPUtils;
-import com.gprinter.aidl.GpService;
-import com.gprinter.command.EscCommand;
-import com.gprinter.command.GpCom;
-import com.gprinter.command.GpUtils;
-import com.gprinter.command.LabelCommand;
-import com.gprinter.io.PortParameters;
-import com.gprinter.service.GpPrintService;
-import com.hoho.android.usbserial.driver.UsbSerialDriver;
-import com.hoho.android.usbserial.driver.UsbSerialProber;
-import com.inuker.bluetooth.library.BluetoothClient;
-import com.inuker.bluetooth.library.beacon.Beacon;
-import com.inuker.bluetooth.library.search.SearchRequest;
-import com.inuker.bluetooth.library.search.SearchResult;
-import com.inuker.bluetooth.library.search.response.SearchResponse;
-import com.inuker.bluetooth.library.utils.BluetoothLog;
+import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Serializable;
-import java.text.SimpleDateFormat;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -93,26 +67,15 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observer;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import top.wuhaojie.bthelper.BtHelperClient;
-import top.wuhaojie.bthelper.IErrorListener;
-import top.wuhaojie.bthelper.OnSearchDeviceListener;
-
-import static com.axecom.iweight.base.SysApplication.mContext;
-import static com.axecom.iweight.ui.uiutils.UIUtils.getResources;
-import static com.nostra13.universalimageloader.utils.IoUtils.DEFAULT_BUFFER_SIZE;
 
 public class MainActivity extends BaseActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private static final String KEY_ISHOW_COUNT_LAYOUT = "key_ishow_count_layout";
     private static final String KEY_HOT_KEY_GOODS = "key_hot_key_goods";
     private static final String[] DATA_DIGITAL = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "删除", "0", "."};
-    private GPprinterManager gPprinterManager;
-    private PrinterServiceConnection conn = null;
-    private UsbSerialDriver driver;
     private View rootView;
 
     private GridView commoditysGridView;
@@ -121,7 +84,6 @@ public class MainActivity extends BaseActivity {
     private CommodityAdapter commodityAdapter;
     private GridAdapter gridAdapter;
     private DigitalAdapter digitalAdapter;
-    //    private Button bankCardBtn;
     private Button cashBtn;
     private Button settingsBtn;
     private Button mainClearBtn;
@@ -147,10 +109,13 @@ public class MainActivity extends BaseActivity {
     private Bitmap bitmap;
     private String orderNo = "";
     private String payId = "";
-    private String qrCode = "";
     private boolean flag = true;
     private String deviceAddress;
     ThreadPoolExecutor executor;
+    BTHelperDialog.Builder builder;
+    private String port = "/dev/ttyS4";
+    public BannerActivity banner = null;
+    boolean switchSimpleOrComplex;
 
     @Override
     public View setInitView() {
@@ -159,19 +124,20 @@ public class MainActivity extends BaseActivity {
         commoditysGridView = rootView.findViewById(R.id.main_commoditys_grid_view);
         digitalGridView = rootView.findViewById(R.id.main_digital_keys_grid_view);
         commoditysListView = rootView.findViewById(R.id.main_commoditys_list_view);
-//        bankCardBtn = rootView.findViewById(R.id.main_bank_card_btn);
         weightLayout = rootView.findViewById(R.id.main_weight_layout);
         countLayout = rootView.findViewById(R.id.main_count_layout);
         countEt = rootView.findViewById(R.id.main_count_et);
         commodityNameTv = rootView.findViewById(R.id.main_commodity_name_tv);
         grandTotalTv = rootView.findViewById(R.id.main_grandtotal_tv);
         weightTotalTv = rootView.findViewById(R.id.main_weight_total_tv);
+//        weightTotalMsgTv = rootView.findViewById(R.id.main_weight_total_msg_tv);
         weightTv = rootView.findViewById(R.id.main_weight_tv);
         operatorTv = rootView.findViewById(R.id.main_operator_tv);
         stallNumberTv = rootView.findViewById(R.id.main_stall_number_tv);
         componyTitleTv = rootView.findViewById(R.id.main_compony_title_tv);
         priceTotalTv = rootView.findViewById(R.id.main_price_total_tv);
         weightTopTv = rootView.findViewById(R.id.main_weight_top_tv);
+//        weightTopMsgTv = rootView.findViewById(R.id.main_weight_msg_tv);
         cashBtn = rootView.findViewById(R.id.main_cash_btn);
         settingsBtn = rootView.findViewById(R.id.main_settings_btn);
         mainClearBtn = rootView.findViewById(R.id.main_clear_btn);
@@ -179,15 +145,33 @@ public class MainActivity extends BaseActivity {
         addBtn = rootView.findViewById(R.id.main_digital_add_btn);
         priceEt = rootView.findViewById(R.id.main_commodity_price_et);
         priceEt.requestFocus();
+        priceEt.addTextChangedListener(new MoneyTextWatcher(priceEt));
         disableShowInput(priceEt);
+        disableShowInput(countEt);
+        getLoginInfo();
+        getGoodsData();
+        DisplayManager displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
+        Display[] presentationDisplays = displayManager.getDisplays();
+        LogUtils.d("------------: " + presentationDisplays.length + "  --- " + presentationDisplays[1].getName());
+        if (presentationDisplays.length > 1) {
+            banner = new BannerActivity(this, presentationDisplays[1]);
+        }
+        banner.show();
 
-//        gPprinterManager = new GPprinterManager(this);
-        connection();
+        advertising();
+
+        LocalSettingsBean.Value.PrinterPort printerPort = (LocalSettingsBean.Value.PrinterPort) SPUtils.readObject(this, LocalSettingsActivity.KEY_PRINTER_PORT);
+        if (printerPort != null) {
+            port = printerPort.val;
+        }
+        if (TextUtils.equals(port, "/dev/ttyS4")) {
+            printerManager.openGpinter();
+        } else {
+            printerManager.usbConn();
+        }
         BlockingQueue workQueue = new LinkedBlockingDeque<>();
         ThreadFactory threadFactory = Executors.defaultThreadFactory();
         executor = new ThreadPoolExecutor(1, 1, 1, TimeUnit.DAYS, workQueue, threadFactory);
-//        gPprinterManager.openConnect();
-//        bankCardBtn.setOnClickListener(this);
 
         mainClearBtn.setOnClickListener(this);
         cashBtn.setOnClickListener(this);
@@ -198,6 +182,8 @@ public class MainActivity extends BaseActivity {
         return rootView;
     }
 
+    PrinterManager printerManager = new PrinterManager(this);
+
     @Override
     public void initView() {
 
@@ -205,14 +191,23 @@ public class MainActivity extends BaseActivity {
         seledtedGoodsList = new ArrayList<>();
         commodityAdapter = new CommodityAdapter(this, seledtedGoodsList);
         commoditysListView.setAdapter(commodityAdapter);
+        commoditysListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                seledtedGoodsList.remove(position);
+                commodityAdapter.notifyDataSetChanged();
+                calculatePrice();
+                return true;
+            }
+        });
 
         gridAdapter = new GridAdapter(this, hotKeyGoodsList);
         commoditysGridView.setAdapter(gridAdapter);
         commoditysGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                flag = true;
-                executor.submit(new WeightThread());
+//                flag = true;
+//                executor.submit(new WeightThread());
                 selectedGoods = new ScalesCategoryGoods.HotKeyGoods();
                 selectedGoods.id = ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).id;
                 selectedGoods.cid = ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).cid;
@@ -221,19 +216,42 @@ public class MainActivity extends BaseActivity {
                 selectedGoods.is_default = ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).is_default;
                 selectedGoods.name = ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).name;
                 commodityNameTv.setText(selectedGoods.name);
-            }
-        });
-        boolean isConnected = NetworkUtil.isConnected(this);
-        if (isConnected) {
-            getGoodsData();
-            getLoginInfo();
-        } else {
-            List<ScalesCategoryGoods.HotKeyGoods> saveHotKeys = (List<ScalesCategoryGoods.HotKeyGoods>) SPUtils.readObject(this, KEY_HOT_KEY_GOODS);
-            if (saveHotKeys != null) {
-                hotKeyGoodsList.addAll(saveHotKeys);
+                float count = 0;
+                if (!TextUtils.isEmpty(countEt.getText())) {
+                    count = Float.parseFloat(countEt.getText().toString());
+                } else if (!TextUtils.isEmpty(countEt.getHint())) {
+                    count = Float.parseFloat(countEt.getHint().toString());
+                }
+                if (switchSimpleOrComplex) {
+                    grandTotalTv.setText(String.format("%.1f", Float.parseFloat(selectedGoods.price) * count));
+                } else {
+                    if (Float.parseFloat(selectedGoods.price) > 0) {
+                        priceEt.setHint(selectedGoods.price);
+                        if (weightTopTv.getText().toString().indexOf('.') == -1 || weightTopTv.getText().length() - (weightTopTv.getText().toString().indexOf(".") + 1) <= 1) {
+                            grandTotalTv.setText(String.format("%.1f", Float.parseFloat(selectedGoods.price) * Float.parseFloat(weightTopTv.getText().toString()) / 1000));
+                        } else {
+                            grandTotalTv.setText(String.format("%.1f", Float.parseFloat(selectedGoods.price) * Float.parseFloat(weightTopTv.getText().toString())));
+                        }
+                    } else if (!TextUtils.isEmpty(priceEt.getText())) {
+                        if (weightTopTv.getText().toString().indexOf('.') == -1 || weightTopTv.getText().length() - (weightTopTv.getText().toString().indexOf(".") + 1) <= 1) {
+                            grandTotalTv.setText(String.format("%.1f", Float.parseFloat(priceEt.getText().toString()) * Float.parseFloat(weightTopTv.getText().toString()) / 1000));
+                        } else {
+                            grandTotalTv.setText(String.format("%.1f", Float.parseFloat(priceEt.getText().toString()) * Float.parseFloat(weightTopTv.getText().toString())));
+                        }
+                    } else if (!TextUtils.isEmpty(priceEt.getHint())) {
+                        if (weightTopTv.getText().toString().indexOf('.') == -1 || weightTopTv.getText().length() - (weightTopTv.getText().toString().indexOf(".") + 1) <= 1) {
+                            grandTotalTv.setText(String.format("%.1f", Float.parseFloat(priceEt.getHint().toString()) * Float.parseFloat(weightTopTv.getText().toString()) / 1000));
+                        } else {
+                            grandTotalTv.setText(String.format("%.1f", Float.parseFloat(priceEt.getHint().toString()) * Float.parseFloat(weightTopTv.getText().toString())));
+                        }
+                    }
+                }
+
+                gridAdapter.setCheckedAtPosition(position);
                 gridAdapter.notifyDataSetChanged();
             }
-        }
+        });
+
         List<String> digitaList = new ArrayList<>();
 
         for (int i = 0; i < DATA_DIGITAL.length; i++) {
@@ -247,71 +265,36 @@ public class MainActivity extends BaseActivity {
                 if (selectedGoods == null) {
                     return;
                 }
+
                 String text = parent.getAdapter().getItem(position).toString();
-                setEditText(priceEt, position, text);
-                grandTotalTv.setText(priceEt.getText().toString() + " 元");
-                selectedGoods.price = priceEt.getText().toString();
-                selectedGoods.grandTotal = priceEt.getText().toString();
+                switch (rootView.findFocus().getId()) {
+                    case R.id.main_count_et:
+                        setEditText(countEt, position, text);
+                        break;
+                    case R.id.main_commodity_price_et:
+                        setEditText(priceEt, position, text, 0);
+                        break;
+                }
+
+                setGrandTotalTxt();
             }
         });
-        // 注册实时状态查询广播
-        registerReceiver(mBroadcastReceiver, new IntentFilter(GpCom.ACTION_DEVICE_REAL_STATUS));
-        /**
-         * 票据模式下，可注册该广播，在需要打印内容的最后加入addQueryPrinterStatus()，在打印完成后会接收到
-         * action为GpCom.ACTION_DEVICE_STATUS的广播，特别用于连续打印，
-         * 可参照该sample中的sendReceiptWithResponse方法与广播中的处理
-         **/
-        registerReceiver(mBroadcastReceiver, new IntentFilter(GpCom.ACTION_RECEIPT_RESPONSE));
-        /**
-         * 标签模式下，可注册该广播，在需要打印内容的最后加入addQueryPrinterStatus(RESPONSE_MODE mode)
-         * ，在打印完成后会接收到，action为GpCom.ACTION_LABEL_RESPONSE的广播，特别用于连续打印，
-         * 可参照该sample中的sendLabelWithResponse方法与广播中的处理
-         **/
-        registerReceiver(mBroadcastReceiver, new IntentFilter(GpCom.ACTION_LABEL_RESPONSE));
-        registerReceiver(netWorkReceiver, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
-        driver = SysApplication.getInstances().getGpDriver();
-        if (driver != null) {
-//            try {
-//                mGpService.openPort(rootView.getId(), PortParameters.USB, driver.getDevice().getDeviceName(), 0);
-//            } catch (RemoteException e) {
-//                e.printStackTrace();
-//            }
-//            SysApplication.getInstances().gPprinterManager.openConnect(driver.getDevice().getDeviceName());
-        }
-//
+
         if (!ClientManager.getClient().isBluetoothOpened()) {
             ClientManager.getClient().openBluetooth();
         }
 
-        BTHelperDialog.Builder builder = new BTHelperDialog.Builder(this);
+        builder = new BTHelperDialog.Builder(this);
         deviceAddress = SPUtils.getString(this, BTHelperDialog.KEY_BT_ADDRESS, "");
-        if (!TextUtils.isEmpty(deviceAddress)) {
-            reConnect(deviceAddress);
-        } else {
-            builder.create(new BTHelperDialog.OnBtnClickListener() {
-
-                @Override
-                public void onConfirmed(BtHelperClient.STATUS mCurrStatus, String deviceAddress) {
-                    SPUtils.putString(MainActivity.this, BTHelperDialog.KEY_BT_ADDRESS, deviceAddress);
-                    executor.submit(new WeightThread());
-
-                }
-
-                @Override
-                public void onCanceled(String result) {
-
-                }
-            }).show();
-        }
-//
-//        test();
+        reConnect(deviceAddress);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         flag = true;
-        boolean switchSimpleOrComplex = (boolean) SPUtils.get(this, SettingsActivity.KET_SWITCH_SIMPLE_OR_COMPLEX, false);
+
+        switchSimpleOrComplex = (boolean) SPUtils.get(this, SettingsActivity.KET_SWITCH_SIMPLE_OR_COMPLEX, false);
         if (switchSimpleOrComplex) {
             countLayout.setVisibility(View.VISIBLE);
             weightLayout.setVisibility(View.GONE);
@@ -320,63 +303,125 @@ public class MainActivity extends BaseActivity {
             weightLayout.setVisibility(View.VISIBLE);
         }
         mTotalCopies = (int) SPUtils.get(this, LocalSettingsActivity.KEY_PRINTER_COUNT, mTotalCopies);
+
     }
 
-    private void connection() {
-        conn = new PrinterServiceConnection();
-        Intent intent = new Intent(this, GpPrintService.class);
-        bindService(intent, conn, Context.BIND_AUTO_CREATE); // bindService
+
+    public void advertising() {
+        RetrofitFactory.getInstance().API()
+                .advertising()
+                .compose(this.<BaseEntity<Advertis>>setThread())
+                .subscribe(new Observer<BaseEntity<Advertis>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(BaseEntity<Advertis> advertisBaseEntity) {
+                        if (advertisBaseEntity.isSuccess()) {
+                            final Advertis advertis = advertisBaseEntity.getData();
+                            List<String> list = new ArrayList<>();
+                            for (int i = 0; i < advertis.list.size(); i++) {
+                                list.add(advertis.list.get(i).img);
+                            }
+                            banner.convenientBanner.setPages(new CBViewHolderCreator<NetworkImageHolderView>() {
+                                @Override
+                                public NetworkImageHolderView createHolder() {
+                                    return new NetworkImageHolderView();
+                                }
+                            }, list).startTurning(2000);
+                            banner.show();
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
-    public void reConnect(final String deviceAddress){
-        BtHelperClient btHelperClient = BtHelperClient.from(this);
-        btHelperClient.requestEnableBt();
-        btHelperClient.connectDevice(deviceAddress, new IErrorListener() {
-            @Override
-            public void onError(Exception e) {
-                showLoading("蓝牙秤连接失败，请重试");
-                e.printStackTrace();
-            }
+    public void reConnect(final String deviceAddress) {
+//        if (!TextUtils.isEmpty(deviceAddress)) {
+//            BtHelperClient btHelperClient = BtHelperClient.from(this);
+//            btHelperClient.requestEnableBt();
+//            btHelperClient.connectDevice(deviceAddress, new IErrorListener() {
+//                @Override
+//                public void onError(Exception e) {
+//                    showLoading("蓝牙秤连接失败，请重试");
+//                    e.printStackTrace();
+//                }
+//
+//                @Override
+//                public void onConnected(BtHelperClient.STATUS mCurrStatus) {
+//                    SPUtils.putString(MainActivity.this, BTHelperDialog.KEY_BT_ADDRESS, deviceAddress);
+//                    executor.submit(new WeightThread());
+//                }
+//
+//            });
+//        } else {
+        builder.create(new BTHelperDialog.OnBtnClickListener() {
 
             @Override
-            public void onConnected(BtHelperClient.STATUS mCurrStatus) {
+            public void onConfirmed(BtHelperClient.STATUS mCurrStatus, String deviceAddress) {
                 SPUtils.putString(MainActivity.this, BTHelperDialog.KEY_BT_ADDRESS, deviceAddress);
-
                 executor.submit(new WeightThread());
-//                new WeightThread().start();
             }
 
-        });
-    }
+            @Override
+            public void onCanceled(String result) {
 
+            }
+        }).show();
+//        }
+
+    }
 
 
     class WeightThread extends Thread {
+        BluetoothSocket socket;
+        InputStream mInputStream;
+
+        public WeightThread() {
+
+        }
+
+        public WeightThread(BluetoothSocket socket) {
+            this.socket = socket;
+            try {
+                mInputStream = socket.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         @Override
         public void run() {
-            while (flag) {
-                InputStream inputStream = BtHelperClient.from(MainActivity.this).mInputStream;
-                if (inputStream != null) {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            mInputStream = BtHelperClient.from(MainActivity.this).mInputStream;
+            if (mInputStream != null) {
+                while (flag) {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(mInputStream));
                     try {
                         String s = reader.readLine();
-                        LogUtils.d("-----------weight: " + s);
+//                        LogUtils.d("-----------weight: " + s);
                         Message msg = Message.obtain();
                         msg.obj = s;
                         weightHandler.sendMessage(msg);
-                        Thread.sleep(1000);
-//                        String s1 = s;
-//                        Toast.makeText(mContext, "weight " + s1 + " mInputStream.available() " + inputStream.available(), Toast.LENGTH_LONG).show();
-//                        Thread.sleep(200);
+                        Thread.sleep(500);
 //                        if (inputStream.available() == 0) {
 //                            break;
 //                        }
                     } catch (Exception e) {
                         e.printStackTrace();
+                        reConnect(deviceAddress);
                         break;
                     }
-
-
                 }
             }
         }
@@ -386,60 +431,61 @@ public class MainActivity extends BaseActivity {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            weightTv.setText(msg.obj.toString().trim() + "公斤");
-            weightTopTv.setText(msg.obj.toString().trim());
+            String weight = msg.obj.toString();
+            if (!TextUtils.isEmpty(weight))
+                if (weight.indexOf('.') == -1 || weight.length() - (weight.indexOf(".") + 1) <= 1) {
+                    float weightf = Float.parseFloat(msg.obj.toString().trim()) / 1000;
+                    weightTv.setText(weightf + "kg");
+                    weightTopTv.setText(weightf + "");
+                    setGrandTotalTxt();
+                } else {
+                    weightTv.setText(msg.obj.toString().trim() + "kg");
+                    weightTopTv.setText(msg.obj.toString().trim());
+                    setGrandTotalTxt();
+                }
         }
     };
 
-    public void submitOrder(SubOrderReqBean subOrderReqBean) {
-        RetrofitFactory.getInstance().API()
-                .submitOrder(subOrderReqBean)
-                .compose(this.<BaseEntity<SubOrderBean>>setThread())
-                .subscribe(new Observer<BaseEntity<SubOrderBean>>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        showLoading();
+    public void setGrandTotalTxt() {
+        float count = 0;
+        if (!TextUtils.isEmpty(countEt.getText())) {
+            count = Float.parseFloat(countEt.getText().toString());
+        } else if (!TextUtils.isEmpty(countEt.getHint())) {
+            count = Float.parseFloat(countEt.getHint().toString());
+        }
+        if (switchSimpleOrComplex) {
+            if (!TextUtils.isEmpty(priceEt.getText())) {
+                grandTotalTv.setText(String.format("%.1f", Float.parseFloat(priceEt.getText().toString()) * count));
+            } else if (!TextUtils.isEmpty(priceEt.getHint())) {
+                grandTotalTv.setText(String.format("%.1f", Float.parseFloat(priceEt.getHint().toString()) * count));
+            }
 
-                    }
+        } else {
+            if (!TextUtils.isEmpty(priceEt.getText())) {
+                if (weightTopTv.getText().toString().indexOf('.') == -1 || weightTopTv.getText().length() - (weightTopTv.getText().toString().indexOf(".") + 1) <= 1) {
+                    grandTotalTv.setText(String.format("%.1f", Float.parseFloat(priceEt.getText().toString()) * Float.parseFloat(weightTopTv.getText().toString()) / 1000));
+                } else {
+                    grandTotalTv.setText(String.format("%.1f", Float.parseFloat(priceEt.getText().toString()) * Float.parseFloat(weightTopTv.getText().toString())));
+                }
+            } else if (!TextUtils.isEmpty(priceEt.getHint())) {
+                if (weightTopTv.getText().toString().indexOf('.') == -1 || weightTopTv.getText().length() - (weightTopTv.getText().toString().indexOf(".") + 1) <= 1) {
+                    grandTotalTv.setText(String.format("%.1f", Float.parseFloat(priceEt.getHint().toString()) * Float.parseFloat(weightTopTv.getText().toString()) / 1000));
+                } else {
+                    grandTotalTv.setText(String.format("%.1f", Float.parseFloat(priceEt.getHint().toString()) * Float.parseFloat(weightTopTv.getText().toString())));
+                }
+            }
+        }
 
-                    @Override
-                    public void onNext(BaseEntity<SubOrderBean> subOrderBeanBaseEntity) {
-                        if (subOrderBeanBaseEntity.isSuccess()) {
-                        } else {
-                            showLoading(subOrderBeanBaseEntity.getMsg());
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                        closeLoading();
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        closeLoading();
-
-                    }
-                });
     }
-
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-//        gPprinterManager.closeConnect();
-        if (conn != null) {
-            unbindService(conn); // unBindService
-        }
-        unregisterReceiver(mBroadcastReceiver);
-        unregisterReceiver(netWorkReceiver);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-//        flag = false;
     }
 
     @Override
@@ -457,391 +503,203 @@ public class MainActivity extends BaseActivity {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-//            case R.id.main_bank_card_btn:
-            case R.id.main_weight_top_tv:
-                Intent intent = new Intent();
-                intent.setClass(this, StaffMemberLoginActivity.class);
-                startActivityForResult(intent, 1002);
-                break;
             case R.id.main_cash_btn:
-//                startDDMActivity(SettingsActivity.class, false);
+                if (!ButtonUtils.isFastDoubleClick(R.id.main_cash_btn)) {
+                    if (Float.parseFloat(priceTotalTv.getText().toString()) <= 0) {
+                        return;
+                    }
+                }
                 showDialog(v);
                 break;
             case R.id.main_settings_btn:
-                Intent intent2 = new Intent();
-                intent2.setClass(this, StaffMemberLoginActivity.class);
-                startActivityForResult(intent2, 1002);
+                if (!ButtonUtils.isFastDoubleClick(R.id.home_card_number_tv)) {
+                    Intent intent2 = new Intent();
+                    intent2.setClass(this, StaffMemberLoginActivity.class);
+                    startActivityForResult(intent2, 1002);
+                }
                 break;
             case R.id.main_clear_btn:
-                clear(1);
+                clear(0);
                 break;
             case R.id.main_digital_clear_btn:
-                orderNo = "156456432123121";
-                payId = "2";
-                try {
-                    int type = mGpService.getPrinterCommandType(mPrinterIndex);
-                    if (type == GpCom.LABEL_COMMAND) {
-                        mGpService.queryPrinterStatus(mPrinterIndex, 1000, REQUEST_PRINT_LABEL);
-                    }
-                    if (type == GpCom.ESC_COMMAND) {
-                        mGpService.queryPrinterStatus(mPrinterIndex, 1000, REQUEST_PRINT_RECEIPT);
-                    }
-                } catch (RemoteException e1) {
-                    e1.printStackTrace();
-                }
-                clear(0);
+                clear(1);
                 break;
             case R.id.main_digital_add_btn:
                 if (selectedGoods == null) {
                     return;
                 }
-//                flag = false;
+                if (TextUtils.isEmpty(priceEt.getText()) && TextUtils.isEmpty(priceEt.getHint().toString())) {
+                    return;
+                }
+                if (Float.parseFloat(grandTotalTv.getText().toString()) <= 0) {
+                    return;
+                }
                 selectedGoods.weight = weightTopTv.getText().toString();
+                selectedGoods.price = TextUtils.isEmpty(priceEt.getText().toString()) ? priceEt.getHint().toString() : priceEt.getText().toString();
+                selectedGoods.grandTotal = grandTotalTv.getText().toString();
                 seledtedGoodsList.add(selectedGoods);
                 commodityAdapter.notifyDataSetChanged();
-                float weightTotal = 0;
-                float priceTotal = 0;
-                for (int i = 0; i < seledtedGoodsList.size(); i++) {
-                    ScalesCategoryGoods.HotKeyGoods goods = seledtedGoodsList.get(i);
-//                    weightTotal+=Integer.parseInt(goods.weight);
-                    if (goods.price != null) {
-                        if (!TextUtils.isEmpty(goods.price)) {
-                            priceTotal += Float.parseFloat(goods.price);
-                            weightTotal += Float.parseFloat(goods.weight);
-                        }
-                    }
-                }
-                weightTotalTv.setText(weightTotal + "");
-                priceTotalTv.setText(priceTotal + "");
-                clear(0);
+                calculatePrice();
+                clear(3);
                 break;
         }
     }
 
-    private static final int MAIN_QUERY_PRINTER_STATUS = 0xfe;
-    private static final int REQUEST_PRINT_LABEL = 0xfd;
-    private static final int REQUEST_PRINT_RECEIPT = 0xfc;
-    private int mPrinterIndex = 0;
-    private GpService mGpService = null;
-
-
-    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            Log.d("TAG", action);
-            // GpCom.ACTION_DEVICE_REAL_STATUS 为广播的IntentFilter
-            if (action.equals(GpCom.ACTION_DEVICE_REAL_STATUS)) {
-
-                // 业务逻辑的请求码，对应哪里查询做什么操作
-                int requestCode = intent.getIntExtra(GpCom.EXTRA_PRINTER_REQUEST_CODE, -1);
-                // 判断请求码，是则进行业务操作
-                if (requestCode == MAIN_QUERY_PRINTER_STATUS) {
-
-                    int status = intent.getIntExtra(GpCom.EXTRA_PRINTER_REAL_STATUS, 16);
-                    String str;
-                    if (status == GpCom.STATE_NO_ERR) {
-                        str = "打印机正常";
-                    } else {
-                        str = "打印机 ";
-                        if ((byte) (status & GpCom.STATE_OFFLINE) > 0) {
-                            str += "脱机";
-                        }
-                        if ((byte) (status & GpCom.STATE_PAPER_ERR) > 0) {
-                            str += "缺纸";
-                        }
-                        if ((byte) (status & GpCom.STATE_COVER_OPEN) > 0) {
-                            str += "打印机开盖";
-                        }
-                        if ((byte) (status & GpCom.STATE_ERR_OCCURS) > 0) {
-                            str += "打印机出错";
-                        }
-                        if ((byte) (status & GpCom.STATE_TIMES_OUT) > 0) {
-                            str += "查询超时";
-                        }
-                    }
-
-                    Toast.makeText(getApplicationContext(), "打印机：" + mPrinterIndex + " 状态：" + str, Toast.LENGTH_SHORT)
-                            .show();
-                } else if (requestCode == REQUEST_PRINT_LABEL) {
-                    int status = intent.getIntExtra(GpCom.EXTRA_PRINTER_REAL_STATUS, 16);
-                    if (status == GpCom.STATE_NO_ERR) {
-//                        sendLabel();
-                        sendLabel(orderNo, payId);
-                    } else {
-                        Toast.makeText(MainActivity.this, "query printer status error", Toast.LENGTH_SHORT).show();
-                    }
-                } else if (requestCode == REQUEST_PRINT_RECEIPT) {
-                    int status = intent.getIntExtra(GpCom.EXTRA_PRINTER_REAL_STATUS, 16);
-                    if (status == GpCom.STATE_NO_ERR) {
-                        sendReceipt();
-                    } else {
-                        Toast.makeText(MainActivity.this, "query printer status error", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            } else if (action.equals(GpCom.ACTION_RECEIPT_RESPONSE)) {
-//                if (--mTotalCopies > 0) {
-//                    sendReceiptWithResponse();
-//                }
-            } else if (action.equals(GpCom.ACTION_LABEL_RESPONSE)) {
-                byte[] data = intent.getByteArrayExtra(GpCom.EXTRA_PRINTER_LABEL_RESPONSE);
-                int cnt = intent.getIntExtra(GpCom.EXTRA_PRINTER_LABEL_RESPONSE_CNT, 1);
-                String d = new String(data, 0, cnt);
-                /**
-                 * 这里的d的内容根据RESPONSE_MODE去判断返回的内容去判断是否成功，具体可以查看标签编程手册SET
-                 * RESPONSE指令
-                 * 该sample中实现的是发一张就返回一次,这里返回的是{00,00001}。这里的对应{Status,######,ID}
-                 * 所以我们需要取出STATUS
-                 */
-                Log.d("LABEL RESPONSE", d);
-
-                if (--mTotalCopies > 0 && d.charAt(1) == 0x00) {
-                    sendLabel(orderNo, payId);
+    public void calculatePrice() {
+        float weightTotalF = 0.0000f;
+        float priceTotal = 0;
+        for (int i = 0; i < seledtedGoodsList.size(); i++) {
+            ScalesCategoryGoods.HotKeyGoods goods = seledtedGoodsList.get(i);
+            if (goods.price != null) {
+                if (!TextUtils.isEmpty(goods.price)) {
+//                    if ((goods.weight).indexOf('.') == -1 || goods.weight.length() - (goods.weight.indexOf(".") + 1) <= 1) {
+                    weightTotalF += Float.parseFloat(goods.weight);
+//                    } else {
+//                        weightTotalF += Float.parseFloat(goods.weight);
+//                    }
+                    priceTotal += Float.parseFloat(goods.grandTotal);
                 }
             }
         }
-    };
+
+        weightTotalTv.setText(String.format("%.4f", weightTotalF));
+        priceTotalTv.setText(String.format("%.2f", priceTotal));
+//        priceTotalTv.setText(String.format("%.2f", priceTotal));
+    }
+
 
     @Override
     public void onEventMainThread(BusEvent event) {
         if (event != null) {
-            if (event.getType() == BusEvent.PRINTER_LABEL) {
-                bitmap = (Bitmap) event.getParam();
+            if (event.getType() == BusEvent.PRINTER_LABEL || event.getType() == BusEvent.POSITION_PATCH) {
+                final String qrcode = event.getmStrParam03();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            bitmap = BitmapFactory.decodeStream(new URL(qrcode).openStream());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
                 orderNo = event.getStrParam();
                 payId = event.getStrParam02();
-                qrCode = event.getmStrParam03();
-                try {
-                    int type = mGpService.getPrinterCommandType(mPrinterIndex);
-                    if (type == GpCom.LABEL_COMMAND) {
-                        mGpService.queryPrinterStatus(mPrinterIndex, 1000, REQUEST_PRINT_LABEL);
+                SPUtils.putString(this, "print_orderno", orderNo);
+                SPUtils.putString(this, "print_payid", payId);
+                if (TextUtils.equals(port, "/dev/ttyS4")) {
+                    btnReceiptPrint(bitmap,
+                            orderNo,
+                            payId,
+                            operatorTv.getText().toString(),
+                            priceTotalTv.getText().toString(),
+                            (List<ScalesCategoryGoods.HotKeyGoods>)SPUtils.readObject(this, "selectedGoodList"));
+                } else {
+                    btnLabelPrint(bitmap,
+                            orderNo,
+                            payId,
+                            operatorTv.getText().toString(),
+                            priceTotalTv.getText().toString(),
+                            (List<ScalesCategoryGoods.HotKeyGoods>)SPUtils.readObject(this, "selectedGoodList"));
+                }
+                clear(1);
+            }
+            if (event.getType() == BusEvent.NET_WORK_AVAILABLE) {
+                boolean available = event.getBooleanParam();
+                if (available) {
+                    ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                    NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+                    if (networkInfo != null && networkInfo.isAvailable()) {
+//                getGoodsData();
+//                getLoginInfo();
+                    } else {
+                        SPUtils.saveObject(MainActivity.this, KEY_HOT_KEY_GOODS, hotKeyGoodsList);
                     }
-                    if (type == GpCom.ESC_COMMAND) {
-                        mGpService.queryPrinterStatus(mPrinterIndex, 1000, REQUEST_PRINT_RECEIPT);
+                }
+            }
+            if (event.getType() == BusEvent.SAVE_COMMODITY_SUCCESS) {
+                boolean isConnected = NetworkUtil.isConnected(this);
+                if (isConnected) {
+                    getGoodsData();
+
+                } else {
+                    List<ScalesCategoryGoods.HotKeyGoods> saveHotKeys = (List<ScalesCategoryGoods.HotKeyGoods>) SPUtils.readObject(this, KEY_HOT_KEY_GOODS);
+                    if (saveHotKeys != null) {
+                        hotKeyGoodsList.addAll(saveHotKeys);
+                        gridAdapter.notifyDataSetChanged();
                     }
-                } catch (RemoteException e1) {
-                    e1.printStackTrace();
+                }
+            }
+            if (event.getType() == BusEvent.SAVE_LOCAL_SUCCESS) {
+                LocalSettingsBean.Value.PrinterPort printerPort = (LocalSettingsBean.Value.PrinterPort) SPUtils.readObject(this, LocalSettingsActivity.KEY_PRINTER_PORT);
+                if (printerPort != null) {
+                    port = printerPort.val;
+                }
+                if (TextUtils.equals(port, "/dev/ttyS4")) {
+                    printerManager.openGpinter();
+                } else {
+                    printerManager.usbConn();
                 }
             }
         }
 
     }
 
-    public void sendLabel(String orderNo, String payId) {
-        LabelCommand tsc = new LabelCommand();
-        tsc.addSize(60, 100); // 设置标签尺寸，按照实际尺寸设置
-        tsc.addGap(0); // 设置标签间隙，按照实际尺寸设置，如果为无间隙纸则设置为0
-        tsc.addDirection(LabelCommand.DIRECTION.BACKWARD, LabelCommand.MIRROR.NORMAL);// 设置打印方向
-        tsc.addReference(0, 0);// 设置原点坐标
-        tsc.addTear(EscCommand.ENABLE.ON); // 撕纸模式开启
-        tsc.addCls();// 清除打印缓冲区
+    private ThreadPool threadPool;
 
-//        tsc.addText(20, 30, LabelCommand.FONTTYPE.KOREAN, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
-//                "조선말");
-        int y = 10;
-
-        tsc.addText(10, y, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
-                "深圳市安鑫宝科技发展有限公司");
-        tsc.addText(10, y += 30, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
-                "交易日期：" + getCurrentTime());
-        tsc.addText(10, y += 30, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
-                "交易单号：" + orderNo);
-        if (TextUtils.equals(payId, "1"))
-            tsc.addText(10, y += 30, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
-                    "结算方式：微信");
-        if (TextUtils.equals(payId, "2"))
-            tsc.addText(10, y += 30, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
-                    "结算方式：支付宝");
-        if (TextUtils.equals(payId, "4"))
-            tsc.addText(10, y += 30, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
-                    "结算方式：现金");
-        tsc.addText(10, y += 30, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
-                "卖方名称：" + operatorTv.getText().toString());
-        tsc.addText(10, y += 30, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
-                "商品名\t\t\t\t" + "单价\t\t\t\t\t" + "重量\t\t\t\t\t" + "金额");
-        tsc.addText(10, y += 30, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
-                "\t\t\t\t\t\t\t" + "（元/斤）\t\t\t" + "(斤)\t\t\t\t\t" + "(元)");
-        tsc.addText(10, y += 30, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
-                "-----------------------------------");
-        for (int i = 0; i < seledtedGoodsList.size(); i++) {
-            ScalesCategoryGoods.HotKeyGoods goods = seledtedGoodsList.get(i);
-            tsc.addText(10, y += 30, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
-                    goods.name.substring(0, 3) + "\t\t\t\t" + goods.price + "\t\t\t\t" + goods.weight + "\t\t\t\t" + goods.grandTotal);
-        }
-        tsc.addText(10, y += 30, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
-                "-----------------------------------");
-        tsc.addText(10, y += 30, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
-                "合计：" + priceTotalTv.getText().toString());
-        tsc.addText(10, y += 30, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
-                "-----------------------------------");
-        tsc.addText(10, y += 30, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
-                "司磅员：" + operatorTv.getText().toString() + "\t\t\t\t\t\t\t" + "秤号：" + AccountManager.getInstance().getScalesId());
-        tsc.addText(10, y += 30, LabelCommand.FONTTYPE.SIMPLIFIED_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
-                "追溯信息：");
-
-//        tsc.addText(180, 30, LabelCommand.FONTTYPE.TRADITIONAL_CHINESE, LabelCommand.ROTATION.ROTATION_0, LabelCommand.FONTMUL.MUL_1, LabelCommand.FONTMUL.MUL_1,
-//                "繁體字");
-
-        // 绘制图片
-        Bitmap b = bitmap;
-        tsc.addBitmap(20, 60, LabelCommand.BITMAP_MODE.OVERWRITE, b.getWidth(), b);
-        //绘制二维码
-//        tsc.addQRCode(105, 75, LabelCommand.EEC.LEVEL_L, 5, LabelCommand.ROTATION.ROTATION_0, " www.smarnet.cc");
-        // 绘制一维条码
-//        tsc.add1DBarcode(50, 350, LabelCommand.BARCODETYPE.CODE128, 100, LabelCommand.READABEL.EANBEL, LabelCommand.ROTATION.ROTATION_0, "SMARNET");
-        tsc.addPrint(1, 1); // 打印标签
-        tsc.addSound(2, 100); // 打印标签后 蜂鸣器响
-        tsc.addCashdrwer(LabelCommand.FOOT.F5, 255, 255);
-        Vector<Byte> datas = tsc.getCommand(); // 发送数据
-        byte[] bytes = GpUtils.ByteTo_byte(datas);
-        String str = Base64.encodeToString(bytes, Base64.DEFAULT);
-        int rel;
-        try {
-            rel = mGpService.sendLabelCommand(mPrinterIndex, str);
-            GpCom.ERROR_CODE r = GpCom.ERROR_CODE.values()[rel];
-            if (r != GpCom.ERROR_CODE.SUCCESS) {
-                Toast.makeText(this, GpCom.getErrorText(r), Toast.LENGTH_SHORT).show();
+    public void btnReceiptPrint(final Bitmap bitmap, final String orderNo, final String payId, final String operator, final String price, final List<ScalesCategoryGoods.HotKeyGoods> seledtedGoodsList ) {
+        threadPool = ThreadPool.getInstantiation();
+        threadPool.addTask(new Runnable() {
+            @Override
+            public void run() {
+                printerManager.printer(orderNo, payId, operator, price, bitmap, seledtedGoodsList);
             }
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        });
     }
 
-    void sendReceipt() {
-
-        EscCommand esc = new EscCommand();
-        esc.addInitializePrinter();
-        esc.addPrintAndFeedLines((byte) 3);
-        esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);// 设置打印居中
-        esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.ON, EscCommand.ENABLE.ON, EscCommand.ENABLE.OFF);// 设置为倍高倍宽
-        esc.addText("Sample\n"); // 打印文字
-        esc.addPrintAndLineFeed();
-
-		/* 打印文字 */
-        esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF);// 取消倍高倍宽
-        esc.addSelectJustification(EscCommand.JUSTIFICATION.LEFT);// 设置打印左对齐
-        esc.addText("Print text\n"); // 打印文字
-        esc.addText("Welcome to use SMARNET printer!\n"); // 打印文字
-
-		/* 打印繁体中文 需要打印机支持繁体字库 */
-        String message = "佳博智匯票據打印機\n";
-        // esc.addText(message,"BIG5");
-        esc.addText(message, "GB2312");
-        esc.addPrintAndLineFeed();
-
-		/* 绝对位置 具体详细信息请查看GP58编程手册 */
-        esc.addText("智汇");
-        esc.addSetHorAndVerMotionUnits((byte) 7, (byte) 0);
-        esc.addSetAbsolutePrintPosition((short) 6);
-        esc.addText("网络");
-        esc.addSetAbsolutePrintPosition((short) 10);
-        esc.addText("设备");
-        esc.addPrintAndLineFeed();
-
-		/* 打印图片 */
-        esc.addText("Print bitmap!\n"); // 打印文字
-        Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
-        esc.addRastBitImage(b, 384, 0); // 打印图片
-
-		/* 打印一维条码 */
-        esc.addText("Print code128\n"); // 打印文字
-        esc.addSelectPrintingPositionForHRICharacters(EscCommand.HRI_POSITION.BELOW);//
-        // 设置条码可识别字符位置在条码下方
-        esc.addSetBarcodeHeight((byte) 60); // 设置条码高度为60点
-        esc.addSetBarcodeWidth((byte) 1); // 设置条码单元宽度为1
-        esc.addCODE128(esc.genCodeB("SMARNET")); // 打印Code128码
-        esc.addPrintAndLineFeed();
-
-		/*
-         * QRCode命令打印 此命令只在支持QRCode命令打印的机型才能使用。 在不支持二维码指令打印的机型上，则需要发送二维条码图片
-		 */
-        esc.addText("Print QRcode\n"); // 打印文字
-        esc.addSelectErrorCorrectionLevelForQRCode((byte) 0x31); // 设置纠错等级
-        esc.addSelectSizeOfModuleForQRCode((byte) 3);// 设置qrcode模块大小
-        esc.addStoreQRCodeData("www.smarnet.cc");// 设置qrcode内容
-        esc.addPrintQRCode();// 打印QRCode
-        esc.addPrintAndLineFeed();
-
-		/* 打印文字 */
-        esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);// 设置打印左对齐
-        esc.addText("Completed!\r\n"); // 打印结束
-        // 开钱箱
-        esc.addGeneratePlus(LabelCommand.FOOT.F5, (byte) 255, (byte) 255);
-        esc.addPrintAndFeedLines((byte) 8);
-
-        Vector<Byte> datas = esc.getCommand(); // 发送数据
-        byte[] bytes = GpUtils.ByteTo_byte(datas);
-        String sss = Base64.encodeToString(bytes, Base64.DEFAULT);
-        int rs;
-        try {
-            rs = mGpService.sendEscCommand(mPrinterIndex, sss);
-            GpCom.ERROR_CODE r = GpCom.ERROR_CODE.values()[rs];
-            if (r != GpCom.ERROR_CODE.SUCCESS) {
-                Toast.makeText(getApplicationContext(), GpCom.getErrorText(r), Toast.LENGTH_SHORT).show();
+    public void btnLabelPrint(final Bitmap bitmap, final String orderNo, final String payId, final String operator, final String price, final List<ScalesCategoryGoods.HotKeyGoods> seledtedGoodsList) {
+        threadPool = ThreadPool.getInstantiation();
+        threadPool.addTask(new Runnable() {
+            @Override
+            public void run() {
+                printerManager.sendLabel(orderNo, payId, operator, price, bitmap, seledtedGoodsList);
             }
-        } catch (RemoteException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        });
     }
-
-    class PrinterServiceConnection implements ServiceConnection {
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            Log.i("ServiceConnection", "onServiceDisconnected() called");
-            mGpService = null;
-        }
-
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            mGpService = GpService.Stub.asInterface(service);
-            try {
-                if (mGpService != null)
-                    if (driver != null)
-                        mGpService.openPort(0, PortParameters.USB, driver.getDevice().getDeviceName(), 0);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private BroadcastReceiver netWorkReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-            if (networkInfo != null && networkInfo.isAvailable()) {
-//                Toast.makeText(context, "当前网络可用", Toast.LENGTH_SHORT).show();
-//                getGoodsData();
-//                getLoginInfo();
-            } else {
-                SPUtils.saveObject(MainActivity.this, KEY_HOT_KEY_GOODS, hotKeyGoodsList);
-            }
-        }
-    };
 
     public void clear(int type) {
         if (type == 0) {
             selectedGoods = null;
             commodityNameTv.setText("");
             priceEt.setText("");
-            grandTotalTv.setText("0.00");
+            grandTotalTv.setText("0.0");
         }
         if (type == 1) {
             weightTopTv.setText("0.000");
             weightTv.setText("");
             weightTotalTv.setText("0");
             grandTotalTv.setText("");
-            seledtedGoodsList.clear();
             priceTotalTv.setText("0.00");
-            commodityAdapter.notifyDataSetChanged();
+            seledtedGoodsList.clear();
+            commodityAdapter = new CommodityAdapter(this, seledtedGoodsList);
+            commoditysListView.setAdapter(commodityAdapter);
+        }
+        if (type == 3) {
+            selectedGoods = null;
+            commodityNameTv.setText("");
+            String hint = "";
+            if (!TextUtils.isEmpty(priceEt.getText())) {
+                hint = priceEt.getText().toString();
+            } else if (!TextUtils.isEmpty(priceEt.getHint())) {
+                hint = priceEt.getHint().toString();
+            }
+            priceEt.setText("");
+            priceEt.setHint(hint);
         }
     }
 
     public void showDialog(View v) {
         switch (v.getId()) {
-//            case R.id.main_bank_card_btn:
-//                intent.setClass(this, UseBankCardActivity.class);
-//                break;
             case R.id.main_cash_btn:
                 Intent intent = new Intent();
                 SubOrderReqBean subOrderReqBean = new SubOrderReqBean();
@@ -859,7 +717,6 @@ public class MainActivity extends BaseActivity {
                     goodsList.add(good);
                 }
                 subOrderReqBean.setToken(AccountManager.getInstance().getToken());
-//                subOrderReqBean.setMac(MacManager.getInstace(this).getMac());
                 subOrderReqBean.setMac(MacManager.getInstace(this).getMac());
                 subOrderReqBean.setTotal_amount(priceTotalTv.getText().toString());
                 subOrderReqBean.setTotal_weight(weightTotalTv.getText().toString());
@@ -870,7 +727,7 @@ public class MainActivity extends BaseActivity {
                 intent.putExtras(bundle);
                 intent.setClass(this, UseCashActivity.class);
                 startActivity(intent);
-
+                SPUtils.saveObject(this, "selectedGoodList",seledtedGoodsList);
                 break;
         }
 
@@ -907,17 +764,18 @@ public class MainActivity extends BaseActivity {
 
     public void getGoodsData() {
         RetrofitFactory.getInstance().API()
-                .getGoodsData(AccountManager.getInstance().getToken(),MacManager.getInstace(this).getMac())
+                .getGoodsData(AccountManager.getInstance().getToken(), MacManager.getInstace(this).getMac())
+//                .getGoodsData(AccountManager.getInstance().getToken(), "80:5e:4f:85:57:9d")
                 .compose(this.<BaseEntity<ScalesCategoryGoods>>setThread())
                 .subscribe(new Observer<BaseEntity<ScalesCategoryGoods>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-                        showLoading();
                     }
 
                     @Override
                     public void onNext(BaseEntity<ScalesCategoryGoods> scalesCategoryGoodsBaseEntity) {
                         if (scalesCategoryGoodsBaseEntity.isSuccess()) {
+                            hotKeyGoodsList.clear();
                             hotKeyGoodsList.addAll(scalesCategoryGoodsBaseEntity.getData().hotKeyGoods);
                             gridAdapter.notifyDataSetChanged();
                         } else {
@@ -980,24 +838,26 @@ public class MainActivity extends BaseActivity {
 
             ScalesCategoryGoods.HotKeyGoods goods = list.get(position);
             holder.nameTv.setText(goods.name);
-            holder.weightTv.setText(goods.weight);
+            if ((goods.weight).indexOf('.') == -1 || goods.weight.length() - (goods.weight.indexOf(".") + 1) <= 1) {
+                holder.weightTv.setText(getString(R.string.string_weight_unit_kg, Float.parseFloat(goods.weight) / 1000 + ""));
+            } else {
+                holder.weightTv.setText(getString(R.string.string_weight_unit_kg, goods.weight));
+            }
             holder.priceTv.setText(goods.price);
             holder.subtotalTv.setText(goods.grandTotal);
-            convertView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    seledtedGoodsList.remove(position);
-                    commodityAdapter.notifyDataSetChanged();
-                    return true;
-                }
-            });
+//            convertView.setOnLongClickListener(new View.OnLongClickListener() {
+//                @Override
+//                public boolean onLongClick(View v) {
+//
+//                }
+//            });
+
             return convertView;
         }
 
         class ViewHolder {
             TextView nameTv;
             TextView priceTv;
-            //            TextView countTv;
             TextView weightTv;
             TextView subtotalTv;
             Button deleteBtn;

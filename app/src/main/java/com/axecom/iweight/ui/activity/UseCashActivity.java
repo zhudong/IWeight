@@ -1,14 +1,18 @@
 package com.axecom.iweight.ui.activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.hardware.display.DisplayManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -22,6 +26,7 @@ import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
 import com.axecom.iweight.base.BaseEntity;
 import com.axecom.iweight.base.BusEvent;
+import com.axecom.iweight.bean.Order;
 import com.axecom.iweight.bean.PayNoticeBean;
 import com.axecom.iweight.bean.SubOrderBean;
 import com.axecom.iweight.bean.SubOrderReqBean;
@@ -31,8 +36,14 @@ import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.ui.uiutils.ImageLoaderHelper;
 import com.axecom.iweight.ui.view.SoftKey;
 import com.axecom.iweight.utils.LogUtils;
+import com.axecom.iweight.utils.MoneyTextWatcher;
+import com.axecom.iweight.utils.NetworkUtil;
+import com.axecom.iweight.utils.SPUtils;
+import com.bumptech.glide.Glide;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.raizlabs.android.dbflow.config.FlowManager;
+import com.raizlabs.android.dbflow.structure.ModelAdapter;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -40,6 +51,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 
 import io.reactivex.Observer;
@@ -72,6 +84,8 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
     private MyRun mRun;
     private String payId;
     private Bitmap bitmap;
+    private boolean flag = true;
+    public BannerActivity banner = null;
 
     @Override
     public View setInitView() {
@@ -90,10 +104,18 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
         softKey = rootView.findViewById(R.id.cash_dialog_softkey);
         disableShowInput(cashEt);
         cashEt.requestFocus();
-
+        cashEt.addTextChangedListener(new MoneyTextWatcher(cashEt));
         orderBean = (SubOrderReqBean) getIntent().getExtras().getSerializable("orderBean");
+        DisplayManager displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
+        Display[] presentationDisplays = displayManager.getDisplays();
+        LogUtils.d("------------: " + presentationDisplays.length + "  --- " + presentationDisplays[1].getName());
+        if (presentationDisplays.length > 1) {
+            banner = new BannerActivity(this, presentationDisplays[1]);
+        }
+        banner.show();
+
         priceTotalTv.setText(orderBean.getTotal_amount());
-        priceRoundTv.setText(new DecimalFormat("#.00").format(Double.parseDouble(orderBean.getTotal_amount())));
+        priceRoundTv.setText(String.format("%.1f", Double.parseDouble(orderBean.getTotal_amount())));
 
         imageLoader = ImageLoader.getInstance();
         options = ImageLoaderHelper.getInstance(this).getDisplayOptions();
@@ -107,20 +129,40 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
 
     @Override
     public void initView() {
+        if (NetworkUtil.isConnected(this)) {
+            aliPayBtn.setEnabled(true);
+            wechatPayBtn.setEnabled(true);
+        } else {
+            aliPayBtn.setEnabled(false);
+            wechatPayBtn.setEnabled(false);
+        }
         softKey.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String text = parent.getAdapter().getItem(position).toString();
                 setEditText(cashEt, position, text);
-                priceChangeTv.setText(Float.parseFloat(text) - Float.parseFloat(priceRoundTv.getText().toString()) + "");
+                String txt = cashEt.getText().toString();
+                if (!TextUtils.isEmpty(cashEt.getText())) {
+                    priceChangeTv.setText(Float.parseFloat(cashEt.getText().toString()) - Float.parseFloat(priceRoundTv.getText().toString()) + "");
+                } else {
+                    priceChangeTv.setText("");
+                }
+
             }
         });
+        banner.bannerOrderLayout.setVisibility(View.VISIBLE);
+        banner.bannerTotalPriceTv.setText(getString(R.string.string_amount_txt3, Float.parseFloat(orderBean.getTotal_amount())));
+        banner.goodsList.clear();
+        banner.goodsList.addAll(orderBean.getGoods());
+        banner.adapter.notifyDataSetChanged();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        flag = false;
         mHandler.removeCallbacks(mRun);
+        banner.bannerOrderLayout.setVisibility(View.GONE);
     }
 
     @Override
@@ -142,6 +184,12 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
                 wechatPayBtn.setTextColor(ContextCompat.getColor(this, R.color.black));
                 cashPayLayout.setVisibility(View.VISIBLE);
                 qrCodeIv.setVisibility(View.GONE);
+                banner.bannerOrderLayout.setVisibility(View.VISIBLE);
+                banner.bannerTotalPriceTv.setText(getString(R.string.string_amount_txt3, Float.parseFloat(orderBean.getTotal_amount())));
+                banner.bannerQRCode.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.logo));
+                banner.goodsList.clear();
+                banner.goodsList.addAll(orderBean.getGoods());
+                banner.adapter.notifyDataSetChanged();
                 break;
             case R.id.cash_dialog_alipay_btn:
                 cashPayBtn.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_white_btn_bg));
@@ -172,7 +220,27 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
 
     public void setOrderBean(String payId) {
         orderBean.setPayment_id(payId);
-        submitOrder(orderBean);
+        if (NetworkUtil.isConnected(this)) {
+            submitOrder(orderBean);
+        } else {
+            List<SubOrderReqBean> orders = (List<SubOrderReqBean>) SPUtils.readObject(this, "local_order");
+            if (orders != null) {
+                orders.add(orderBean);
+                SPUtils.saveObject(this, "local_order", orders);
+            } else {
+                List<SubOrderReqBean> localOrder = new ArrayList<>();
+                localOrder.add(orderBean);
+                SPUtils.saveObject(this, "local_order", localOrder);
+            }
+        }
+    }
+
+    @Override
+    public void onEventMainThread(BusEvent event) {
+        super.onEventMainThread(event);
+        if (event != null) {
+
+        }
     }
 
     public void submitOrder(SubOrderReqBean subOrderReqBean) {
@@ -188,7 +256,18 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
                     @Override
                     public void onNext(final BaseEntity<SubOrderBean> subOrderBeanBaseEntity) {
                         if (subOrderBeanBaseEntity.isSuccess()) {
-                            imageLoader.displayImage(subOrderBeanBaseEntity.getData().getCode_img_url(), qrCodeIv, options);
+//                            imageLoader.displayImage(subOrderBeanBaseEntity.getData().getCode_img_url(), qrCodeIv, options);
+                            Glide.with(UseCashActivity.this).load(subOrderBeanBaseEntity.getData().getCode_img_url()).into(qrCodeIv);
+
+                            banner.bannerOrderLayout.setVisibility(View.VISIBLE);
+                            banner.bannerTotalPriceTv.setText(getString(R.string.string_amount_txt3, Float.parseFloat(orderBean.getTotal_amount())));
+                            imageLoader.displayImage(subOrderBeanBaseEntity.getData().getCode_img_url(), banner.bannerQRCode, options);
+//                            Glide.with(UseCashActivity.this).load(subOrderBeanBaseEntity.getData().getCode_img_url()).into(banner.bannerQRCode);
+
+                            banner.goodsList.clear();
+                            banner.goodsList.addAll(orderBean.getGoods());
+                            banner.adapter.notifyDataSetChanged();
+
                             new Thread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -229,10 +308,13 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
 
         @Override
         public void run() {
-            Message msg = Message.obtain();
-            msg.obj = subOrderBeanBaseEntity.getData();
-            mHandler.sendMessage(msg);
-            mHandler.postDelayed(this, 1000 * 3);//延迟5秒,再次执行task本身,实现了循环的效果
+            if (flag) {
+                Message msg = Message.obtain();
+                msg.obj = subOrderBeanBaseEntity.getData();
+                mHandler.sendMessage(msg);
+                mHandler.postDelayed(this, 1000 * 3);//延迟5秒,再次执行task本身,实现了循环的效果
+            }
+
         }
     }
 
@@ -243,7 +325,7 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
             SubOrderBean subOrderBeanBaseEntity = (SubOrderBean) msg.obj;
 
             String order_no = subOrderBeanBaseEntity.getOrder_no();
-            String qrCode =subOrderBeanBaseEntity.getPrint_code_img();
+            String qrCode = subOrderBeanBaseEntity.getPrint_code_img();
             getPayNotice(order_no, qrCode);
         }
     };
@@ -259,12 +341,14 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
                     }
 
                     @Override
-                    public void onNext(BaseEntity<PayNoticeBean> payNoticeBeanBaseEntity) {
+                    public void onNext(final BaseEntity<PayNoticeBean> payNoticeBeanBaseEntity) {
                         if (payNoticeBeanBaseEntity.isSuccess()) {
                             if (payNoticeBeanBaseEntity.getData().flag == 0) {
-                                showLoading(payNoticeBeanBaseEntity.getData().msg);
+                                flag = false;
                                 mHandler.removeCallbacks(mRun);
+                                banner.bannerOrderLayout.setVisibility(View.GONE);
                                 EventBus.getDefault().post(new BusEvent(BusEvent.PRINTER_LABEL, bitmap, order_no, payId, qrCode));
+                                finish();
                             }
                             LogUtils.d(payNoticeBeanBaseEntity.getData().msg);
                         }

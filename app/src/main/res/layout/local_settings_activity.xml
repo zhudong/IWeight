@@ -108,6 +108,7 @@
                         android:drawableBottom="@drawable/shape_black_line"
                         android:gravity="center_vertical"
                         android:textColor="@color/black"
+                        android:text="内置打印机：/dev/ttyS4"
                         android:textSize="20sp" />
 
                     <Button
@@ -410,6 +411,7 @@
                         android:textSize="20sp" />
 
                     <TextView
+                        android:enabled="false"
                         android:id="@+id/local_settings_sleep_time_tv"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
@@ -418,7 +420,7 @@
                         android:background="@drawable/shape_white_btn_bg"
                         android:gravity="center_vertical"
                         android:padding="5dp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/gray_555"
                         android:textSize="20sp" />
                 </LinearLayout>
 

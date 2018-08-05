@@ -2,8 +2,11 @@ package com.axecom.iweight.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.content.ContextCompat;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,13 +27,26 @@ import com.axecom.iweight.bean.CalibrationBean;
 import com.axecom.iweight.manager.AccountManager;
 import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.ui.adapter.DigitalAdapter;
+import com.axecom.iweight.ui.view.BTHelperDialog;
 import com.axecom.iweight.ui.view.SoftKeyborad;
+import com.axecom.iweight.utils.SPUtils;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import top.wuhaojie.bthelper.BtHelperClient;
+import top.wuhaojie.bthelper.IErrorListener;
 
 /**
  * Created by Administrator on 2018-5-29.
@@ -59,6 +75,10 @@ public class CalibrationActivity extends BaseActivity {
     private ImageView nextStepLineIv;
     private boolean isShowStaffLogin = true;
     private boolean isChecked = false;
+    private String deviceAddress;
+    ThreadPoolExecutor executor;
+    BTHelperDialog.Builder builder;
+    private TextView weightTv;
 
     @Override
     public View setInitView() {
@@ -80,6 +100,7 @@ public class CalibrationActivity extends BaseActivity {
         calibrationValueEt = rootView.findViewById(R.id.calibration_dcalibration_value_et);
         nextStepLineIv = rootView.findViewById(R.id.calibration_next_step_line_iv);
         nextStepLayout = rootView.findViewById(R.id.calibration_next_step_layout);
+        weightTv = rootView.findViewById(R.id.calibration_weight_tv);
 
 
         disableShowInput(maxAngeEt);
@@ -103,11 +124,16 @@ public class CalibrationActivity extends BaseActivity {
 
     @Override
     public void initView() {
-//        Intent intent = new Intent();
-//        intent.setClass(this, StaffMemberLoginActivity.class);
-//        startActivityForResult(intent, 101);
-        List<String> digitaList = new ArrayList<>();
+        BlockingQueue workQueue = new LinkedBlockingDeque<>();
+        ThreadFactory threadFactory = Executors.defaultThreadFactory();
+        executor = new ThreadPoolExecutor(1, 1, 1, TimeUnit.DAYS, workQueue, threadFactory);
+        executor.submit(new WeightThread());
 
+        builder = new BTHelperDialog.Builder(this);
+        deviceAddress = SPUtils.getString(this, BTHelperDialog.KEY_BT_ADDRESS, "");
+//        reConnect(deviceAddress);
+
+        List<String> digitaList = new ArrayList<>();
         for (int i = 0; i < DATA_DIGITAL.length; i++) {
             digitaList.add(DATA_DIGITAL[i]);
         }
@@ -196,6 +222,86 @@ public class CalibrationActivity extends BaseActivity {
 
     }
 
+    public void reConnect(final String deviceAddress) {
+        if (!TextUtils.isEmpty(deviceAddress)) {
+            BtHelperClient btHelperClient = BtHelperClient.from(this);
+            btHelperClient.requestEnableBt();
+            btHelperClient.connectDevice(deviceAddress, new IErrorListener() {
+                @Override
+                public void onError(Exception e) {
+                    showLoading("蓝牙秤连接失败，请重试");
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onConnected(BtHelperClient.STATUS mCurrStatus) {
+                    SPUtils.putString(CalibrationActivity.this, BTHelperDialog.KEY_BT_ADDRESS, deviceAddress);
+                    executor.submit(new WeightThread());
+                }
+
+            });
+        } else {
+            builder.create(new BTHelperDialog.OnBtnClickListener() {
+
+                @Override
+                public void onConfirmed(BtHelperClient.STATUS mCurrStatus, String deviceAddress) {
+                    SPUtils.putString(CalibrationActivity.this, BTHelperDialog.KEY_BT_ADDRESS, deviceAddress);
+                    executor.submit(new WeightThread());
+                }
+
+                @Override
+                public void onCanceled(String result) {
+
+                }
+            }).show();
+        }
+
+    }
+
+    private boolean flag = true;
+
+    class WeightThread extends Thread {
+        @Override
+        public void run() {
+
+            InputStream inputStream = BtHelperClient.from(CalibrationActivity.this).mInputStream;
+            if (inputStream != null) {
+                while (flag) {
+
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                    try {
+                        String s = reader.readLine();
+//                        LogUtils.d("-----------weight: " + s);
+                        Message msg = Message.obtain();
+                        msg.obj = s;
+                        weightHandler.sendMessage(msg);
+                        Thread.sleep(500);
+//                        if (inputStream.available() == 0) {
+//                            break;
+//                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        reConnect(deviceAddress);
+                        break;
+                    }
+
+
+            }
+                } else {
+                    reConnect(deviceAddress);
+                }
+        }
+    }
+
+    private Handler weightHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            weightTv.setText(msg.obj.toString().trim());
+            standardWeighingTv.setText(msg.obj.toString().trim());
+        }
+    };
+
     public void storeCalibrationRecord(CalibrationBean calibrationBean) {
         RetrofitFactory.getInstance().API()
                 .storeCalibrationRecord(calibrationBean)
@@ -209,10 +315,7 @@ public class CalibrationActivity extends BaseActivity {
 
                     @Override
                     public void onNext(BaseEntity baseEntity) {
-                        if (baseEntity.isSuccess()) {
-                        } else {
                         showLoading(baseEntity.getMsg());
-                        }
                     }
 
                     @Override

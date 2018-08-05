@@ -178,6 +178,7 @@ public class SystemSettingsActivity extends BaseActivity {
                     @Override
                     public void onSelected(AdapterView<?> parent, View view, int position, long id) {
                         priceingMethodPos = position;
+                        SPUtils.put(SystemSettingsActivity.this, SettingsActivity.KET_SWITCH_SIMPLE_OR_COMPLEX, position == 0? false:true);
                         priceingMethodTv.setText(((Map<String, String>) parent.getAdapter().getItem(position)).get(position + 1 + ""));
                     }
                 }).show();
@@ -417,7 +418,7 @@ public class SystemSettingsActivity extends BaseActivity {
                                     loginTypeTv.setText((((LinkedTreeMap) valueMap.get("default_login_type")).get("val")).toString());
                                 }
                             }else {
-                                loginTypeTv.setText((((LinkedTreeMap) valueMap.get("default_login_type")).get("val")).toString());
+                                loginTypeTv.setText((((LinkedTreeMap) valueMap.get("default_login_type")).get("val")) != null ?(((LinkedTreeMap) valueMap.get("default_login_type")).get("val")).toString() :"");
                             }
                             LinkedHashMap printerMap = (LinkedHashMap) SPUtils.readObject(SystemSettingsActivity.this, KEY_PRINTER);
                             if (printerMap != null) {
@@ -429,7 +430,7 @@ public class SystemSettingsActivity extends BaseActivity {
                                     printerTv.setText((((LinkedTreeMap) valueMap.get("printer_configuration")).get("val")).toString());
                                 }
                             }else {
-                                printerTv.setText((((LinkedTreeMap) valueMap.get("printer_configuration")).get("val")).toString());
+                                printerTv.setText((((LinkedTreeMap) valueMap.get("printer_configuration")).get("val")) != null ? (((LinkedTreeMap) valueMap.get("printer_configuration")).get("val")).toString() : "");
                             }
                             LinkedHashMap buyerNumberMap = (LinkedHashMap) SPUtils.readObject(SystemSettingsActivity.this, KEY_BUYER_NUMBER);
                             if (buyerNumberMap != null) {
@@ -441,7 +442,7 @@ public class SystemSettingsActivity extends BaseActivity {
                                     buyerNumberTv.setText((((LinkedTreeMap) valueMap.get("default_buyer_number")).get("val")).toString());
                                 }
                             }else {
-                                buyerNumberTv.setText((((LinkedTreeMap) valueMap.get("default_buyer_number")).get("val")).toString());
+                                buyerNumberTv.setText((((LinkedTreeMap) valueMap.get("default_buyer_number")).get("val"))!=null?(((LinkedTreeMap) valueMap.get("default_buyer_number")).get("val")).toString(): "");
                             }
                             LinkedHashMap balanceRoundingMap = (LinkedHashMap) SPUtils.readObject(SystemSettingsActivity.this, KEY_BALANCE_ROUNDING);
                             if (balanceRoundingMap != null) {
@@ -453,7 +454,7 @@ public class SystemSettingsActivity extends BaseActivity {
                                     balanceRoundingTv.setText(((LinkedTreeMap) valueMap.get("balance_rounding")).get("val").toString());
                                 }
                             }else {
-                                balanceRoundingTv.setText(((LinkedTreeMap) valueMap.get("balance_rounding")).get("val").toString());
+                                balanceRoundingTv.setText(((LinkedTreeMap) valueMap.get("balance_rounding")).get("val")!=null?((LinkedTreeMap) valueMap.get("balance_rounding")).get("val").toString():"");
                             }
                             LinkedHashMap priceingMethodMap = (LinkedHashMap) SPUtils.readObject(SystemSettingsActivity.this, KEY_PRICEING_METHOD);
                             if (priceingMethodMap != null) {
@@ -465,7 +466,7 @@ public class SystemSettingsActivity extends BaseActivity {
                                     priceingMethodTv.setText(((LinkedTreeMap) valueMap.get("default_pricing_model")).get("val").toString());
                                 }
                             }else {
-                                priceingMethodTv.setText(((LinkedTreeMap) valueMap.get("default_pricing_model")).get("val").toString());
+                                priceingMethodTv.setText(((LinkedTreeMap) valueMap.get("default_pricing_model")).get("val")!=null?((LinkedTreeMap) valueMap.get("default_pricing_model")).get("val").toString():"");
                             }
                             LinkedHashMap weightRoundingMap = (LinkedHashMap) SPUtils.readObject(SystemSettingsActivity.this, KEY_WEIGHT_ROUNDING);
                             if (weightRoundingMap != null) {
@@ -477,7 +478,7 @@ public class SystemSettingsActivity extends BaseActivity {
                                     weightRoundingTv.setText(((LinkedTreeMap) valueMap.get("rounding_weight")).get("val").toString());
                                 }
                             }else {
-                                weightRoundingTv.setText(((LinkedTreeMap) valueMap.get("rounding_weight")).get("val").toString());
+                                weightRoundingTv.setText(((LinkedTreeMap) valueMap.get("rounding_weight")).get("val")!=null?((LinkedTreeMap) valueMap.get("rounding_weight")).get("val").toString():"");
                             }
                             LinkedHashMap sellerNumberMap = (LinkedHashMap) SPUtils.readObject(SystemSettingsActivity.this, KEY_SELLER_NUMBER);
                             if (sellerNumberMap != null) {
@@ -489,7 +490,7 @@ public class SystemSettingsActivity extends BaseActivity {
                                     sellerNumberTv.setText(((LinkedTreeMap) valueMap.get("default_seller_number")).get("val").toString());
                                 }
                             }else {
-                                sellerNumberTv.setText(((LinkedTreeMap) valueMap.get("default_seller_number")).get("val").toString());
+                                sellerNumberTv.setText(((LinkedTreeMap) valueMap.get("default_seller_number")).get("val")!=null?((LinkedTreeMap) valueMap.get("default_seller_number")).get("val").toString():"");
                             }
                             LinkedHashMap weightUnitMap = (LinkedHashMap) SPUtils.readObject(SystemSettingsActivity.this, KEY_WEIGHT_UNIT);
                             if (weightUnitMap != null) {
@@ -501,7 +502,7 @@ public class SystemSettingsActivity extends BaseActivity {
                                     weightUnitTv.setText(((LinkedTreeMap) valueMap.get("screen_unit_display")).get("val").toString());
                                 }
                             }else {
-                                weightUnitTv.setText(((LinkedTreeMap) valueMap.get("screen_unit_display")).get("val").toString());
+                                weightUnitTv.setText(((LinkedTreeMap) valueMap.get("screen_unit_display")).get("val")!=null?((LinkedTreeMap) valueMap.get("screen_unit_display")).get("val").toString():"");
                             }
                             LinkedHashMap notClearPriceMap = (LinkedHashMap) SPUtils.readObject(SystemSettingsActivity.this, KEY_NOT_CLEAR);
                             if (notClearPriceMap != null) {

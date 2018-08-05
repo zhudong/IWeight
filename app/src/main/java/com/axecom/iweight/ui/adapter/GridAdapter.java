@@ -1,6 +1,7 @@
 package com.axecom.iweight.ui.adapter;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import java.util.List;
 public class GridAdapter extends BaseAdapter{
     private Context context;
     private List<ScalesCategoryGoods.HotKeyGoods> list;
+    private int pos = -1;
 
     public GridAdapter(Context context, List<ScalesCategoryGoods.HotKeyGoods> list){
         this.context = context;
@@ -38,7 +40,9 @@ public class GridAdapter extends BaseAdapter{
     public long getItemId(int position) {
         return position;
     }
-
+    public void setCheckedAtPosition(int position) {
+        this.pos = position;
+    }
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder holder = null;
@@ -64,7 +68,13 @@ public class GridAdapter extends BaseAdapter{
 //                }
 //            }
 //        });
-
+        if (pos == position) {
+            holder.commodityBtn.setBackground(ContextCompat.getDrawable(context, R.drawable.shape_green_bg));
+            holder.commodityBtn.setTextColor(ContextCompat.getColor(context, R.color.white));
+        } else {
+            holder.commodityBtn.setBackground(ContextCompat.getDrawable(context, R.drawable.shape_weight_display_bg));
+            holder.commodityBtn.setTextColor(ContextCompat.getColor(context, R.color.black));
+        }
         return convertView;
     }
 

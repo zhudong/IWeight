@@ -543,25 +543,18 @@ public class BtHelperClient {
 //                BluetoothSocket socket =  remoteDevice.createRfcommSocketToServiceRecord(UUID.fromString(STR_UUID));
 //                BluetoothSocket socket =  (BluetoothSocket) remoteDevice.getClass().getMethod("createRfcommSocket", new Class[] {int.class}).invoke(remoteDevice,1);
                 mSocket = remoteDevice.createInsecureRfcommSocketToServiceRecord(UUID.fromString(Constants.STR_UUID));
-//                if(!socket.isConnected())
+                if(!mSocket.isConnected()){
+                    mSocket.connect();
+                }
 
-                mSocket.connect();
                 mInputStream = mSocket.getInputStream();
                 mOutputStream = mSocket.getOutputStream();
                 mCurrStatus = STATUS.CONNECTED;
-//                Toast.makeText(mContext, "mCurrStatus " + mCurrStatus, Toast.LENGTH_LONG).show();
                 listener.onConnected(mCurrStatus);
             } catch (Exception e) {
                 e.printStackTrace();
                 if (listener != null)
                     listener.onError(e);
-//                try {
-//                    mInputStream.close();
-//                    mOutputStream.close();
-//                } catch (IOException closeException) {
-//                    closeException.printStackTrace();
-//                }
-//                mCurrStatus = STATUS.FREE;
             }
         }
     }
