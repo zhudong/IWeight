@@ -56,6 +56,7 @@ public class DataSummaryActivity extends BaseActivity {
     private TextView countTotalTv, weightTotalTv, grandTotalTv, amountTotalTv;
     private TextView orderAmountTv;
     private Button prevPageBtn, nextPageBtn, prevMonthBtn, nextMonthBtn, prevDayBtn, nextDayBtn;
+    private Button salesDetailsPrevPageBtn,salesDetailsNextPageBtn,salesDetailsPrevDayBtn,salesDetailsNextDayBtn;
     private int currentPage = 1;
     private String currentDay;
     private int typeVal = 1;
@@ -87,6 +88,10 @@ public class DataSummaryActivity extends BaseActivity {
         nextMonthBtn = rootView.findViewById(R.id.data_summary_reports_next_month_btn);
         prevDayBtn = rootView.findViewById(R.id.data_summary_reports_prev_day_btn);
         nextDayBtn = rootView.findViewById(R.id.data_summary_reports_next_day_btn);
+        salesDetailsPrevPageBtn = rootView.findViewById(R.id.data_summary_sales_details_prev_page_btn);
+        salesDetailsNextPageBtn = rootView.findViewById(R.id.data_summary_sales_details_next_page_btn);
+        salesDetailsPrevDayBtn = rootView.findViewById(R.id.data_summary_sales_details_prev_day_btn);
+        salesDetailsNextDayBtn = rootView.findViewById(R.id.data_summary_sales_details_next_day_btn);
 
 
         dayReportTv.setOnClickListener(this);
@@ -99,6 +104,10 @@ public class DataSummaryActivity extends BaseActivity {
         nextMonthBtn.setOnClickListener(this);
         prevDayBtn.setOnClickListener(this);
         nextDayBtn.setOnClickListener(this);
+        salesDetailsPrevPageBtn.setOnClickListener(this);
+        salesDetailsNextPageBtn.setOnClickListener(this);
+        salesDetailsPrevDayBtn.setOnClickListener(this);
+        salesDetailsNextDayBtn.setOnClickListener(this);
         return rootView;
     }
 
@@ -172,9 +181,10 @@ public class DataSummaryActivity extends BaseActivity {
                     @Override
                     public void onNext(BaseEntity<OrderListResultBean> orderListResultBeanBaseEntity) {
                         if (orderListResultBeanBaseEntity.isSuccess()) {
-                            orderAmountTv.setText(orderListResultBeanBaseEntity.getData().total_amount);
+                            orderList.clear();
                             orderList.addAll(orderListResultBeanBaseEntity.getData().list);
                             salesAdapter.notifyDataSetChanged();
+                            orderAmountTv.setText(orderListResultBeanBaseEntity.getData().total_amount);
                         } else {
                             showLoading(orderListResultBeanBaseEntity.getMsg());
                         }
@@ -197,6 +207,8 @@ public class DataSummaryActivity extends BaseActivity {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.data_summary_day_report_tv:
+                currentDay = getCurrentTime( "yyyy-MM-dd");
+                dateTv.setText(currentDay);
                 dataList.clear();
                 currentPage = 1;
                 typeVal = 1;
@@ -210,12 +222,21 @@ public class DataSummaryActivity extends BaseActivity {
                 nextMonthBtn.setVisibility(View.GONE);
                 prevDayBtn.setVisibility(View.VISIBLE);
                 nextDayBtn.setVisibility(View.VISIBLE);
+                prevPageBtn.setVisibility(View.GONE);
+                nextPageBtn.setVisibility(View.GONE);
+
+                salesDetailsPrevPageBtn.setVisibility(View.GONE);
+                salesDetailsNextPageBtn.setVisibility(View.GONE);
+                salesDetailsPrevDayBtn.setVisibility(View.GONE);
+                salesDetailsNextDayBtn.setVisibility(View.GONE);
                 dayReportTv.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_gray_btn_bg));
                 monthReportTv.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_white_btn_bg));
                 salesDetailsReportTv.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_white_btn_bg));
                 getReportsList(currentDay, typeVal + "", currentPage + "", pageNum + "");
                 break;
             case R.id.data_summary_month_report_tv:
+                currentDay = getCurrentTime( "yyyy-MM");
+                dateTv.setText(currentDay);
                 dataList.clear();
                 currentPage = 1;
                 typeVal = 2;
@@ -229,12 +250,21 @@ public class DataSummaryActivity extends BaseActivity {
                 nextMonthBtn.setVisibility(View.VISIBLE);
                 prevDayBtn.setVisibility(View.GONE);
                 nextDayBtn.setVisibility(View.GONE);
+                prevPageBtn.setVisibility(View.GONE);
+                nextPageBtn.setVisibility(View.GONE);
+
+                salesDetailsPrevPageBtn.setVisibility(View.GONE);
+                salesDetailsNextPageBtn.setVisibility(View.GONE);
+                salesDetailsPrevDayBtn.setVisibility(View.GONE);
+                salesDetailsNextDayBtn.setVisibility(View.GONE);
                 dayReportTv.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_white_btn_bg));
                 monthReportTv.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_gray_btn_bg));
                 salesDetailsReportTv.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_white_btn_bg));
                 getReportsList(currentDay, typeVal + "", currentPage + "", pageNum + "");
                 break;
             case R.id.data_summary_sales_details_report_tv:
+                currentDay = getCurrentTime( "yyyy-MM-dd");
+                dateTv.setText(currentDay);
                 orderList.clear();
                 reportTitleLayout.setVisibility(View.GONE);
                 reportTotalLayout.setVisibility(View.GONE);
@@ -242,6 +272,18 @@ public class DataSummaryActivity extends BaseActivity {
                 salesTitleLayout.setVisibility(View.VISIBLE);
                 salesTotalLayout.setVisibility(View.VISIBLE);
                 salesDetailsListView.setVisibility(View.VISIBLE);
+                prevPageBtn.setVisibility(View.GONE);
+                nextPageBtn.setVisibility(View.GONE);
+                prevMonthBtn.setVisibility(View.GONE);
+                nextMonthBtn.setVisibility(View.GONE);
+                prevDayBtn.setVisibility(View.GONE);
+                nextDayBtn.setVisibility(View.GONE);
+
+                salesDetailsPrevPageBtn.setVisibility(View.VISIBLE);
+                salesDetailsNextPageBtn.setVisibility(View.VISIBLE);
+                salesDetailsPrevDayBtn.setVisibility(View.VISIBLE);
+                salesDetailsNextDayBtn.setVisibility(View.VISIBLE);
+
                 dayReportTv.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_white_btn_bg));
                 monthReportTv.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_white_btn_bg));
                 salesDetailsReportTv.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_gray_btn_bg));
@@ -251,26 +293,48 @@ public class DataSummaryActivity extends BaseActivity {
                 finish();
                 break;
             case R.id.data_summary_reports_prev_page_btn:
-                getReportsList(currentDay, typeVal + "", --currentPage <= 1 ? "1" : --currentPage + "", pageNum + "");
+                getReportsList(currentDay, typeVal + "", --currentPage <= 1 ?  (currentPage=1)+"" : --currentPage + "", pageNum + "");
                 break;
             case R.id.data_summary_reports_next_page_btn:
                 getReportsList(currentDay, typeVal + "", ++currentPage + "", pageNum + "");
                 break;
             case R.id.data_summary_reports_prev_month_btn:
                 currentPage = 1;
-                getReportsList(getCurrentTime(currentDay, "yyyy-MM", 1), typeVal + "", (currentPage = 1) + "", pageNum + "");
+                currentDay = getMonthTime(currentDay, "yyyy-MM", 1);
+                dateTv.setText(currentDay);
+                getReportsList(currentDay, typeVal + "",(currentPage = 1) + "", pageNum + "");
                 break;
             case R.id.data_summary_reports_next_month_btn:
                 currentPage = 1;
-                getReportsList(getCurrentTime(currentDay, "yyyy-MM", 2), typeVal + "", (currentPage = 1) + "", pageNum + "");
+                currentDay = getMonthTime(currentDay, "yyyy-MM", 2);
+                dateTv.setText(currentDay);
+                getReportsList(currentDay,  typeVal + "",(currentPage = 1) + "", pageNum + "");
                 break;
             case R.id.data_summary_reports_prev_day_btn:
                 currentDay = getCurrentTime(currentDay, "yyyy-MM-dd", 3);
+                dateTv.setText(currentDay);
                 getReportsList(currentDay, typeVal + "", (currentPage = 1) + "", pageNum + "");
                 break;
             case R.id.data_summary_reports_next_day_btn:
                 currentDay = getCurrentTime(currentDay, "yyyy-MM-dd", 4);
+                dateTv.setText(currentDay);
                 getReportsList(currentDay, typeVal + "", (currentPage = 1) + "", pageNum + "");
+                break;
+            case R.id.data_summary_sales_details_prev_page_btn:
+                getOrderList(currentDay,  --currentPage <= 1 ? (currentPage=1)+"" : --currentPage + "", "10");
+                break;
+            case R.id.data_summary_sales_details_next_page_btn:
+                getOrderList(currentDay, ++currentPage + "", "10");
+                break;
+            case R.id.data_summary_sales_details_prev_day_btn:
+                currentDay = getCurrentTime(currentDay, "yyyy-MM-dd", 3);
+                dateTv.setText(currentDay);
+                getOrderList(currentDay, "1", "10");
+                break;
+            case R.id.data_summary_sales_details_next_day_btn:
+                currentDay = getCurrentTime(currentDay, "yyyy-MM-dd", 4);
+                dateTv.setText(currentDay);
+                getOrderList(currentDay, "1", "10");
                 break;
         }
     }

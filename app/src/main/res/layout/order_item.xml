@@ -10,6 +10,15 @@
         android:orientation="horizontal">
 
         <TextView
+            android:id="@+id/order_item_id_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="1"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+ <TextView
             android:id="@+id/order_item_number_tv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

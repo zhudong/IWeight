@@ -40,7 +40,7 @@ public class AbnormalOrderActivity extends BaseActivity {
     private OrderAdapter orderAdapter;
     private Button previousBtn, nextBtn, backBtn;
     private List<UnusualOrdersBean.Order> orderList;
-    private int previousPos = 8;
+    private int previousPos = 12;
     private int currentPage = 1;
 
     @Override
@@ -147,6 +147,7 @@ public class AbnormalOrderActivity extends BaseActivity {
             if(convertView == null){
                 convertView = LayoutInflater.from(context).inflate(R.layout.abnormal_order_item, null);
                 holder = new ViewHolder();
+                holder.orderIdTv = convertView.findViewById(R.id.abnormal_order_item_id_tv);
                 holder.orderNumberTv = convertView.findViewById(R.id.abnormal_order_item_number_tv);
                 holder.dealTimeTv = convertView.findViewById(R.id.abnormal_order_item_dealTime_tv);
                 holder.sellerTv = convertView.findViewById(R.id.abnormal_order_item_seller_tv);
@@ -161,6 +162,7 @@ public class AbnormalOrderActivity extends BaseActivity {
             }
 
             UnusualOrdersBean.Order order = list.get(position);
+            holder.orderIdTv.setText(order.id);
             holder.orderNumberTv.setText(order.order_no);
             holder.dealTimeTv.setText(order.create_time);
             holder.sellerTv.setText(order.client_name);
@@ -174,6 +176,7 @@ public class AbnormalOrderActivity extends BaseActivity {
         }
 
         class ViewHolder{
+            TextView orderIdTv;
             TextView orderNumberTv;
             TextView dealTimeTv;
             TextView sellerTv;

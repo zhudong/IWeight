@@ -43,7 +43,7 @@ public class OrderInvalidActivity extends BaseActivity {
     private ListView orderListView;
     private OrderAdapter orderAdapter;
     private Button previousBtn, nextBtn, backBtn;
-    private int previousPos = 16;
+    private int previousPos = 12;
     private int nextPos = 16;
     private CustomDialog mDialog;
     private CustomDialog.Builder builder;
@@ -212,6 +212,7 @@ public class OrderInvalidActivity extends BaseActivity {
             if (convertView == null) {
                 convertView = LayoutInflater.from(context).inflate(R.layout.order_item, null);
                 holder = new ViewHolder();
+                holder.orderIdTv = convertView.findViewById(R.id.order_item_id_tv);
                 holder.orderNumberTv = convertView.findViewById(R.id.order_item_number_tv);
                 holder.dealTimeTv = convertView.findViewById(R.id.order_item_dealTime_tv);
                 holder.sellerTv = convertView.findViewById(R.id.order_item_seller_tv);
@@ -226,6 +227,8 @@ public class OrderInvalidActivity extends BaseActivity {
                 holder = (ViewHolder) convertView.getTag();
             }
             final UnusualOrdersBean.Order order = orderMap.get(orderList.get(position).order_no);
+
+            holder.orderIdTv.setText(order.id);
             holder.orderNumberTv.setText(order.order_no);
             holder.dealTimeTv.setText(order.create_time);
             holder.sellerTv.setText(order.client_name);
@@ -268,6 +271,7 @@ public class OrderInvalidActivity extends BaseActivity {
         }
 
         class ViewHolder {
+            TextView orderIdTv;
             TextView orderNumberTv;
             TextView dealTimeTv;
             TextView sellerTv;

@@ -457,6 +457,28 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
         Date m = c.getTime();
         return simpleDateFormat.format(m);
     }
+    public String getMonthTime(String specifiedDay, String format, int type) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);// HH:mm:ss
+        Calendar c = Calendar.getInstance();
+        Date date = null;
+        try {
+            date = new SimpleDateFormat("yy-MM").parse(specifiedDay);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        c.setTime(date);
+        if (type == 1)
+            c.add(Calendar.MONTH, -1);
+        if (type == 2)
+            c.add(Calendar.MONTH, +1);
+        if (type == 3)
+            c.add(Calendar.DAY_OF_MONTH, -1);
+        if (type == 4)
+            c.add(Calendar.DAY_OF_MONTH, +1);
+        Date m = c.getTime();
+        return simpleDateFormat.format(m);
+    }
 
     public void scrollTo(final ListView listView, final int position) {
         listView.post(new Runnable() {

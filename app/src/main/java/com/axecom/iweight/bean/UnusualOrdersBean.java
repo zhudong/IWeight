@@ -10,6 +10,7 @@ public class UnusualOrdersBean extends BaseEntity {
 
 
     public class Order{
+        public String id;
         public String order_no;
         public String create_time;
         public String client_name;
