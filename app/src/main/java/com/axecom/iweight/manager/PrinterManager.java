@@ -61,12 +61,8 @@ public class PrinterManager {
 //    }
 
     public void usbConn() {
-        if (SysApplication.getInstances().getGpDriver() == null) {
-            return;
-        }
-
         LocalSettingsBean.Value.PrinterPort printerPort = (LocalSettingsBean.Value.PrinterPort) SPUtils.readObject(context, LocalSettingsActivity.KEY_PRINTER_PORT);
-        usbName = printerPort.val;
+        usbName = printerPort.val.split("：")[1];
         UsbDevice usbDevice = Utils.getUsbDeviceFromName(context, usbName);
         usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
 
@@ -91,7 +87,9 @@ public class PrinterManager {
                 .setContext(context)
                 .build();
         mUsbPort = new UsbPort(context, usbDevice);
-        mUsbPort.openPort();
+       boolean isOpenPort = mUsbPort.openPort();
+        if (isOpenPort) {
+        }
 
 //        DeviceConnFactoryManager.getDeviceConnFactoryManagers()[id].openPort();
     }
@@ -178,6 +176,7 @@ public class PrinterManager {
 
         // 绘制图片
         Bitmap b = bitmap;
+        if(bitmap!= null)
         tsc.addBitmap(20, 60, LabelCommand.BITMAP_MODE.OVERWRITE, b.getWidth(), b);
         //绘制二维码
 //        tsc.addQRCode(105, 75, LabelCommand.EEC.LEVEL_L, 5, LabelCommand.ROTATION.ROTATION_0, " www.smarnet.cc");
@@ -236,7 +235,8 @@ public class PrinterManager {
         esc.addText("------------------------------------------------\n");
         esc.addText("司磅员：" + operator + "\t" + "秤号：" + AccountManager.getInstance().getScalesId() + "\n");
         esc.addText("追溯信息：\n");
-        esc.addRastBitImage(bitmap, 200, 0);
+        if(bitmap!= null)
+            esc.addRastBitImage(bitmap, 200, 0);
         esc.addGeneratePlus(LabelCommand.FOOT.F5, (byte) 255, (byte) 255);
         esc.addPrintAndFeedLines((byte) 8);
         esc.addCutPaper();

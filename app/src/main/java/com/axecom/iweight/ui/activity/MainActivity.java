@@ -58,6 +58,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
@@ -117,6 +118,7 @@ public class MainActivity extends BaseActivity {
     private String port = "/dev/ttyS4";
     public BannerActivity banner = null;
     boolean switchSimpleOrComplex;
+    boolean stopPrint;
 
     @Override
     public View setInitView() {
@@ -151,7 +153,21 @@ public class MainActivity extends BaseActivity {
         disableShowInput(priceEt);
         disableShowInput(countEt);
         getLoginInfo();
-        getGoodsData();
+        hotKeyGoodsList = new ArrayList<>();
+        seledtedGoodsList = new ArrayList<>();
+        gridAdapter = new GridAdapter(this, hotKeyGoodsList);
+
+        boolean isConnected = NetworkUtil.isConnected(this);
+        if (isConnected) {
+            getGoodsData();
+
+        } else {
+            List<ScalesCategoryGoods.HotKeyGoods> saveHotKeys = (List<ScalesCategoryGoods.HotKeyGoods>) SPUtils.readObject(this, KEY_HOT_KEY_GOODS);
+            if (saveHotKeys != null) {
+                hotKeyGoodsList.addAll(saveHotKeys);
+                gridAdapter.notifyDataSetChanged();
+            }
+        }
         DisplayManager displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
         Display[] presentationDisplays = displayManager.getDisplays();
         LogUtils.d("------------: " + presentationDisplays.length + "  --- " + presentationDisplays[1].getName());
@@ -161,10 +177,9 @@ public class MainActivity extends BaseActivity {
         banner.show();
 
         advertising();
-
         LocalSettingsBean.Value.PrinterPort printerPort = (LocalSettingsBean.Value.PrinterPort) SPUtils.readObject(this, LocalSettingsActivity.KEY_PRINTER_PORT);
         if (printerPort != null) {
-            port = printerPort.val;
+            port = printerPort.val.split("：")[1];
         }
         if (TextUtils.equals(port, "/dev/ttyS4")) {
             printerManager.openGpinter();
@@ -189,8 +204,7 @@ public class MainActivity extends BaseActivity {
     @Override
     public void initView() {
         weightNumberTv.setText(AccountManager.getInstance().getScalesId());
-        hotKeyGoodsList = new ArrayList<>();
-        seledtedGoodsList = new ArrayList<>();
+
         commodityAdapter = new CommodityAdapter(this, seledtedGoodsList);
         commoditysListView.setAdapter(commodityAdapter);
         commoditysListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -203,7 +217,6 @@ public class MainActivity extends BaseActivity {
             }
         });
 
-        gridAdapter = new GridAdapter(this, hotKeyGoodsList);
         commoditysGridView.setAdapter(gridAdapter);
         commoditysGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -295,7 +308,10 @@ public class MainActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         flag = true;
-
+        LinkedHashMap valueMap = (LinkedHashMap) SPUtils.readObject(this, SystemSettingsActivity.KEY_STOP_PRINT);
+        if (valueMap != null) {
+            stopPrint = (boolean) valueMap.get("val");
+        }
         switchSimpleOrComplex = (boolean) SPUtils.get(this, SettingsActivity.KET_SWITCH_SIMPLE_OR_COMPLEX, false);
         if (switchSimpleOrComplex) {
             countLayout.setVisibility(View.VISIBLE);
@@ -574,17 +590,23 @@ public class MainActivity extends BaseActivity {
     public void onEventMainThread(BusEvent event) {
         if (event != null) {
             if (event.getType() == BusEvent.PRINTER_LABEL || event.getType() == BusEvent.POSITION_PATCH) {
+                if(stopPrint){
+                    return;
+                }
                 final String qrcode = event.getmStrParam03();
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            bitmap = BitmapFactory.decodeStream(new URL(qrcode).openStream());
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                bitmap = (Bitmap) event.getParam();
+                if (bitmap == null) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                bitmap = BitmapFactory.decodeStream(new URL(qrcode).openStream());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
-                    }
-                }).start();
+                    }).start();
+                }
                 orderNo = event.getStrParam();
                 payId = event.getStrParam02();
                 SPUtils.putString(this, "print_orderno", orderNo);
@@ -595,14 +617,14 @@ public class MainActivity extends BaseActivity {
                             payId,
                             operatorTv.getText().toString(),
                             priceTotalTv.getText().toString(),
-                            (List<ScalesCategoryGoods.HotKeyGoods>)SPUtils.readObject(this, "selectedGoodList"));
+                            (List<ScalesCategoryGoods.HotKeyGoods>) SPUtils.readObject(this, "selectedGoodList"));
                 } else {
                     btnLabelPrint(bitmap,
                             orderNo,
                             payId,
                             operatorTv.getText().toString(),
                             priceTotalTv.getText().toString(),
-                            (List<ScalesCategoryGoods.HotKeyGoods>)SPUtils.readObject(this, "selectedGoodList"));
+                            (List<ScalesCategoryGoods.HotKeyGoods>) SPUtils.readObject(this, "selectedGoodList"));
                 }
                 clear(1);
             }
@@ -620,22 +642,30 @@ public class MainActivity extends BaseActivity {
                 }
             }
             if (event.getType() == BusEvent.SAVE_COMMODITY_SUCCESS) {
+                SPUtils.saveObject(MainActivity.this, KEY_HOT_KEY_GOODS, hotKeyGoodsList);
                 boolean isConnected = NetworkUtil.isConnected(this);
                 if (isConnected) {
                     getGoodsData();
 
-                } else {
+
+                }else {
                     List<ScalesCategoryGoods.HotKeyGoods> saveHotKeys = (List<ScalesCategoryGoods.HotKeyGoods>) SPUtils.readObject(this, KEY_HOT_KEY_GOODS);
                     if (saveHotKeys != null) {
                         hotKeyGoodsList.addAll(saveHotKeys);
                         gridAdapter.notifyDataSetChanged();
                     }
                 }
+//                else {
+//                    if (saveHotKeys != null) {
+//                        hotKeyGoodsList.addAll(saveHotKeys);
+//                        gridAdapter.notifyDataSetChanged();
+//                    }
+//                }
             }
             if (event.getType() == BusEvent.SAVE_LOCAL_SUCCESS) {
                 LocalSettingsBean.Value.PrinterPort printerPort = (LocalSettingsBean.Value.PrinterPort) SPUtils.readObject(this, LocalSettingsActivity.KEY_PRINTER_PORT);
                 if (printerPort != null) {
-                    port = printerPort.val;
+                    port = printerPort.val.split("：")[1];
                 }
                 if (TextUtils.equals(port, "/dev/ttyS4")) {
                     printerManager.openGpinter();
@@ -649,7 +679,7 @@ public class MainActivity extends BaseActivity {
 
     private ThreadPool threadPool;
 
-    public void btnReceiptPrint(final Bitmap bitmap, final String orderNo, final String payId, final String operator, final String price, final List<ScalesCategoryGoods.HotKeyGoods> seledtedGoodsList ) {
+    public void btnReceiptPrint(final Bitmap bitmap, final String orderNo, final String payId, final String operator, final String price, final List<ScalesCategoryGoods.HotKeyGoods> seledtedGoodsList) {
         threadPool = ThreadPool.getInstantiation();
         threadPool.addTask(new Runnable() {
             @Override
@@ -729,7 +759,7 @@ public class MainActivity extends BaseActivity {
                 intent.putExtras(bundle);
                 intent.setClass(this, UseCashActivity.class);
                 startActivity(intent);
-                SPUtils.saveObject(this, "selectedGoodList",seledtedGoodsList);
+                SPUtils.saveObject(this, "selectedGoodList", seledtedGoodsList);
                 break;
         }
 

@@ -35,6 +35,7 @@
                 android:orientation="vertical">
 
                 <LinearLayout
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_marginTop="20dp"
@@ -86,9 +87,8 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_weight="1">
+                    android:layout_height="80dp"
+                    android:layout_marginTop="20dp">
 
                     <TextView
                         android:layout_width="0dp"
@@ -129,15 +129,15 @@
                         android:background="@drawable/shape_white_btn_bg"
                         android:gravity="center_vertical"
                         android:padding="5dp"
+                        android:text="115200"
                         android:textColor="@color/gray_555"
                         android:textSize="20sp" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="80dp"
                     android:layout_marginTop="20dp"
-                    android:layout_weight="1"
                     android:orientation="horizontal">
 
                     <TextView
@@ -165,9 +165,8 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="80dp"
                     android:layout_marginTop="20dp"
-                    android:layout_weight="1"
                     android:orientation="horizontal">
 
                     <TextView
@@ -194,6 +193,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_marginTop="20dp"
@@ -226,10 +226,9 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="80dp"
                     android:layout_marginBottom="20dp"
                     android:layout_marginTop="20dp"
-                    android:layout_weight="1"
                     android:orientation="horizontal">
 
                     <TextView
@@ -266,6 +265,7 @@
                 android:orientation="vertical">
 
                 <LinearLayout
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_marginTop="10dp"
@@ -307,9 +307,8 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_weight="1"
+                    android:layout_height="80dp"
+                    android:layout_marginTop="20dp"
                     android:orientation="horizontal">
 
                     <TextView
@@ -365,9 +364,8 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_weight="1"
+                    android:layout_height="80dp"
+                    android:layout_marginTop="20dp"
                     android:orientation="horizontal">
 
                     <TextView
@@ -395,9 +393,8 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_weight="1"
+                    android:layout_height="80dp"
+                    android:layout_marginTop="20dp"
                     android:orientation="horizontal">
 
                     <TextView
@@ -426,9 +423,8 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_weight="1"
+                    android:layout_height="80dp"
+                    android:layout_marginTop="20dp"
                     android:orientation="horizontal">
 
                     <TextView
@@ -443,15 +439,16 @@
 
                     <TextView
                         android:id="@+id/local_settings_read_card_type_choose_tv"
-                        android:layout_width="110dp"
+                        android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
+                        android:layout_weight="2"
                         android:drawableBottom="@drawable/shape_black_line"
                         android:gravity="center_vertical"
                         android:textColor="@color/gray_555"
                         android:textSize="20sp" />
 
                     <Button
+                        android:visibility="gone"
                         android:enabled="false"
                         android:id="@+id/local_settings_read_card_type_choose_btn"
                         android:layout_width="wrap_content"
@@ -464,10 +461,9 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
+                    android:layout_height="80dp"
                     android:layout_marginBottom="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_weight="1"
+                    android:layout_marginTop="20dp"
                     android:orientation="horizontal">
 
                     <TextView

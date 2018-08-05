@@ -40,6 +40,7 @@ import com.axecom.iweight.utils.MoneyTextWatcher;
 import com.axecom.iweight.utils.NetworkUtil;
 import com.axecom.iweight.utils.SPUtils;
 import com.bumptech.glide.Glide;
+import com.google.gson.internal.LinkedTreeMap;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.raizlabs.android.dbflow.config.FlowManager;
@@ -52,6 +53,7 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import io.reactivex.Observer;
@@ -129,6 +131,25 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
 
     @Override
     public void initView() {
+        LinkedHashMap valueMap = (LinkedHashMap) SPUtils.readObject(this, SystemSettingsActivity.KEY_STOP_CASH);
+        if (valueMap != null) {
+            boolean b = (boolean) valueMap.get("val");
+            if (!b) {
+                cashPayBtn.setVisibility(View.VISIBLE);
+                cashPayLayout.setVisibility(View.VISIBLE);
+            } else {
+                cashPayBtn.setVisibility(View.GONE);
+                aliPayBtn.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_green_bg2));
+                aliPayBtn.setTextColor(ContextCompat.getColor(this, R.color.white));
+                wechatPayBtn.setBackground(ContextCompat.getDrawable(this, R.drawable.shape_white_btn_bg));
+                wechatPayBtn.setTextColor(ContextCompat.getColor(this, R.color.black));
+                cashPayLayout.setVisibility(View.GONE);
+                qrCodeIv.setVisibility(View.VISIBLE);
+                payId = "2";
+                setOrderBean(payId);
+            }
+        }
+
         if (NetworkUtil.isConnected(this)) {
             aliPayBtn.setEnabled(true);
             wechatPayBtn.setEnabled(true);
@@ -232,6 +253,8 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
                 localOrder.add(orderBean);
                 SPUtils.saveObject(this, "local_order", localOrder);
             }
+            EventBus.getDefault().post(new BusEvent(BusEvent.PRINTER_LABEL, bitmap, "", payId, ""));
+            finish();
         }
     }
 

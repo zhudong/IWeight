@@ -13,6 +13,9 @@ public class Constants {
     public static final String URL = "http://nong.yingzy.com/api/";
     public static final String MAC_TEST = "84:73:03:5b:ba:bb";
 
+    public static final String ADMIN_CARD_NUMBER = "A29529D6";
+    public static final String ADMIN_CARD_PWD = "885911";
+
     public class UserInfo{
         public static final String USER_TOKEN = "user_token";
         public static final String USER_SCALES_ID = "scales_id";

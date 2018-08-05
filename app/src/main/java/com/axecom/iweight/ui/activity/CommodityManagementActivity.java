@@ -231,6 +231,9 @@ public class CommodityManagementActivity extends BaseActivity {
                         if (baseEntity.isSuccess()) {
                             EventBus.getDefault().post(new BusEvent(BusEvent.SAVE_COMMODITY_SUCCESS, true));
                             Toast.makeText(CommodityManagementActivity.this, baseEntity.getMsg(), Toast.LENGTH_SHORT).show();
+                            adapter = new DragAdapter(CommodityManagementActivity.this, hotKeyList);
+                            adapter.showDeleteTv(false);
+                            commodityRV.setAdapter(adapter);
                         } else {
                             showLoading(baseEntity.getMsg());
                         }
@@ -451,13 +454,14 @@ public class CommodityManagementActivity extends BaseActivity {
             view.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    showDeleteTv();
+                    showDeleteTv(true);
                     return true;
                 }
             });
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if(onItemClickListener!=null)
                     onItemClickListener.onItemClickListener(v);
                 }
             });
@@ -495,11 +499,11 @@ public class CommodityManagementActivity extends BaseActivity {
             notifyItemMoved(fromPosition, toPosition);
         }
 
-        public void showDeleteTv() {
+        public void showDeleteTv(boolean show) {
             for (int i = 0; i < mItems.size(); i++) {
-                mItems.get(i).setShow(true);
+                mItems.get(i).setShow(show);
             }
-            isShowDelTv = true;
+            isShowDelTv = show;
             notifyDataSetChanged();
         }
 
@@ -517,7 +521,7 @@ public class CommodityManagementActivity extends BaseActivity {
             int visibleChildCount = parent.getChildCount();
             for (int i = 0; i < visibleChildCount; i++) {
                 View view = parent.getChildAt(i);
-                TextView deleteTv = (TextView) view.findViewById(R.id.commodity_item_2_delete_tv);
+                ImageView deleteTv = (ImageView) view.findViewById(R.id.commodity_item_2_delete_tv);
                 if (deleteTv != null) {
                     deleteTv.setVisibility(View.VISIBLE);
                 }
@@ -526,13 +530,13 @@ public class CommodityManagementActivity extends BaseActivity {
 
         class DragViewHolder extends RecyclerView.ViewHolder implements OnDragVHListener {
             private TextView nameTv;
-            private TextView deleteTv;
+            private ImageView deleteTv;
             private ImageView selectedTv;
 
             public DragViewHolder(View itemView) {
                 super(itemView);
                 nameTv = (TextView) itemView.findViewById(R.id.commodity_item_2_name_tv);
-                deleteTv = (TextView) itemView.findViewById(R.id.commodity_item_2_delete_tv);
+                deleteTv = (ImageView) itemView.findViewById(R.id.commodity_item_2_delete_tv);
                 selectedTv = (ImageView) itemView.findViewById(R.id.commodity_item_2_selected_iv);
             }
 

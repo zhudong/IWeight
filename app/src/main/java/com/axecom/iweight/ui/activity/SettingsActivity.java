@@ -193,6 +193,15 @@ public class SettingsActivity extends BaseActivity {
                         }
                     }
                     break;
+                case POSITION_UPDATE:
+                    showLoading();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            closeLoading();
+                        }
+                    }, 2000);
+                    break;
             }
         }
     };

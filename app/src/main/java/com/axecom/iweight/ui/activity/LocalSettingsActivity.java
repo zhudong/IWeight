@@ -296,7 +296,7 @@ public class LocalSettingsActivity extends BaseActivity {
 
         if (!TextUtils.isEmpty(printerPortChooseTv.getText())) {
             valueMap.printer_port.update_time = System.currentTimeMillis() + "";
-            valueMap.printer_port.val = printerPortChooseTv.getText().toString().split("：")[1];
+            valueMap.printer_port.val = printerPortChooseTv.getText().toString();
             SPUtils.saveObject(this, KEY_PRINTER_PORT, valueMap.printer_port);
         }
 
@@ -414,6 +414,10 @@ public class LocalSettingsActivity extends BaseActivity {
                 softBuilder.create(new SoftKeyborad.OnConfirmedListener() {
                     @Override
                     public void onConfirmed(String result) {
+                        if(result.equals("0")){
+                            showLoading("最小为1份");
+                            return;
+                        }
                         printerCountTv.setText(result);
                     }
                 }).show();

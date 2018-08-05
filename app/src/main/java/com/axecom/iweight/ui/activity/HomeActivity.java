@@ -11,6 +11,7 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +26,7 @@ import com.axecom.iweight.base.BusEvent;
 import com.axecom.iweight.base.SysApplication;
 import com.axecom.iweight.bean.LoginData;
 import com.axecom.iweight.bean.WeightBean;
+import com.axecom.iweight.conf.Constants;
 import com.axecom.iweight.manager.AccountManager;
 import com.axecom.iweight.manager.MacManager;
 import com.axecom.iweight.manager.PrinterManager;
@@ -34,15 +36,20 @@ import com.axecom.iweight.ui.view.SoftKeyborad;
 import com.axecom.iweight.utils.ButtonUtils;
 import com.axecom.iweight.utils.LogUtils;
 import com.axecom.iweight.utils.NetworkUtil;
+import com.axecom.iweight.utils.SPUtils;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
+
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
+
+import static com.axecom.iweight.ui.activity.SystemSettingsActivity.KEY_DEFAULT_LOGIN_TYPE;
 
 /**
  * Created by Administrator on 2018-5-8.
@@ -79,7 +86,7 @@ public class HomeActivity extends BaseActivity {
         cardNumberTv.setOnClickListener(this);
         confirmBtn.setOnClickListener(this);
         savePwdCtv.setOnClickListener(this);
-                DisplayManager displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
+        DisplayManager displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
         //获取屏幕数量
         Display[] presentationDisplays = displayManager.getDisplays();
         LogUtils.d("------------: " + presentationDisplays.length + "  --- " + presentationDisplays[1].getName());
@@ -281,7 +288,24 @@ public class HomeActivity extends BaseActivity {
 //                openGpinter();
                 break;
             case R.id.home_confirm_btn:
-                clientLogin(weightId + "", cardNumberTv.getText().toString(), pwdTv.getText().toString());
+                if (NetworkUtil.isConnected(this)) {
+                    LinkedHashMap valueMap = (LinkedHashMap) SPUtils.readObject(this, KEY_DEFAULT_LOGIN_TYPE);
+                    String value = "";
+                    if(valueMap != null){
+                        value = valueMap.get("val").toString();
+                    }
+                    if (TextUtils.equals(value, "卖方卡")) {
+                        clientLogin(weightId + "", cardNumberTv.getText().toString(), pwdTv.getText().toString());
+                    } else {
+                        staffMemberLogin(weightId + "", cardNumberTv.getText().toString(), pwdTv.getText().toString());
+                    }
+                } else {
+                    if (!TextUtils.isEmpty(cardNumberTv.getText())) {
+                        if (TextUtils.equals(cardNumberTv.getText(), Constants.ADMIN_CARD_NUMBER) && TextUtils.equals(pwdTv.getText(), Constants.ADMIN_CARD_PWD)) {
+                            startDDMActivity(MainActivity.class, false);
+                        }
+                    }
+                }
                 break;
             case R.id.home_card_number_tv:
                 if (!ButtonUtils.isFastDoubleClick(R.id.home_card_number_tv)) {
@@ -394,6 +418,45 @@ public class HomeActivity extends BaseActivity {
                 });
     }
 
+    public void staffMemberLogin(String scalesId, final String serialNumber, final String password) {
+        RetrofitFactory.getInstance().API()
+                .staffMemberLogin(scalesId, serialNumber, password)
+                .compose(this.<BaseEntity<LoginData>>setThread())
+                .subscribe(new Observer<BaseEntity<LoginData>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        showLoading();
+
+                    }
+
+                    @Override
+                    public void onNext(BaseEntity<LoginData> loginDataBaseEntity) {
+                        if (loginDataBaseEntity.isSuccess()) {
+                            AccountManager.getInstance().setAdminToken(loginDataBaseEntity.getData().getAdminToken());
+                            if (savePwdCtv.isChecked()) {
+                                AccountManager.getInstance().savePwd(serialNumber, password);
+                            } else {
+                                AccountManager.getInstance().savePwd(serialNumber, null);
+                            }
+//                            mHanlder.postDelayed(task, 1000);
+                            startDDMActivity(MainActivity.class, false);
+                        } else {
+                            showLoading(loginDataBaseEntity.getMsg());
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                        closeLoading();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        closeLoading();
+                    }
+                });
+    }
 
     @Override
     public void onBackPressed() {

@@ -69,6 +69,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="50dp"
                 android:layout_width="match_parent"
+                android:inputType="numberPassword"
                 android:layout_height="40dp"
                 android:paddingLeft="5dp"
                 android:background="@drawable/shape_white_btn_bg"/>

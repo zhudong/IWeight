@@ -242,6 +242,7 @@
                             android:textSize="25sp"
                             android:textColor="@color/black"
                             android:layout_width="match_parent"
+                            android:inputType="numberPassword"
                             android:layout_height="60dp"
                             android:layout_marginLeft="10dp"
                             android:background="@drawable/shape_edittext_bg"

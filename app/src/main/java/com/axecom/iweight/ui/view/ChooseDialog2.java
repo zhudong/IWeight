@@ -110,11 +110,11 @@ public class ChooseDialog2<T> extends Dialog {
 
                 holder.chooseCtv.setText(list.get(position).getChooseItem());
 
-                if (pos == position) {
-                    holder.chooseCtv.setChecked(true);
-                } else {
-                    holder.chooseCtv.setChecked(false);
-                }
+//                if (pos == position) {
+//                    holder.chooseCtv.setChecked(true);
+//                } else {
+//                    holder.chooseCtv.setChecked(false);
+//                }
 
                 return convertView;
             }

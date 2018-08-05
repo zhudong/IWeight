@@ -33,26 +33,26 @@ import io.reactivex.disposables.Disposable;
 
 public class SystemSettingsActivity extends BaseActivity {
 
-    private static final String KEY_DEFAULT_LOGIN_TYPE = "key_default_login_type";
-    private static final String KEY_PRINTER = "key_printer";
-    private static final String KEY_BUYER_NUMBER = "key_buyer_number";
-    private static final String KEY_BALANCE_ROUNDING = "key_balance_rounding";
-    private static final String KEY_PRICEING_METHOD = "key_priceing_method";
-    private static final String KEY_WEIGHT_ROUNDING = "key_weight_rounding";
-    private static final String KEY_SELLER_NUMBER = "key_seller_number";
-    private static final String KEY_WEIGHT_UNIT = "key_weight_unit";
+    public static final String KEY_DEFAULT_LOGIN_TYPE = "key_default_login_type";
+    public static final String KEY_PRINTER = "key_printer";
+    public static final String KEY_BUYER_NUMBER = "key_buyer_number";
+    public static final String KEY_BALANCE_ROUNDING = "key_balance_rounding";
+    public static final String KEY_PRICEING_METHOD = "key_priceing_method";
+    public static final String KEY_WEIGHT_ROUNDING = "key_weight_rounding";
+    public static final String KEY_SELLER_NUMBER = "key_seller_number";
+    public static final String KEY_WEIGHT_UNIT = "key_weight_unit";
 
-    private static final String KEY_NOT_CLEAR = "key_not_clear";
-    private static final String KEY_SAVE_WEIGHT = "key_save_weight";
-    private static final String KEY_AUTO_OBTAIN = "key_auto_obtain";
-    private static final String KEY_CASH_SETTLEMENT = "key_cash_settlement";
-    private static final String KEY_DISTINGUISH = "key_distinguish";
-    private static final String KEY_ICCARD_SETTLEMENT = "key_iccard_settlement";
-    private static final String KEY_STOP_PRINT = "key_stop_print";
-    private static final String KEY_NO_PATCH_SETTLEMENT = "key_no_patch_settlement";
-    private static final String KEY_AUTO_PREV = "key_auto_prev";
-    private static final String KEY_CASH_ROUNDING = "key_cash_rounding";
-    private static final String KEY_STOP_CASH = "key_stop_cash";
+    public static final String KEY_NOT_CLEAR = "key_not_clear";
+    public static final String KEY_SAVE_WEIGHT = "key_save_weight";
+    public static final String KEY_AUTO_OBTAIN = "key_auto_obtain";
+    public static final String KEY_CASH_SETTLEMENT = "key_cash_settlement";
+    public static final String KEY_DISTINGUISH = "key_distinguish";
+    public static final String KEY_ICCARD_SETTLEMENT = "key_iccard_settlement";
+    public static final String KEY_STOP_PRINT = "key_stop_print";
+    public static final String KEY_NO_PATCH_SETTLEMENT = "key_no_patch_settlement";
+    public static final String KEY_AUTO_PREV = "key_auto_prev";
+    public static final String KEY_CASH_ROUNDING = "key_cash_rounding";
+    public static final String KEY_STOP_CASH = "key_stop_cash";
 
 
     private View rootView;
