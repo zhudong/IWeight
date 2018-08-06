@@ -27,6 +27,7 @@ import com.axecom.iweight.base.BaseActivity;
 import com.axecom.iweight.base.BusEvent;
 import com.axecom.iweight.bean.SettingsBean;
 import com.axecom.iweight.manager.PrinterManager;
+import com.axecom.iweight.ui.view.BTHelperDialog;
 import com.axecom.iweight.ui.view.CustomDialog;
 import com.axecom.iweight.utils.SPUtils;
 
@@ -34,6 +35,15 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import top.wuhaojie.bthelper.BtHelperClient;
 
 /**
  * Created by Administrator on 2018-5-16.
@@ -42,6 +52,7 @@ import java.util.List;
 public class SettingsActivity extends BaseActivity {
     public static final String KET_SWITCH_SIMPLE_OR_COMPLEX = "key_switch_simple_or_complex";
     private static final String ACTION_NET_CHANGE = "android.net.conn.CONNECTIVITY_CHANGE";
+    ThreadPoolExecutor executor;
 
     private static final int POSITION_SWITCH = 0;
     private static final int POSITION_PATCH = 1;
@@ -56,8 +67,9 @@ public class SettingsActivity extends BaseActivity {
     private static final int POSITION_WIFI = 10;
     private static final int POSITION_LOCAL = 11;
     private static final int POSITION_SYSTEM = 12;
-    private static final int POSITION_WEIGHT = 13;
-    private static final int POSITION_RE_BOOT = 14;
+    private static final int POSITION_BLUETOOTH = 13;
+    private static final int POSITION_WEIGHT = 14;
+    private static final int POSITION_RE_BOOT = 15;
 
     private static final int[] ICONS = {R.drawable.switching_setting,
             R.drawable.patch_setting,
@@ -71,6 +83,7 @@ public class SettingsActivity extends BaseActivity {
             R.drawable.re_connecting,
             R.drawable.wifi_setting,
             R.drawable.local_setting,
+            R.drawable.system_setting,
             R.drawable.system_setting,
             R.drawable.weight_setting,
             R.drawable.re_boot};
@@ -88,6 +101,7 @@ public class SettingsActivity extends BaseActivity {
             R.string.string_wifi_setting_txt,
             R.string.string_local_setting_txt,
             R.string.string_system_setting_txt,
+            R.string.string_bluetooth_setting_txt,
             R.string.string_back_txt,
             R.string.string_reboot_txt};
 
@@ -106,6 +120,9 @@ public class SettingsActivity extends BaseActivity {
             wifiManager.setWifiEnabled(true);
         }
         registerReceiver(netWorkReceiver, new IntentFilter(ACTION_NET_CHANGE));
+        BlockingQueue workQueue = new LinkedBlockingDeque<>();
+        ThreadFactory threadFactory = Executors.defaultThreadFactory();
+        executor = new ThreadPoolExecutor(1, 1, 1, TimeUnit.DAYS, workQueue, threadFactory);
 
         return rootView;
     }
@@ -201,6 +218,22 @@ public class SettingsActivity extends BaseActivity {
                             closeLoading();
                         }
                     }, 2000);
+                    break;
+                case POSITION_BLUETOOTH:
+                    BTHelperDialog.Builder builder = new BTHelperDialog.Builder(SettingsActivity.this);
+                    builder.create(new BTHelperDialog.OnBtnClickListener() {
+
+                        @Override
+                        public void onConfirmed(BtHelperClient.STATUS mCurrStatus, String deviceAddress) {
+                            SPUtils.putString(SettingsActivity.this, BTHelperDialog.KEY_BT_ADDRESS, deviceAddress);
+                            EventBus.getDefault().post(new BusEvent(BusEvent.BLUETOOTH_CONNECTED, true));
+                        }
+
+                        @Override
+                        public void onCanceled(String result) {
+
+                        }
+                    }).show();
                     break;
             }
         }

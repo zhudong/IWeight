@@ -6,7 +6,7 @@ package com.axecom.iweight.utils;
 
 public class ButtonUtils {
     private static long lastClickTime = 0;
-    private static long DIFF = 1500;
+    private static long DIFF = 2000;
     private static int lastButtonId = -1;
 
     /**

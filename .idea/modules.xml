@@ -3,8 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/IWeight.iml" filepath="$PROJECT_DIR$/IWeight.iml" />
+      <module fileurl="file://E:\android workspace\IWeight\IWeight.iml" filepath="E:\android workspace\IWeight\IWeight.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/bthelper/bthelper.iml" filepath="$PROJECT_DIR$/bthelper/bthelper.iml" />
+      <module fileurl="file://E:\android workspace\IWeight\bthelper\bthelper.iml" filepath="E:\android workspace\IWeight\bthelper\bthelper.iml" />
       <module fileurl="file://$PROJECT_DIR$/usbSerialForAndroid/usbSerialForAndroid.iml" filepath="$PROJECT_DIR$/usbSerialForAndroid/usbSerialForAndroid.iml" />
     </modules>
   </component>

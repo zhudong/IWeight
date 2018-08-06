@@ -196,4 +196,7 @@ public interface RequestInterface {
 
     @GET("advertising")
     Observable<BaseEntity<Advertis>> advertising();
+
+    @POST("submitOrders")
+    Observable<BaseEntity> submitOrders(@Body List<SubOrderReqBean> list);
 }

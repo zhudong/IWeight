@@ -1,6 +1,7 @@
 package com.axecom.iweight.ui.activity;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,9 +17,12 @@ import com.axecom.iweight.base.BaseActivity;
 import com.axecom.iweight.base.BaseEntity;
 import com.axecom.iweight.bean.OrderListResultBean;
 import com.axecom.iweight.bean.ReportResultBean;
+import com.axecom.iweight.bean.ScalesCategoryGoods;
 import com.axecom.iweight.conf.Constants;
 import com.axecom.iweight.manager.AccountManager;
 import com.axecom.iweight.manager.MacManager;
+import com.axecom.iweight.manager.PrinterManager;
+import com.axecom.iweight.manager.ThreadPool;
 import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.utils.LogUtils;
 
@@ -342,6 +346,25 @@ public class DataSummaryActivity extends BaseActivity {
         }
     }
 
+    private ThreadPool threadPool;
+
+    public void printerOrder(final int orderType) {
+        threadPool = ThreadPool.getInstantiation();
+        threadPool.addTask(new Runnable() {
+            @Override
+            public void run() {
+                switch (orderType){
+                    case 1:
+                    case 2:
+                        new PrinterManager(DataSummaryActivity.this).printerOrderOfDayAndMonth(dataList);
+                        break;
+                    case 3:
+                        new PrinterManager(DataSummaryActivity.this).printerOrderDetails(orderList);
+                        break;
+                }
+            }
+        });
+    }
 
     class DataAdapter extends BaseAdapter {
         private Context context;

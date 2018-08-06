@@ -93,7 +93,6 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
                     android:layout_weight="1">
@@ -103,7 +102,7 @@
                         android:layout_height="wrap_content"
                         android:text="品种："
                         android:textColor="@color/black"
-                        android:textSize="25sp" />
+                        android:textSize="28sp" />
 
                     <TextView
                         android:id="@+id/main_commodity_name_tv"
@@ -111,7 +110,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textColor="@color/black"
-                        android:textSize="25sp" />
+                        android:textSize="28sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -125,7 +124,7 @@
                         android:layout_height="wrap_content"
                         android:text="单价："
                         android:textColor="@color/black"
-                        android:textSize="25sp" />
+                        android:textSize="28sp" />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -145,7 +144,7 @@
                             android:paddingLeft="5dp"
                             android:paddingRight="5dp"
                             android:textColor="@color/black"
-                            android:textSize="25sp" />
+                            android:textSize="28sp" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -153,7 +152,7 @@
                             android:layout_marginLeft="10dp"
                             android:text="元"
                             android:textColor="@color/black"
-                            android:textSize="25sp" />
+                            android:textSize="28sp" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -178,7 +177,7 @@
                         android:layout_height="wrap_content"
                         android:text="净重："
                         android:textColor="@color/black"
-                        android:textSize="25sp" />
+                        android:textSize="28sp" />
 
                     <TextView
                         android:id="@+id/main_weight_tv"
@@ -187,7 +186,7 @@
                         android:layout_weight="1"
                         android:text="0.000"
                         android:textColor="@color/black"
-                        android:textSize="25sp" />
+                        android:textSize="28sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -204,7 +203,7 @@
                         android:layout_height="wrap_content"
                         android:text="数量："
                         android:textColor="@color/black"
-                        android:textSize="25sp" />
+                        android:textSize="28sp" />
 
                     <EditText
                         android:id="@+id/main_count_et"
@@ -213,7 +212,7 @@
                         android:layout_weight="1"
                         android:hint="1"
                         android:textColor="@color/black"
-                        android:textSize="25sp" />
+                        android:textSize="28sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -221,7 +220,7 @@
                         android:layout_marginRight="20dp"
                         android:text="件"
                         android:textColor="@color/black"
-                        android:textSize="25sp" />
+                        android:textSize="28sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -294,7 +293,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="净重"
+                    android:text="净重/数量"
                     android:textColor="@color/black"
                     android:textSize="25sp" />
 

@@ -402,7 +402,7 @@ public class MainActivity extends BaseActivity {
     }
 
 
-    class WeightThread extends Thread {
+   public class WeightThread extends Thread {
         BluetoothSocket socket;
         InputStream mInputStream;
 
@@ -452,10 +452,14 @@ public class MainActivity extends BaseActivity {
             String weight = msg.obj.toString();
             if (!TextUtils.isEmpty(weight))
                 if (weight.indexOf('.') == -1 || weight.length() - (weight.indexOf(".") + 1) <= 1) {
-                    float weightf = Float.parseFloat(msg.obj.toString().trim()) / 1000;
-                    weightTv.setText(weightf + "kg");
-                    weightTopTv.setText(weightf + "");
-                    setGrandTotalTxt();
+                    try {
+                        float weightf = Float.parseFloat(msg.obj.toString().trim()) / 1000;
+                        weightTv.setText(weightf + "kg");
+                        weightTopTv.setText(weightf + "");
+                        setGrandTotalTxt();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     weightTv.setText(msg.obj.toString().trim() + "kg");
                     weightTopTv.setText(msg.obj.toString().trim());
@@ -489,7 +493,11 @@ public class MainActivity extends BaseActivity {
                 if (weightTopTv.getText().toString().indexOf('.') == -1 || weightTopTv.getText().length() - (weightTopTv.getText().toString().indexOf(".") + 1) <= 1) {
                     grandTotalTv.setText(String.format("%.1f", Float.parseFloat(priceEt.getHint().toString()) * Float.parseFloat(weightTopTv.getText().toString()) / 1000));
                 } else {
-                    grandTotalTv.setText(String.format("%.1f", Float.parseFloat(priceEt.getHint().toString()) * Float.parseFloat(weightTopTv.getText().toString())));
+                    try {
+                        grandTotalTv.setText(String.format("%.1f", Float.parseFloat(priceEt.getHint().toString()) * Float.parseFloat(weightTopTv.getText().toString())));
+                    }catch (Exception e){
+
+                    }
                 }
             }
         }
@@ -580,7 +588,7 @@ public class MainActivity extends BaseActivity {
             }
         }
 
-        weightTotalTv.setText(String.format("%.4f", weightTotalF));
+        weightTotalTv.setText(String.format("%.2f", weightTotalF));
         priceTotalTv.setText(String.format("%.2f", priceTotal));
 //        priceTotalTv.setText(String.format("%.2f", priceTotal));
     }
@@ -590,7 +598,8 @@ public class MainActivity extends BaseActivity {
     public void onEventMainThread(BusEvent event) {
         if (event != null) {
             if (event.getType() == BusEvent.PRINTER_LABEL || event.getType() == BusEvent.POSITION_PATCH) {
-                if(stopPrint){
+                showLoading("支付成功");
+                if (stopPrint) {
                     return;
                 }
                 final String qrcode = event.getmStrParam03();
@@ -600,17 +609,58 @@ public class MainActivity extends BaseActivity {
                         @Override
                         public void run() {
                             try {
-                                bitmap = BitmapFactory.decodeStream(new URL(qrcode).openStream());
+                                String bmpUrl = (String) SPUtils.readObject(MainActivity.this, "print_bitmap");
+                                String price = SPUtils.getString(MainActivity.this, "print_price", "");
+                                bitmap = BitmapFactory.decodeStream(new URL(bmpUrl).openStream());
+                                if (TextUtils.equals(port, "/dev/ttyS4")) {
+                                    btnReceiptPrint(bitmap,
+                                            orderNo,
+                                            payId,
+                                            operatorTv.getText().toString(),
+                                            price,
+                                            (List<ScalesCategoryGoods.HotKeyGoods>) SPUtils.readObject(MainActivity.this, "selectedGoodList"));
+                                } else {
+                                    btnLabelPrint(bitmap,
+                                            orderNo,
+                                            payId,
+                                            operatorTv.getText().toString(),
+                                            price,
+                                            (List<ScalesCategoryGoods.HotKeyGoods>) SPUtils.readObject(MainActivity.this, "selectedGoodList"));
+                                }
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
                         }
                     }).start();
+                } else {
+                    orderNo = event.getStrParam();
+                    payId = event.getStrParam02();
+                    SPUtils.putString(this, "print_orderno", orderNo);
+                    SPUtils.putString(this, "print_payid", payId);
+                    SPUtils.putString(this, "print_price", priceTotalTv.getText().toString());
+                    if (TextUtils.equals(port, "/dev/ttyS4")) {
+                        btnReceiptPrint(bitmap,
+                                orderNo,
+                                payId,
+                                operatorTv.getText().toString(),
+                                priceTotalTv.getText().toString(),
+                                (List<ScalesCategoryGoods.HotKeyGoods>) SPUtils.readObject(this, "selectedGoodList"));
+                    } else {
+                        btnLabelPrint(bitmap,
+                                orderNo,
+                                payId,
+                                operatorTv.getText().toString(),
+                                priceTotalTv.getText().toString(),
+                                (List<ScalesCategoryGoods.HotKeyGoods>) SPUtils.readObject(this, "selectedGoodList"));
+                    }
                 }
-                orderNo = event.getStrParam();
+
+                clear(1);
+            }
+            if (event.getType() == BusEvent.PRINTER_NO_BITMAP) {
+                orderNo = (Math.random() * 9 + 1) * 100000 + getCurrentTime("yyyyMMddHHmmss");
                 payId = event.getStrParam02();
-                SPUtils.putString(this, "print_orderno", orderNo);
-                SPUtils.putString(this, "print_payid", payId);
+                SPUtils.putString(this, "print_price", priceTotalTv.getText().toString());
                 if (TextUtils.equals(port, "/dev/ttyS4")) {
                     btnReceiptPrint(bitmap,
                             orderNo,
@@ -634,10 +684,13 @@ public class MainActivity extends BaseActivity {
                     ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
                     NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
                     if (networkInfo != null && networkInfo.isAvailable()) {
+                        List<SubOrderReqBean> orders = (List<SubOrderReqBean>) SPUtils.readObject(MainActivity.this, "local_order");
+                        submitOrders(orders);
 //                getGoodsData();
 //                getLoginInfo();
                     } else {
                         SPUtils.saveObject(MainActivity.this, KEY_HOT_KEY_GOODS, hotKeyGoodsList);
+
                     }
                 }
             }
@@ -648,7 +701,7 @@ public class MainActivity extends BaseActivity {
                     getGoodsData();
 
 
-                }else {
+                } else {
                     List<ScalesCategoryGoods.HotKeyGoods> saveHotKeys = (List<ScalesCategoryGoods.HotKeyGoods>) SPUtils.readObject(this, KEY_HOT_KEY_GOODS);
                     if (saveHotKeys != null) {
                         hotKeyGoodsList.addAll(saveHotKeys);
@@ -671,6 +724,11 @@ public class MainActivity extends BaseActivity {
                     printerManager.openGpinter();
                 } else {
                     printerManager.usbConn();
+                }
+            }
+            if(event.getType() == BusEvent.BLUETOOTH_CONNECTED){
+                if (event.getBooleanParam()){
+                    executor.submit(new WeightThread());
                 }
             }
         }

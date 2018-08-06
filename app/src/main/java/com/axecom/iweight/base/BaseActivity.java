@@ -508,9 +508,10 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
                     @Override
                     public void run() {
                         List<SubOrderReqBean> orders = (List<SubOrderReqBean>) SPUtils.readObject(BaseActivity.this, "local_order");
-                        for (int i = 0; i < orders.size(); i++) {
-                            submitOrder(orders.get(i));
-                        }
+                        submitOrders(orders);
+//                        for (int i = 0; i < orders.size(); i++) {
+//                            submitOrder(orders.get(i));
+//                        }
                     }
                 }).start();
             }
@@ -518,6 +519,30 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
         if (event.getType() == BusEvent.REPORT_DEVICE_IS_ONLINE) {
             isOnline();
         }
+    }
+
+    public void submitOrders(List<SubOrderReqBean> list){
+        RetrofitFactory.getInstance().API()
+                .submitOrders(list)
+                .compose(this.<BaseEntity>setThread())
+                .subscribe(new Observer<BaseEntity>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                    }
+
+                    @Override
+                    public void onNext(BaseEntity baseEntity) {
+
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                    }
+                });
     }
 
     public void submitOrder(SubOrderReqBean subOrderReqBean) {

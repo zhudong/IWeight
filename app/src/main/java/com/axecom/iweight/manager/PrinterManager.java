@@ -13,6 +13,8 @@ import android.widget.Toast;
 
 import com.axecom.iweight.base.SysApplication;
 import com.axecom.iweight.bean.LocalSettingsBean;
+import com.axecom.iweight.bean.OrderListResultBean;
+import com.axecom.iweight.bean.ReportResultBean;
 import com.axecom.iweight.bean.ScalesCategoryGoods;
 import com.axecom.iweight.ui.activity.LocalSettingsActivity;
 import com.axecom.iweight.utils.SPUtils;
@@ -64,14 +66,16 @@ public class PrinterManager {
         LocalSettingsBean.Value.PrinterPort printerPort = (LocalSettingsBean.Value.PrinterPort) SPUtils.readObject(context, LocalSettingsActivity.KEY_PRINTER_PORT);
         usbName = printerPort.val.split("：")[1];
         UsbDevice usbDevice = Utils.getUsbDeviceFromName(context, usbName);
-        usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
-
-        if (usbManager.hasPermission(usbDevice)) {
-            usbConn(usbDevice);
-        } else {//请求权限
-            mPermissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), 0);
-            usbManager.requestPermission(usbDevice, mPermissionIntent);
+        if (usbDevice != null) {
+            usbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
+            if (usbManager.hasPermission(usbDevice)) {
+                usbConn(usbDevice);
+            } else {//请求权限
+                mPermissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), 0);
+                usbManager.requestPermission(usbDevice, mPermissionIntent);
+            }
         }
+
     }
 
     /**
@@ -87,7 +91,7 @@ public class PrinterManager {
                 .setContext(context)
                 .build();
         mUsbPort = new UsbPort(context, usbDevice);
-       boolean isOpenPort = mUsbPort.openPort();
+        boolean isOpenPort = mUsbPort.openPort();
         if (isOpenPort) {
         }
 
@@ -176,8 +180,8 @@ public class PrinterManager {
 
         // 绘制图片
         Bitmap b = bitmap;
-        if(bitmap!= null)
-        tsc.addBitmap(20, 60, LabelCommand.BITMAP_MODE.OVERWRITE, b.getWidth(), b);
+        if (bitmap != null)
+            tsc.addBitmap(20, 60, LabelCommand.BITMAP_MODE.OVERWRITE, b.getWidth(), b);
         //绘制二维码
 //        tsc.addQRCode(105, 75, LabelCommand.EEC.LEVEL_L, 5, LabelCommand.ROTATION.ROTATION_0, " www.smarnet.cc");
         // 绘制一维条码
@@ -198,6 +202,17 @@ public class PrinterManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void printerOrderOfDayAndMonth(List<ReportResultBean.list> dataList) {
+        EscCommand esc = new EscCommand();
+        esc.addInitializePrinter();
+        esc.addPrintAndFeedLines((byte) 3);
+        esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);
+    }
+
+    public void printerOrderDetails(List<OrderListResultBean.list> orderList) {
+
     }
 
     public void printer(String orderNo, String payId, String operator, String price, Bitmap bitmap, List<ScalesCategoryGoods.HotKeyGoods> seledtedGoodsList) {
@@ -235,7 +250,7 @@ public class PrinterManager {
         esc.addText("------------------------------------------------\n");
         esc.addText("司磅员：" + operator + "\t" + "秤号：" + AccountManager.getInstance().getScalesId() + "\n");
         esc.addText("追溯信息：\n");
-        if(bitmap!= null)
+        if (bitmap != null)
             esc.addRastBitImage(bitmap, 200, 0);
         esc.addGeneratePlus(LabelCommand.FOOT.F5, (byte) 255, (byte) 255);
         esc.addPrintAndFeedLines((byte) 8);

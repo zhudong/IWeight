@@ -17,6 +17,8 @@ public class BusEvent {
     public static final int SAVE_COMMODITY_SUCCESS = 6;
     public static final int SAVE_LOCAL_SUCCESS = 7;
     public static final int POSITION_PATCH = 9;
+    public static final int PRINTER_NO_BITMAP = 10;
+    public static final int BLUETOOTH_CONNECTED = 11;
 
 
     //图片下载完成

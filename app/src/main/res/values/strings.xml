@@ -60,6 +60,7 @@
     <string name="string_wifi_setting_txt">WIFI设置</string>
     <string name="string_local_setting_txt">本机设置</string>
     <string name="string_system_setting_txt">系统设置</string>
+    <string name="string_bluetooth_setting_txt">蓝牙设置</string>
     <string name="string_back_txt">返回</string>
     <string name="string_settings_back_txt">返回设置</string>
     <string name="string_reboot_txt">重启</string>

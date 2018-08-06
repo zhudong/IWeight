@@ -93,6 +93,7 @@ public class HomeActivity extends BaseActivity {
         if (presentationDisplays.length > 1) {
             banner = new BannerActivity(this, presentationDisplays[1]);
         }
+        if(!banner.isShowing())
         banner.show();
         return rootView;
     }

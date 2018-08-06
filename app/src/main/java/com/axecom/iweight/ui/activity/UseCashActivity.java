@@ -26,6 +26,7 @@ import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
 import com.axecom.iweight.base.BaseEntity;
 import com.axecom.iweight.base.BusEvent;
+import com.axecom.iweight.base.SysApplication;
 import com.axecom.iweight.bean.Order;
 import com.axecom.iweight.bean.PayNoticeBean;
 import com.axecom.iweight.bean.SubOrderBean;
@@ -114,6 +115,7 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
         if (presentationDisplays.length > 1) {
             banner = new BannerActivity(this, presentationDisplays[1]);
         }
+        if(!banner.isShowing())
         banner.show();
 
         priceTotalTv.setText(orderBean.getTotal_amount());
@@ -164,7 +166,7 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
                 setEditText(cashEt, position, text);
                 String txt = cashEt.getText().toString();
                 if (!TextUtils.isEmpty(cashEt.getText())) {
-                    priceChangeTv.setText(Float.parseFloat(cashEt.getText().toString()) - Float.parseFloat(priceRoundTv.getText().toString()) + "");
+                    priceChangeTv.setText(String.format("%.1f", Float.parseFloat(cashEt.getText().toString()) - Float.parseFloat(priceRoundTv.getText().toString())));
                 } else {
                     priceChangeTv.setText("");
                 }
@@ -253,7 +255,7 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
                 localOrder.add(orderBean);
                 SPUtils.saveObject(this, "local_order", localOrder);
             }
-            EventBus.getDefault().post(new BusEvent(BusEvent.PRINTER_LABEL, bitmap, "", payId, ""));
+            EventBus.getDefault().post(new BusEvent(BusEvent.PRINTER_NO_BITMAP, "", payId, ""));
             finish();
         }
     }
@@ -286,6 +288,7 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
                             banner.bannerTotalPriceTv.setText(getString(R.string.string_amount_txt3, Float.parseFloat(orderBean.getTotal_amount())));
                             imageLoader.displayImage(subOrderBeanBaseEntity.getData().getCode_img_url(), banner.bannerQRCode, options);
 //                            Glide.with(UseCashActivity.this).load(subOrderBeanBaseEntity.getData().getCode_img_url()).into(banner.bannerQRCode);
+                            SPUtils.saveObject(SysApplication.getContext(), "print_bitmap", subOrderBeanBaseEntity.getData().getPrint_code_img());
 
                             banner.goodsList.clear();
                             banner.goodsList.addAll(orderBean.getGoods());

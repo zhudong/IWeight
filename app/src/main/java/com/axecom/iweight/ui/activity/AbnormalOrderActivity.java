@@ -60,7 +60,7 @@ public class AbnormalOrderActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        getOrders("1", "10", "2");
+        getOrders("1", previousPos + "", "2");
         orderList = new ArrayList<>();
         orderAdapter = new OrderAdapter(this, orderList);
         orderListView.setAdapter(orderAdapter);
