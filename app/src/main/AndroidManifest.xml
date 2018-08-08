@@ -119,7 +119,8 @@
         <activity
             android:name=".ui.activity.CalibrationActivity"
             android:windowSoftInputMode="stateHidden|stateAlwaysHidden" />
-        <activity android:name=".ui.activity.WifiSettingsActivity" />
+        <activity android:name=".ui.activity.WifiSettingsActivity"
+            android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".ui.activity.CommodityManagementActivity" />
         <activity
             android:name=".ui.activity.ModityCommodityActivity"

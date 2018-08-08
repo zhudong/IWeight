@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
@@ -255,6 +256,27 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
                 localOrder.add(orderBean);
                 SPUtils.saveObject(this, "local_order", localOrder);
             }
+//
+//            Order order = new Order();
+//            ModelAdapter<Order> adapter = FlowManager.getModelAdapter(Order.class);
+//            for (SubOrderReqBean.Goods good: orderBean.getGoods()) {
+//                order.token = orderBean.getToken();
+//                order.mac = orderBean.getMac();
+//                order.total_amount = orderBean.getTotal_amount();
+//                order.total_weight = orderBean.getTotal_weight();
+////                order.total_number = orderBean.get();
+//                order.pricing_model = orderBean.getPricing_model();
+//                order.payment_id = orderBean.getPayment_id();
+//                order.create_time = orderBean.getCreate_time();
+//                order.goods_id = good.getGoods_id();
+//                order.goods_weight = good.getGoods_weight();
+//                order.goods_price = good.getGoods_price();
+//                order.goods_number = good.getGoods_number();
+//                order.goods_name = good.getGoods_name();
+//                order.amount = good.getGoods_amount();
+//                adapter.insert(order);
+//            }
+
             EventBus.getDefault().post(new BusEvent(BusEvent.PRINTER_NO_BITMAP, "", payId, ""));
             finish();
         }
@@ -288,7 +310,7 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
                             banner.bannerTotalPriceTv.setText(getString(R.string.string_amount_txt3, Float.parseFloat(orderBean.getTotal_amount())));
                             imageLoader.displayImage(subOrderBeanBaseEntity.getData().getCode_img_url(), banner.bannerQRCode, options);
 //                            Glide.with(UseCashActivity.this).load(subOrderBeanBaseEntity.getData().getCode_img_url()).into(banner.bannerQRCode);
-                            SPUtils.saveObject(SysApplication.getContext(), "print_bitmap", subOrderBeanBaseEntity.getData().getPrint_code_img());
+                            SPUtils.putString(SysApplication.getContext(), "print_bitmap", subOrderBeanBaseEntity.getData().getPrint_code_img());
 
                             banner.goodsList.clear();
                             banner.goodsList.addAll(orderBean.getGoods());
@@ -372,6 +394,7 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
                             if (payNoticeBeanBaseEntity.getData().flag == 0) {
                                 flag = false;
                                 mHandler.removeCallbacks(mRun);
+//                                Toast.makeText(UseCashActivity.this, "支付成功", Toast.LENGTH_SHORT).show();
                                 banner.bannerOrderLayout.setVisibility(View.GONE);
                                 EventBus.getDefault().post(new BusEvent(BusEvent.PRINTER_LABEL, bitmap, order_no, payId, qrCode));
                                 finish();

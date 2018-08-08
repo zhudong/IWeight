@@ -3,6 +3,7 @@ package com.axecom.iweight.ui.activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
 import com.axecom.iweight.base.BaseEntity;
+import com.axecom.iweight.bean.LocalSettingsBean;
 import com.axecom.iweight.bean.OrderListResultBean;
 import com.axecom.iweight.bean.ReportResultBean;
 import com.axecom.iweight.bean.ScalesCategoryGoods;
@@ -25,6 +27,8 @@ import com.axecom.iweight.manager.PrinterManager;
 import com.axecom.iweight.manager.ThreadPool;
 import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.utils.LogUtils;
+import com.axecom.iweight.utils.SPUtils;
+import com.gprinter.io.PortManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +57,7 @@ public class DataSummaryActivity extends BaseActivity {
     private TextView monthReportTv;
     private TextView salesDetailsReportTv;
     private TextView backTv;
+    private TextView printTv;
     private TextView dateTv;
     private List<ReportResultBean.list> dataList;
     private List<OrderListResultBean.list> orderList;
@@ -66,6 +71,11 @@ public class DataSummaryActivity extends BaseActivity {
     private int typeVal = 1;
     private int pageNum = 9;
     private int previousPos = 10;
+    private int orderType = 1;
+    private ReportResultBean reportResultBean;
+    private OrderListResultBean orderListResultBean;
+    private PrinterManager printerManager;
+    private String port = "/dev/ttyS4";
 
     @Override
     public View setInitView() {
@@ -81,6 +91,7 @@ public class DataSummaryActivity extends BaseActivity {
         salesDetailsReportTv = rootView.findViewById(R.id.data_summary_sales_details_report_tv);
         backTv = rootView.findViewById(R.id.data_summary_back_tv);
         dateTv = rootView.findViewById(R.id.data_summary_date_tv);
+        printTv = rootView.findViewById(R.id.data_summary_print_tv);
         countTotalTv = rootView.findViewById(R.id.data_summary_reports_count_total_tv);
         orderAmountTv = rootView.findViewById(R.id.data_summary_order_amount_total_tv);
         weightTotalTv = rootView.findViewById(R.id.data_summary_reports_weight_total_tv);
@@ -99,6 +110,7 @@ public class DataSummaryActivity extends BaseActivity {
 
 
         dayReportTv.setOnClickListener(this);
+        printTv.setOnClickListener(this);
         monthReportTv.setOnClickListener(this);
         salesDetailsReportTv.setOnClickListener(this);
         backTv.setOnClickListener(this);
@@ -117,6 +129,16 @@ public class DataSummaryActivity extends BaseActivity {
 
     @Override
     public void initView() {
+        printerManager = new PrinterManager(this);
+        LocalSettingsBean.Value.PrinterPort printerPort = (LocalSettingsBean.Value.PrinterPort) SPUtils.readObject(this, LocalSettingsActivity.KEY_PRINTER_PORT);
+        if (printerPort != null) {
+            port = printerPort.val.split("：")[1];
+        }
+        if (TextUtils.equals(port, "/dev/ttyS4")) {
+            printerManager.openGpinter();
+        } else {
+            printerManager.usbConn();
+        }
         currentDay = getCurrentTime( "yyyy-MM-dd");
         getReportsList(currentDay, typeVal + "", currentPage + "", pageNum + "");
         dataList = new ArrayList<>();
@@ -143,14 +165,15 @@ public class DataSummaryActivity extends BaseActivity {
                     @Override
                     public void onNext(BaseEntity<ReportResultBean> reportResultBeanBaseEntity) {
                         if (reportResultBeanBaseEntity.isSuccess()) {
+                            reportResultBean = reportResultBeanBaseEntity.getData();
                             dataList.clear();
-                            dataList.addAll(reportResultBeanBaseEntity.getData().list);
+                            dataList.addAll(reportResultBean.list);
                             LogUtils.d("-----list size " + dataList.size());
                             dataAdapter.notifyDataSetChanged();
-                            countTotalTv.setText(reportResultBeanBaseEntity.getData().total_num + "");
-                            weightTotalTv.setText(reportResultBeanBaseEntity.getData().total_weight);
-                            grandTotalTv.setText(reportResultBeanBaseEntity.getData().total_amount);
-                            amountTotalTv.setText(reportResultBeanBaseEntity.getData().total_amount);
+                            countTotalTv.setText(reportResultBean.total_num + "");
+                            weightTotalTv.setText(reportResultBean.total_weight);
+                            grandTotalTv.setText(reportResultBean.total_amount);
+                            amountTotalTv.setText(reportResultBean.total_amount);
                             closeLoading();
                         } else {
                             showLoading(reportResultBeanBaseEntity.getMsg());
@@ -185,7 +208,8 @@ public class DataSummaryActivity extends BaseActivity {
                     @Override
                     public void onNext(BaseEntity<OrderListResultBean> orderListResultBeanBaseEntity) {
                         if (orderListResultBeanBaseEntity.isSuccess()) {
-                            orderList.addAll(orderListResultBeanBaseEntity.getData().list);
+                            orderListResultBean = orderListResultBeanBaseEntity.getData();
+                            orderList.addAll(orderListResultBean.list);
                             salesAdapter.notifyDataSetChanged();
                             scrollTo(salesDetailsListView,salesDetailsListView.getCount() - 1);
 
@@ -212,6 +236,7 @@ public class DataSummaryActivity extends BaseActivity {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.data_summary_day_report_tv:
+                orderType = 1;
                 currentDay = getCurrentTime( "yyyy-MM-dd");
                 dateTv.setText(currentDay);
                 dataList.clear();
@@ -240,6 +265,7 @@ public class DataSummaryActivity extends BaseActivity {
                 getReportsList(currentDay, typeVal + "", currentPage + "", pageNum + "");
                 break;
             case R.id.data_summary_month_report_tv:
+                orderType = 2;
                 currentDay = getCurrentTime( "yyyy-MM");
                 dateTv.setText(currentDay);
                 dataList.clear();
@@ -268,6 +294,7 @@ public class DataSummaryActivity extends BaseActivity {
                 getReportsList(currentDay, typeVal + "", currentPage + "", pageNum + "");
                 break;
             case R.id.data_summary_sales_details_report_tv:
+                orderType = 3;
                 currentDay = getCurrentTime( "yyyy-MM-dd");
                 dateTv.setText(currentDay);
                 orderList.clear();
@@ -343,12 +370,15 @@ public class DataSummaryActivity extends BaseActivity {
                 dateTv.setText(currentDay);
                 getOrderList(currentDay, "1", "10");
                 break;
+            case R.id.data_summary_print_tv:
+                printerOrder(orderType, reportResultBean);
+                break;
         }
     }
 
     private ThreadPool threadPool;
 
-    public void printerOrder(final int orderType) {
+    public void printerOrder(final int orderType, final ReportResultBean reportResultBean) {
         threadPool = ThreadPool.getInstantiation();
         threadPool.addTask(new Runnable() {
             @Override
@@ -356,10 +386,10 @@ public class DataSummaryActivity extends BaseActivity {
                 switch (orderType){
                     case 1:
                     case 2:
-                        new PrinterManager(DataSummaryActivity.this).printerOrderOfDayAndMonth(dataList);
+                        printerManager.printerOrderOfDayAndMonth(dataList,reportResultBean);
                         break;
                     case 3:
-                        new PrinterManager(DataSummaryActivity.this).printerOrderDetails(orderList);
+                        printerManager.printerOrderDetails(orderList,orderListResultBean);
                         break;
                 }
             }
@@ -455,11 +485,11 @@ public class DataSummaryActivity extends BaseActivity {
             if (convertView == null) {
                 convertView = LayoutInflater.from(context).inflate(R.layout.sales_data_item, null);
                 holder = new ViewHolder();
-                holder.orderNumberTv = convertView.findViewById(R.id.sales_data_item_order_number_tv);
+                holder.goodsNameTv = convertView.findViewById(R.id.sales_data_item_goods_name_tv);
                 holder.timeTv = convertView.findViewById(R.id.sales_data_item_time_tv);
                 holder.weightTv = convertView.findViewById(R.id.sales_data_item_weight_tv);
-                holder.grandTotalTv = convertView.findViewById(R.id.sales_data_item_grand_total_tv);
-                holder.incomeTv = convertView.findViewById(R.id.sales_data_item_income_tv);
+                holder.priceNumberTv = convertView.findViewById(R.id.sales_data_item_price_number_tv);
+                holder.totalAmountTv = convertView.findViewById(R.id.sales_data_item_total_amount_tv);
                 holder.payTypeTv = convertView.findViewById(R.id.sales_data_item_pay_type_tv);
                 convertView.setTag(holder);
             } else {
@@ -467,22 +497,22 @@ public class DataSummaryActivity extends BaseActivity {
             }
 
             OrderListResultBean.list item = list.get(position);
-            holder.orderNumberTv.setText(item.order_no);
+            holder.goodsNameTv.setText(item.goods_name);
             holder.timeTv.setText(item.times);
-            holder.weightTv.setText(item.total_weight);
-            holder.grandTotalTv.setText(item.total_amount);
-            holder.incomeTv.setText(item.total_amount);
+            holder.weightTv.setText(item.goods_weight);
+            holder.priceNumberTv.setText(item.price_number);
+            holder.totalAmountTv.setText(item.total_amount);
             holder.payTypeTv.setText(item.payment_type);
 
             return convertView;
         }
 
         class ViewHolder {
-            TextView orderNumberTv;
+            TextView goodsNameTv;
             TextView timeTv;
             TextView weightTv;
-            TextView grandTotalTv;
-            TextView incomeTv;
+            TextView priceNumberTv;
+            TextView totalAmountTv;
             TextView payTypeTv;
         }
     }

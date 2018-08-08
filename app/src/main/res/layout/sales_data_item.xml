@@ -15,6 +15,16 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="ax0382018042716005"
+            android:visibility="gone"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+        <TextView
+            android:id="@+id/sales_data_item_goods_name_tv"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="白菜"
             android:textColor="@color/black"
             android:textSize="20sp" />
         <TextView
@@ -36,7 +46,16 @@
             android:textColor="@color/black"
             android:textSize="20sp" />
         <TextView
-            android:id="@+id/sales_data_item_grand_total_tv"
+            android:id="@+id/sales_data_item_price_number_tv"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="11"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+        <TextView
+            android:id="@+id/sales_data_item_total_amount_tv"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
@@ -45,8 +64,19 @@
             android:textColor="@color/black"
             android:textSize="20sp" />
         <TextView
+            android:id="@+id/sales_data_item_grand_total_tv"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:visibility="gone"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="127.80"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+        <TextView
             android:id="@+id/sales_data_item_income_tv"
             android:layout_width="0dp"
+            android:visibility="gone"
             android:layout_weight="1"
             android:layout_height="match_parent"
             android:gravity="center"

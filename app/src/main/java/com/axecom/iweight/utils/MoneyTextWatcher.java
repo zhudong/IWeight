@@ -48,7 +48,7 @@ public class MoneyTextWatcher implements TextWatcher {
         if (s.toString().startsWith("0")
                 && s.toString().trim().length() > 1) {
             if (!s.toString().substring(1, 2).equals(".")) {
-                editText.setText(s.subSequence(0, 1));
+                editText.setText(s.subSequence(1, 2));
                 editText.setSelection(1);
                 return;
             }

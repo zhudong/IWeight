@@ -12,9 +12,10 @@ public class SubOrderReqBean implements Serializable{
     private String total_weight;
     private String payment_id;
     private String create_time;
-    private List goods;
+    private String pricing_model;
+    private List<Goods> goods;
 
-    public List getGoods() {
+    public List<Goods> getGoods() {
         return goods;
     }
 
@@ -68,6 +69,14 @@ public class SubOrderReqBean implements Serializable{
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getPricing_model() {
+        return pricing_model;
+    }
+
+    public void setPricing_model(String pricing_model) {
+        this.pricing_model = pricing_model;
     }
 
     public static class Goods implements Serializable{

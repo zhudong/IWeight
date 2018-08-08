@@ -17,7 +17,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:padding="10dp"
-        android:visibility="visible"
+        android:visibility="gone"
         android:orientation="horizontal">
 
         <ImageView

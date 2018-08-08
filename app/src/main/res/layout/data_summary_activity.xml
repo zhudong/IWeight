@@ -73,7 +73,7 @@
                     android:background="@drawable/shape_white_btn_bg"
                     android:gravity="center|left"
                     android:paddingLeft="10dp"
-                    android:text="销售明细"
+                    android:text="商品明细"
                     android:textColor="@color/black"
                     android:textSize="20sp" />
 
@@ -90,6 +90,17 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/data_summary_print_tv"
+                    android:layout_width="match_parent"
+                    android:layout_height="65dp"
+                    android:background="@drawable/shape_white_btn_bg"
+                    android:gravity="center"
+                    android:paddingLeft="10dp"
+                    android:text="打印"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
+                <TextView
+                    android:layout_marginTop="-2dp"
                     android:id="@+id/data_summary_back_tv"
                     android:layout_width="match_parent"
                     android:layout_height="65dp"
@@ -175,7 +186,7 @@
                         android:layout_weight="1"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:text="订单号"
+                        android:text="商品名"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
 
@@ -202,7 +213,7 @@
                         android:layout_weight="1"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:text="小计(元)"
+                        android:text="单价/件数"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
 
@@ -211,7 +222,7 @@
                         android:layout_weight="1"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:text="实收(元)"
+                        android:text="小计"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
 

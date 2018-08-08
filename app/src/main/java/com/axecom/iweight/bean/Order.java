@@ -2,10 +2,13 @@ package com.axecom.iweight.bean;
 
 import com.axecom.iweight.base.AppDatabase;
 import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.OneToMany;
 import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.sql.language.Select;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -13,20 +16,28 @@ import java.util.List;
  */
 
 @Table(database = AppDatabase.class)
-public class Order extends BaseModel {
+public class Order extends BaseModel implements Serializable{
     @PrimaryKey(autoincrement = true)//ID自增
     public long id;
 
     @Column
-    public String order_no;
+    public String token;
+    @Column
+    public String mac;
     @Column
     public String total_amount;
     @Column
     public String total_weight;
     @Column
+    public String payment_id;
+    @Column
     public String create_time;
     @Column
-    public String payment_type;
+    public String total_number;
+    @Column
+    public String pricing_model;
+
+
     @Column
     public String goods_id;
     @Column

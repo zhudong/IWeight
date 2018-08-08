@@ -32,8 +32,11 @@ import com.axecom.iweight.base.BaseActivity;
 import com.axecom.iweight.base.BaseEntity;
 import com.axecom.iweight.base.BusEvent;
 import com.axecom.iweight.bean.Advertis;
+import com.axecom.iweight.bean.HotKeyBean;
+import com.axecom.iweight.bean.HotKeyBean_Table;
 import com.axecom.iweight.bean.LocalSettingsBean;
 import com.axecom.iweight.bean.LoginInfo;
+import com.axecom.iweight.bean.Order;
 import com.axecom.iweight.bean.ScalesCategoryGoods;
 import com.axecom.iweight.bean.SubOrderReqBean;
 import com.axecom.iweight.manager.AccountManager;
@@ -51,6 +54,9 @@ import com.axecom.iweight.utils.MoneyTextWatcher;
 import com.axecom.iweight.utils.NetworkUtil;
 import com.axecom.iweight.utils.SPUtils;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
+import com.raizlabs.android.dbflow.config.FlowManager;
+import com.raizlabs.android.dbflow.sql.language.SQLite;
+import com.raizlabs.android.dbflow.structure.ModelAdapter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -69,7 +75,10 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.functions.ObjectHelper;
 import top.wuhaojie.bthelper.BtHelperClient;
+
+import static com.axecom.iweight.ui.activity.SystemSettingsActivity.KEY_PRICEING_METHOD;
 
 public class MainActivity extends BaseActivity {
 
@@ -157,17 +166,7 @@ public class MainActivity extends BaseActivity {
         seledtedGoodsList = new ArrayList<>();
         gridAdapter = new GridAdapter(this, hotKeyGoodsList);
 
-        boolean isConnected = NetworkUtil.isConnected(this);
-        if (isConnected) {
-            getGoodsData();
 
-        } else {
-            List<ScalesCategoryGoods.HotKeyGoods> saveHotKeys = (List<ScalesCategoryGoods.HotKeyGoods>) SPUtils.readObject(this, KEY_HOT_KEY_GOODS);
-            if (saveHotKeys != null) {
-                hotKeyGoodsList.addAll(saveHotKeys);
-                gridAdapter.notifyDataSetChanged();
-            }
-        }
         DisplayManager displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
         Display[] presentationDisplays = displayManager.getDisplays();
         LogUtils.d("------------: " + presentationDisplays.length + "  --- " + presentationDisplays[1].getName());
@@ -218,19 +217,50 @@ public class MainActivity extends BaseActivity {
         });
 
         commoditysGridView.setAdapter(gridAdapter);
+        boolean isConnected = NetworkUtil.isConnected(this);
+//        if (isConnected) {
+            List<HotKeyBean> hotKeyBeanList = SQLite.select().from(HotKeyBean.class).queryList();
+            if (hotKeyBeanList != null && hotKeyBeanList.size() > 0) {
+                ScalesCategoryGoods.HotKeyGoods hotKeyGoods;
+                for (HotKeyBean goods : hotKeyBeanList) {
+                    hotKeyGoods = new ScalesCategoryGoods.HotKeyGoods();
+                    hotKeyGoods.id = goods.id;
+                    hotKeyGoods.cid = goods.cid;
+                    hotKeyGoods.price = goods.price;
+                    hotKeyGoods.weight = goods.weight;
+                    hotKeyGoods.grandTotal = goods.grandTotal;
+                    hotKeyGoods.traceable_code = goods.traceable_code;
+                    hotKeyGoods.is_default = goods.is_default;
+                    hotKeyGoods.name = goods.name;
+                    hotKeyGoodsList.add(hotKeyGoods);
+                }
+                gridAdapter.notifyDataSetChanged();
+            } else {
+                getGoodsData();
+            }
+
+//        } else {
+//            List<ScalesCategoryGoods.HotKeyGoods> saveHotKeys = (List<ScalesCategoryGoods.HotKeyGoods>) SPUtils.readObject(this, KEY_HOT_KEY_GOODS);
+//            if (saveHotKeys != null) {
+//                hotKeyGoodsList.addAll(saveHotKeys);
+//                gridAdapter.notifyDataSetChanged();
+//            }
+//        }
         commoditysGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 //                flag = true;
-//                executor.submit(new WeightThread());
-                selectedGoods = new ScalesCategoryGoods.HotKeyGoods();
-                selectedGoods.id = ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).id;
-                selectedGoods.cid = ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).cid;
-                selectedGoods.price = ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).price;
-                selectedGoods.traceable_code = ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).traceable_code;
-                selectedGoods.is_default = ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).is_default;
-                selectedGoods.name = ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).name;
+////                executor.submit(new WeightThread());
+//                selectedGoods = new ScalesCategoryGoods.HotKeyGoods();
+//                selectedGoods.id = ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).id;
+//                selectedGoods.cid = ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).cid;
+//                selectedGoods.price = ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).price;
+//                selectedGoods.traceable_code = ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).traceable_code;
+//                selectedGoods.is_default = ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).is_default;
+//                selectedGoods.name = ((ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position)).name;
+                selectedGoods = (ScalesCategoryGoods.HotKeyGoods) parent.getAdapter().getItem(position);
                 commodityNameTv.setText(selectedGoods.name);
+                priceEt.setText(selectedGoods.price);
                 float count = 0;
                 if (!TextUtils.isEmpty(countEt.getText())) {
                     count = Float.parseFloat(countEt.getText().toString());
@@ -240,27 +270,33 @@ public class MainActivity extends BaseActivity {
                 if (switchSimpleOrComplex) {
                     grandTotalTv.setText(String.format("%.1f", Float.parseFloat(selectedGoods.price) * count));
                 } else {
-                    if (Float.parseFloat(selectedGoods.price) > 0) {
-                        priceEt.setHint(selectedGoods.price);
-                        if (weightTopTv.getText().toString().indexOf('.') == -1 || weightTopTv.getText().length() - (weightTopTv.getText().toString().indexOf(".") + 1) <= 1) {
-                            grandTotalTv.setText(String.format("%.1f", Float.parseFloat(selectedGoods.price) * Float.parseFloat(weightTopTv.getText().toString()) / 1000));
-                        } else {
-                            grandTotalTv.setText(String.format("%.1f", Float.parseFloat(selectedGoods.price) * Float.parseFloat(weightTopTv.getText().toString())));
-                        }
-                    } else if (!TextUtils.isEmpty(priceEt.getText())) {
-                        if (weightTopTv.getText().toString().indexOf('.') == -1 || weightTopTv.getText().length() - (weightTopTv.getText().toString().indexOf(".") + 1) <= 1) {
-                            grandTotalTv.setText(String.format("%.1f", Float.parseFloat(priceEt.getText().toString()) * Float.parseFloat(weightTopTv.getText().toString()) / 1000));
-                        } else {
-                            grandTotalTv.setText(String.format("%.1f", Float.parseFloat(priceEt.getText().toString()) * Float.parseFloat(weightTopTv.getText().toString())));
-                        }
-                    } else if (!TextUtils.isEmpty(priceEt.getHint())) {
-                        if (weightTopTv.getText().toString().indexOf('.') == -1 || weightTopTv.getText().length() - (weightTopTv.getText().toString().indexOf(".") + 1) <= 1) {
-                            grandTotalTv.setText(String.format("%.1f", Float.parseFloat(priceEt.getHint().toString()) * Float.parseFloat(weightTopTv.getText().toString()) / 1000));
-                        } else {
-                            grandTotalTv.setText(String.format("%.1f", Float.parseFloat(priceEt.getHint().toString()) * Float.parseFloat(weightTopTv.getText().toString())));
-                        }
+                    if (weightTopTv.getText().toString().indexOf('.') == -1 || weightTopTv.getText().length() - (weightTopTv.getText().toString().indexOf(".") + 1) <= 1) {
+                        grandTotalTv.setText(String.format("%.1f", Float.parseFloat(selectedGoods.price) * Float.parseFloat(weightTopTv.getText().toString()) / 1000));
+                    } else {
+                        grandTotalTv.setText(String.format("%.1f", Float.parseFloat(selectedGoods.price) * Float.parseFloat(weightTopTv.getText().toString())));
                     }
                 }
+
+//                    if (Float.parseFloat(selectedGoods.price) > 0) {
+//                        priceEt.setHint(selectedGoods.price);
+//                        if (weightTopTv.getText().toString().indexOf('.') == -1 || weightTopTv.getText().length() - (weightTopTv.getText().toString().indexOf(".") + 1) <= 1) {
+//                            grandTotalTv.setText(String.format("%.1f", Float.parseFloat(selectedGoods.price) * Float.parseFloat(weightTopTv.getText().toString()) / 1000));
+//                        } else {
+//                            grandTotalTv.setText(String.format("%.1f", Float.parseFloat(selectedGoods.price) * Float.parseFloat(weightTopTv.getText().toString())));
+//                        }
+//                    } else if (!TextUtils.isEmpty(priceEt.getText())) {
+//                        if (weightTopTv.getText().toString().indexOf('.') == -1 || weightTopTv.getText().length() - (weightTopTv.getText().toString().indexOf(".") + 1) <= 1) {
+//                            grandTotalTv.setText(String.format("%.1f", Float.parseFloat(priceEt.getText().toString()) * Float.parseFloat(weightTopTv.getText().toString()) / 1000));
+//                        } else {
+//                            grandTotalTv.setText(String.format("%.1f", Float.parseFloat(priceEt.getText().toString()) * Float.parseFloat(weightTopTv.getText().toString())));
+//                        }
+//                    } else if (!TextUtils.isEmpty(priceEt.getHint())) {
+//                        if (weightTopTv.getText().toString().indexOf('.') == -1 || weightTopTv.getText().length() - (weightTopTv.getText().toString().indexOf(".") + 1) <= 1) {
+//                            grandTotalTv.setText(String.format("%.1f", Float.parseFloat(priceEt.getHint().toString()) * Float.parseFloat(weightTopTv.getText().toString()) / 1000));
+//                        } else {
+//                            grandTotalTv.setText(String.format("%.1f", Float.parseFloat(priceEt.getHint().toString()) * Float.parseFloat(weightTopTv.getText().toString())));
+//                        }
+//                    }
 
                 gridAdapter.setCheckedAtPosition(position);
                 gridAdapter.notifyDataSetChanged();
@@ -317,6 +353,7 @@ public class MainActivity extends BaseActivity {
             countLayout.setVisibility(View.VISIBLE);
             weightLayout.setVisibility(View.GONE);
         } else {
+            countEt.setText("0");
             countLayout.setVisibility(View.GONE);
             weightLayout.setVisibility(View.VISIBLE);
         }
@@ -402,7 +439,7 @@ public class MainActivity extends BaseActivity {
     }
 
 
-   public class WeightThread extends Thread {
+    public class WeightThread extends Thread {
         BluetoothSocket socket;
         InputStream mInputStream;
 
@@ -495,7 +532,7 @@ public class MainActivity extends BaseActivity {
                 } else {
                     try {
                         grandTotalTv.setText(String.format("%.1f", Float.parseFloat(priceEt.getHint().toString()) * Float.parseFloat(weightTopTv.getText().toString())));
-                    }catch (Exception e){
+                    } catch (Exception e) {
 
                     }
                 }
@@ -563,8 +600,22 @@ public class MainActivity extends BaseActivity {
                 selectedGoods.weight = weightTopTv.getText().toString();
                 selectedGoods.price = TextUtils.isEmpty(priceEt.getText().toString()) ? priceEt.getHint().toString() : priceEt.getText().toString();
                 selectedGoods.grandTotal = grandTotalTv.getText().toString();
+                selectedGoods.count = countEt.getText().toString();
                 seledtedGoodsList.add(selectedGoods);
                 commodityAdapter.notifyDataSetChanged();
+//                HotKeyBean hotKeyBean = new HotKeyBean();
+//                hotKeyBean.id = selectedGoods.id;
+//                hotKeyBean.cid = selectedGoods.cid;
+//                hotKeyBean.grandTotal = selectedGoods.grandTotal;
+//                hotKeyBean.is_default = selectedGoods.is_default;
+//                hotKeyBean.name = selectedGoods.name;
+//                hotKeyBean.local_price = selectedGoods.price;
+//                hotKeyBean.traceable_code = selectedGoods.traceable_code;
+//                hotKeyBean.weight = selectedGoods.weight;
+                SQLite.update(HotKeyBean.class)
+                        .set(HotKeyBean_Table.price.eq(selectedGoods.price))
+                        .where(HotKeyBean_Table.id.eq(selectedGoods.id))
+                        .query();
                 calculatePrice();
                 clear(3);
                 break;
@@ -599,9 +650,7 @@ public class MainActivity extends BaseActivity {
         if (event != null) {
             if (event.getType() == BusEvent.PRINTER_LABEL || event.getType() == BusEvent.POSITION_PATCH) {
                 showLoading("支付成功");
-                if (stopPrint) {
-                    return;
-                }
+
                 final String qrcode = event.getmStrParam03();
                 bitmap = (Bitmap) event.getParam();
                 if (bitmap == null) {
@@ -609,21 +658,24 @@ public class MainActivity extends BaseActivity {
                         @Override
                         public void run() {
                             try {
-                                String bmpUrl = (String) SPUtils.readObject(MainActivity.this, "print_bitmap");
+                                String bmpUrl = SPUtils.getString(MainActivity.this, "print_bitmap", "");
                                 String price = SPUtils.getString(MainActivity.this, "print_price", "");
+                                String orderNo = SPUtils.getString(MainActivity.this, "print_orderno", "");
+                                String payId = SPUtils.getString(MainActivity.this, "print_payid", "");
+                                String priceTotal = SPUtils.getString(MainActivity.this, "print_price", "");
                                 bitmap = BitmapFactory.decodeStream(new URL(bmpUrl).openStream());
                                 if (TextUtils.equals(port, "/dev/ttyS4")) {
                                     btnReceiptPrint(bitmap,
                                             orderNo,
                                             payId,
-                                            operatorTv.getText().toString(),
+                                            priceTotal,
                                             price,
                                             (List<ScalesCategoryGoods.HotKeyGoods>) SPUtils.readObject(MainActivity.this, "selectedGoodList"));
                                 } else {
                                     btnLabelPrint(bitmap,
                                             orderNo,
                                             payId,
-                                            operatorTv.getText().toString(),
+                                            priceTotal,
                                             price,
                                             (List<ScalesCategoryGoods.HotKeyGoods>) SPUtils.readObject(MainActivity.this, "selectedGoodList"));
                                 }
@@ -633,6 +685,9 @@ public class MainActivity extends BaseActivity {
                         }
                     }).start();
                 } else {
+                    if (stopPrint) {
+                        return;
+                    }
                     orderNo = event.getStrParam();
                     payId = event.getStrParam02();
                     SPUtils.putString(this, "print_orderno", orderNo);
@@ -658,6 +713,7 @@ public class MainActivity extends BaseActivity {
                 clear(1);
             }
             if (event.getType() == BusEvent.PRINTER_NO_BITMAP) {
+                showLoading("支付成功");
                 orderNo = (Math.random() * 9 + 1) * 100000 + getCurrentTime("yyyyMMddHHmmss");
                 payId = event.getStrParam02();
                 SPUtils.putString(this, "print_price", priceTotalTv.getText().toString());
@@ -688,26 +744,26 @@ public class MainActivity extends BaseActivity {
                         submitOrders(orders);
 //                getGoodsData();
 //                getLoginInfo();
-                    } else {
-                        SPUtils.saveObject(MainActivity.this, KEY_HOT_KEY_GOODS, hotKeyGoodsList);
-
                     }
+//                    else {
+//                        SPUtils.saveObject(MainActivity.this, KEY_HOT_KEY_GOODS, hotKeyGoodsList);
+//                    }
                 }
             }
             if (event.getType() == BusEvent.SAVE_COMMODITY_SUCCESS) {
-                SPUtils.saveObject(MainActivity.this, KEY_HOT_KEY_GOODS, hotKeyGoodsList);
-                boolean isConnected = NetworkUtil.isConnected(this);
-                if (isConnected) {
+//                SPUtils.saveObject(MainActivity.this, KEY_HOT_KEY_GOODS, hotKeyGoodsList);
+//                boolean isConnected = NetworkUtil.isConnected(this);
+//                if (isConnected) {
                     getGoodsData();
 
 
-                } else {
-                    List<ScalesCategoryGoods.HotKeyGoods> saveHotKeys = (List<ScalesCategoryGoods.HotKeyGoods>) SPUtils.readObject(this, KEY_HOT_KEY_GOODS);
-                    if (saveHotKeys != null) {
-                        hotKeyGoodsList.addAll(saveHotKeys);
-                        gridAdapter.notifyDataSetChanged();
-                    }
-                }
+//                } else {
+//                    List<ScalesCategoryGoods.HotKeyGoods> saveHotKeys = (List<ScalesCategoryGoods.HotKeyGoods>) SPUtils.readObject(this, KEY_HOT_KEY_GOODS);
+//                    if (saveHotKeys != null) {
+//                        hotKeyGoodsList.addAll(saveHotKeys);
+//                        gridAdapter.notifyDataSetChanged();
+//                    }
+//                }
 //                else {
 //                    if (saveHotKeys != null) {
 //                        hotKeyGoodsList.addAll(saveHotKeys);
@@ -726,8 +782,8 @@ public class MainActivity extends BaseActivity {
                     printerManager.usbConn();
                 }
             }
-            if(event.getType() == BusEvent.BLUETOOTH_CONNECTED){
-                if (event.getBooleanParam()){
+            if (event.getType() == BusEvent.BLUETOOTH_CONNECTED) {
+                if (event.getBooleanParam()) {
                     executor.submit(new WeightThread());
                 }
             }
@@ -812,6 +868,11 @@ public class MainActivity extends BaseActivity {
                 subOrderReqBean.setTotal_weight(weightTotalTv.getText().toString());
                 subOrderReqBean.setCreate_time(getCurrentTime());
                 subOrderReqBean.setGoods(goodsList);
+                if (switchSimpleOrComplex) {
+                    subOrderReqBean.setPricing_model("2");
+                }else {
+                    subOrderReqBean.setPricing_model("1");
+                }
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("orderBean", subOrderReqBean);
                 intent.putExtras(bundle);
@@ -834,9 +895,11 @@ public class MainActivity extends BaseActivity {
 
                     @Override
                     public void onNext(BaseEntity<LoginInfo> loginInfoBaseEntity) {
-                        stallNumberTv.setText(loginInfoBaseEntity.getData().boothNumber);
-                        operatorTv.setText(loginInfoBaseEntity.getData().name);
-                        componyTitleTv.setText(loginInfoBaseEntity.getData().organizationName);
+                        if (loginInfoBaseEntity.isSuccess()) {
+                            stallNumberTv.setText(loginInfoBaseEntity.getData().boothNumber);
+                            operatorTv.setText(loginInfoBaseEntity.getData().name);
+                            componyTitleTv.setText(loginInfoBaseEntity.getData().organizationName);
+                        }
                     }
 
                     @Override
@@ -865,8 +928,22 @@ public class MainActivity extends BaseActivity {
                     @Override
                     public void onNext(BaseEntity<ScalesCategoryGoods> scalesCategoryGoodsBaseEntity) {
                         if (scalesCategoryGoodsBaseEntity.isSuccess()) {
+                            ScalesCategoryGoods hotKeyGoods = scalesCategoryGoodsBaseEntity.getData();
                             hotKeyGoodsList.clear();
                             hotKeyGoodsList.addAll(scalesCategoryGoodsBaseEntity.getData().hotKeyGoods);
+                            HotKeyBean hotKey = new HotKeyBean();
+                            ModelAdapter<HotKeyBean> modelAdapter = FlowManager.getModelAdapter(HotKeyBean.class);
+                            for (ScalesCategoryGoods.HotKeyGoods goods : hotKeyGoodsList) {
+                                hotKey.id = goods.id;
+                                hotKey.cid = goods.cid;
+                                hotKey.grandTotal = goods.grandTotal;
+                                hotKey.is_default = goods.is_default;
+                                hotKey.name = goods.name;
+                                hotKey.price = goods.price;
+                                hotKey.traceable_code = goods.traceable_code;
+                                hotKey.weight = goods.weight;
+                                modelAdapter.insert(hotKey);
+                            }
                             gridAdapter.notifyDataSetChanged();
                         } else {
                             showLoading(scalesCategoryGoodsBaseEntity.getMsg());
@@ -928,10 +1005,14 @@ public class MainActivity extends BaseActivity {
 
             ScalesCategoryGoods.HotKeyGoods goods = list.get(position);
             holder.nameTv.setText(goods.name);
-            if ((goods.weight).indexOf('.') == -1 || goods.weight.length() - (goods.weight.indexOf(".") + 1) <= 1) {
-                holder.weightTv.setText(getString(R.string.string_weight_unit_kg, Float.parseFloat(goods.weight) / 1000 + ""));
+            if (Integer.parseInt(goods.count) > 0) {
+                holder.weightTv.setText(goods.count);
             } else {
-                holder.weightTv.setText(getString(R.string.string_weight_unit_kg, goods.weight));
+                if ((goods.weight).indexOf('.') == -1 || goods.weight.length() - (goods.weight.indexOf(".") + 1) <= 1) {
+                    holder.weightTv.setText(getString(R.string.string_weight_unit_kg, Float.parseFloat(goods.weight) / 1000 + ""));
+                } else {
+                    holder.weightTv.setText(getString(R.string.string_weight_unit_kg, goods.weight));
+                }
             }
             holder.priceTv.setText(goods.price);
             holder.subtotalTv.setText(goods.grandTotal);

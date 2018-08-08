@@ -11,7 +11,7 @@ public class ScalesCategoryGoods<T> extends BaseEntity {
     public List<categoryGoods> categoryGoods;
     public List<Goods> goodsList;
 
-    public static class Goods{
+    public static class Goods {
         public int id;
         public String name;
         public int cid;
@@ -20,18 +20,20 @@ public class ScalesCategoryGoods<T> extends BaseEntity {
         public int is_default;
     }
 
-    public static class HotKeyGoods implements Serializable{
+    public static class HotKeyGoods implements Serializable {
         public int id;
         public String name;
         public int cid;
         public int traceable_code;
         public String price;
+        public String local_price;
         public int is_default;
         public String weight;
+        public String count;
         public String grandTotal;
     }
 
-    public class allGoods{
+    public class allGoods {
         public int id;
         public String name;
         public int cid;
@@ -40,12 +42,12 @@ public class ScalesCategoryGoods<T> extends BaseEntity {
         public int is_default;
     }
 
-    public class categoryGoods{
+    public class categoryGoods {
         public int id;
         public String name;
         public List<child> child;
 
-        public class child  {
+        public class child {
             public int id;
             public String name;
             public int cid;

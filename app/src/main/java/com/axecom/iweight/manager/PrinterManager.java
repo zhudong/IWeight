@@ -204,15 +204,66 @@ public class PrinterManager {
         }
     }
 
-    public void printerOrderOfDayAndMonth(List<ReportResultBean.list> dataList) {
+    public void printerOrderOfDayAndMonth(List<ReportResultBean.list> dataList, ReportResultBean reportResultBean) {
         EscCommand esc = new EscCommand();
         esc.addInitializePrinter();
         esc.addPrintAndFeedLines((byte) 3);
-        esc.addSelectJustification(EscCommand.JUSTIFICATION.CENTER);
+        esc.addSelectJustification(EscCommand.JUSTIFICATION.LEFT);
+        esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF);
+
+//        esc.addText("时间\t笔数\t重量(kg)    小计(元)    实收(元)\n");
+        for (int i = 0; i < dataList.size(); i++) {
+            esc.addText("时间：" + dataList.get(i).times + "\t\t");
+            esc.addText("笔数：" + dataList.get(i).all_num + "\n");
+            esc.addText("重量(kg)：" + dataList.get(i).total_weight + "\t\t");
+            esc.addText("小计(元)：" + dataList.get(i).total_amount + "\n");
+            esc.addText("实收(元)：" + dataList.get(i).total_amount + "\n\n");
+        }
+        esc.addText("总计\n");
+        esc.addText("笔数：" + reportResultBean.total_num + "\t\t");
+        esc.addText("重量(kg)：" + reportResultBean.total_weight + "\n");
+        esc.addText("小计(元)：" + reportResultBean.total_amount + "\t");
+        esc.addText("实收(元)：" + reportResultBean.total_amount + "\n");
+        esc.addGeneratePlus(LabelCommand.FOOT.F5, (byte) 255, (byte) 255);
+        esc.addPrintAndFeedLines((byte) 8);
+        esc.addCutPaper();
+        esc.addQueryPrinterStatus();
+        Vector<Byte> datas = esc.getCommand();
+        try {
+            mSerialPort.writeDataImmediately(datas, 0, datas.size());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void printerOrderDetails(List<OrderListResultBean.list> orderList) {
+    public void printerOrderDetails(List<OrderListResultBean.list> orderList, OrderListResultBean orderListResultBean) {
+        EscCommand esc = new EscCommand();
+        esc.addInitializePrinter();
+        esc.addPrintAndFeedLines((byte) 3);
+        esc.addSelectJustification(EscCommand.JUSTIFICATION.LEFT);
+        esc.addSelectPrintModes(EscCommand.FONT.FONTA, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF, EscCommand.ENABLE.OFF);
 
+        for (int i = 0; i < orderList.size(); i++) {
+                esc.addText("商品名：" + orderList.get(i).goods_name + "\t\t");
+                esc.addText("时间：" + orderList.get(i).times + "\n");
+                esc.addText("重量(kg)：" + orderList.get(i).goods_weight + "\t\t");
+                esc.addText("单价/件数：" + orderList.get(i).price_number + "\n");
+                esc.addText("小计：" + orderList.get(i).total_amount + "\t\t");
+                esc.addText("结算方式：" + orderList.get(i).payment_type + "\n\n");
+        }
+        esc.addText("总计\n");
+        esc.addText("笔数：" + orderListResultBean.total + "\t\t");
+        esc.addText("总计(元)：" + orderListResultBean.total_amount + "\t");
+        esc.addGeneratePlus(LabelCommand.FOOT.F5, (byte) 255, (byte) 255);
+        esc.addPrintAndFeedLines((byte) 8);
+        esc.addCutPaper();
+        esc.addQueryPrinterStatus();
+        Vector<Byte> datas = esc.getCommand();
+        try {
+            mSerialPort.writeDataImmediately(datas, 0, datas.size());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void printer(String orderNo, String payId, String operator, String price, Bitmap bitmap, List<ScalesCategoryGoods.HotKeyGoods> seledtedGoodsList) {

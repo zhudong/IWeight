@@ -225,8 +225,11 @@ public class SettingsActivity extends BaseActivity {
 
                         @Override
                         public void onConfirmed(BtHelperClient.STATUS mCurrStatus, String deviceAddress) {
-                            SPUtils.putString(SettingsActivity.this, BTHelperDialog.KEY_BT_ADDRESS, deviceAddress);
-                            EventBus.getDefault().post(new BusEvent(BusEvent.BLUETOOTH_CONNECTED, true));
+                            if(mCurrStatus == BtHelperClient.STATUS.CONNECTED){
+//                                showLoading("连接成功");
+                                SPUtils.putString(SettingsActivity.this, BTHelperDialog.KEY_BT_ADDRESS, deviceAddress);
+                                EventBus.getDefault().post(new BusEvent(BusEvent.BLUETOOTH_CONNECTED, true));
+                            }
                         }
 
                         @Override

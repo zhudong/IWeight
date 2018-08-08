@@ -110,15 +110,7 @@ public abstract class BaseActivity extends FragmentActivity implements View.OnCl
         this.getWindow().setFlags(FLAG_HOMEKEY_DISPATCHED, FLAG_HOMEKEY_DISPATCHED);//关键代码
         EventBus.getDefault().register(this);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        DisplayManager displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
-//        //获取屏幕数量
-//        Display[] presentationDisplays = displayManager.getDisplays();
-//        LogUtils.d("------------: " + presentationDisplays.length + "  --- " + presentationDisplays[1].getName());
-//        if (presentationDisplays.length > 1) {
-//            banner = new BannerActivity(this, presentationDisplays[1]);
-//        }
-//        banner.show();
-//        advertising();
+
         Intent bannerIntent = new Intent(this, BannerService.class);
         startService(bannerIntent);
         if (Integer.parseInt(android.os.Build.VERSION.SDK) > 19) {

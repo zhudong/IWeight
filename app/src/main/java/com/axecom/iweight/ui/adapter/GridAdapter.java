@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.axecom.iweight.R;
 import com.axecom.iweight.bean.ScalesCategoryGoods;
@@ -57,17 +58,6 @@ public class GridAdapter extends BaseAdapter{
 
         ScalesCategoryGoods.HotKeyGoods goods = list.get(position);
         holder.commodityBtn.setText(goods.name);
-//        convertView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(position == list.size() - 1){
-////                    commoditysGridView.smoothScrollToPosition(5);
-//                }
-//                if(position == list.size() - 2){
-////                    commoditysGridView.smoothScrollToPosition(1);
-//                }
-//            }
-//        });
         if (pos == position) {
             holder.commodityBtn.setBackground(ContextCompat.getDrawable(context, R.drawable.shape_green_bg));
             holder.commodityBtn.setTextColor(ContextCompat.getColor(context, R.color.white));
@@ -79,6 +69,6 @@ public class GridAdapter extends BaseAdapter{
     }
 
     class ViewHolder{
-        Button commodityBtn;
+        TextView commodityBtn;
     }
 }

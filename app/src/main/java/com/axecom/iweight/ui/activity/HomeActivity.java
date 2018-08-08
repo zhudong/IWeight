@@ -24,6 +24,7 @@ import com.axecom.iweight.base.BaseActivity;
 import com.axecom.iweight.base.BaseEntity;
 import com.axecom.iweight.base.BusEvent;
 import com.axecom.iweight.base.SysApplication;
+import com.axecom.iweight.bean.LocalSettingsBean;
 import com.axecom.iweight.bean.LoginData;
 import com.axecom.iweight.bean.WeightBean;
 import com.axecom.iweight.conf.Constants;
@@ -174,12 +175,17 @@ public class HomeActivity extends BaseActivity {
                 SysApplication.getInstances().setGpDriver(driver);
             }
         }
+        LocalSettingsBean.Value.PrinterPort printerPort = (LocalSettingsBean.Value.PrinterPort) SPUtils.readObject(this, LocalSettingsActivity.KEY_PRINTER_PORT);
+        if (printerPort != null) {
+            if (!TextUtils.equals(printerPort.val.split("：")[1], "/dev/ttyS4")) {
+                if (SysApplication.getInstances().getGpDriver() == null) {
+                    showLoading("没有插入打印机，请检查设备");
+                }
+            }
+        }
 
         if (SysApplication.getInstances().getCardDevice() == null) {
             showLoading("没有插入读卡器，请检查设备");
-        }
-        if (SysApplication.getInstances().getGpDriver() == null) {
-            showLoading("没有插入打印机，请检查设备");
         }
     }
 
@@ -257,27 +263,6 @@ public class HomeActivity extends BaseActivity {
                 usbOpen();
                 LogUtils.d("ACTION_USB_DEVICE_ATTACHED");
             }
-        }
-    };
-    private Handler mHanlder = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case 1:
-                    isOnline();
-                    break;
-                default:
-                    break;
-            }
-            super.handleMessage(msg);
-        }
-    };
-
-    private Runnable task = new Runnable() {
-        @Override
-        public void run() {
-            mHanlder.sendEmptyMessage(1);
-            mHanlder.postDelayed(this, 60 * 1000 * 5);
         }
     };
 
@@ -398,7 +383,6 @@ public class HomeActivity extends BaseActivity {
                             } else {
                                 AccountManager.getInstance().savePwd(serialNumber, null);
                             }
-//                            mHanlder.postDelayed(task, 1000);
                             startDDMActivity(MainActivity.class, false);
                         } else {
                             showLoading(loginDataBaseEntity.getMsg());
@@ -433,13 +417,12 @@ public class HomeActivity extends BaseActivity {
                     @Override
                     public void onNext(BaseEntity<LoginData> loginDataBaseEntity) {
                         if (loginDataBaseEntity.isSuccess()) {
-                            AccountManager.getInstance().setAdminToken(loginDataBaseEntity.getData().getAdminToken());
+                            AccountManager.getInstance().saveToken(loginDataBaseEntity.getData().getAdminToken());
                             if (savePwdCtv.isChecked()) {
                                 AccountManager.getInstance().savePwd(serialNumber, password);
                             } else {
                                 AccountManager.getInstance().savePwd(serialNumber, null);
                             }
-//                            mHanlder.postDelayed(task, 1000);
                             startDDMActivity(MainActivity.class, false);
                         } else {
                             showLoading(loginDataBaseEntity.getMsg());
