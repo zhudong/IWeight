@@ -568,11 +568,10 @@ public class MainActivity extends BaseActivity {
         switch (v.getId()) {
             case R.id.main_cash_btn:
                 if (!ButtonUtils.isFastDoubleClick(R.id.main_cash_btn)) {
-                    if (Float.parseFloat(priceTotalTv.getText().toString()) <= 0) {
-                        return;
+                    if (Float.parseFloat(priceTotalTv.getText().toString()) > 0) {
+                        showDialog(v);
                     }
                 }
-                showDialog(v);
                 break;
             case R.id.main_settings_btn:
                 if (!ButtonUtils.isFastDoubleClick(R.id.home_card_number_tv)) {
