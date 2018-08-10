@@ -159,6 +159,7 @@ public class MainActivity extends BaseActivity {
         priceEt = rootView.findViewById(R.id.main_commodity_price_et);
         priceEt.requestFocus();
         priceEt.addTextChangedListener(new MoneyTextWatcher(priceEt));
+        countEt.addTextChangedListener(countTextWatcher);
         disableShowInput(priceEt);
         disableShowInput(countEt);
         getLoginInfo();
@@ -361,6 +362,51 @@ public class MainActivity extends BaseActivity {
 
     }
 
+    private TextWatcher countTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if (s.toString().startsWith("0")
+                    && s.toString().trim().length() > 1) {
+                if (!s.toString().substring(1, 2).equals(".")) {
+                    countEt.setText(s.subSequence(1, 2));
+                    countEt.setSelection(1);
+                    return;
+                }
+            }
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            String temp = s.toString();
+            int posDot = temp.indexOf(".");
+            //小数点之前保留3位数字或者一千
+            if (posDot <= 0){
+                //temp
+                if(temp.equals("10000")){
+                    return;
+                }else{
+                    if(temp.length()<=4){
+                        return;
+                    }else{
+                        s.delete(4, 5);
+                        return;
+                    }
+                }
+            }
+            //保留三位小数
+            if (temp.length() - posDot - 1 > 1)
+            {
+                s.delete(posDot + 2, posDot + 3);
+            }
+
+        }
+    };
 
     public void advertising() {
         RetrofitFactory.getInstance().API()
