@@ -376,6 +376,7 @@ public class MainActivity extends BaseActivity {
                     countEt.setText(s.subSequence(1, 2));
                     countEt.setSelection(1);
                     return;
+                    
                 }
             }
 
