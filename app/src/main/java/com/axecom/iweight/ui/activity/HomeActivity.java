@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckedTextView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
@@ -26,6 +27,8 @@ import com.axecom.iweight.base.BusEvent;
 import com.axecom.iweight.base.SysApplication;
 import com.axecom.iweight.bean.LocalSettingsBean;
 import com.axecom.iweight.bean.LoginData;
+import com.axecom.iweight.bean.User;
+import com.axecom.iweight.bean.User_Table;
 import com.axecom.iweight.bean.WeightBean;
 import com.axecom.iweight.conf.Constants;
 import com.axecom.iweight.manager.AccountManager;
@@ -38,9 +41,13 @@ import com.axecom.iweight.utils.ButtonUtils;
 import com.axecom.iweight.utils.LogUtils;
 import com.axecom.iweight.utils.NetworkUtil;
 import com.axecom.iweight.utils.SPUtils;
+import com.google.gson.internal.LinkedTreeMap;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
+import com.raizlabs.android.dbflow.config.FlowManager;
+import com.raizlabs.android.dbflow.sql.language.SQLite;
+import com.raizlabs.android.dbflow.structure.ModelAdapter;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -70,7 +77,7 @@ public class HomeActivity extends BaseActivity {
     public boolean threadStatus = false;
     UsbSerialPort port;
     public BannerActivity banner = null;
-
+    private String loginType;
     @Override
     public View setInitView() {
         rootView = LayoutInflater.from(this).inflate(R.layout.activity_home, null);
@@ -94,8 +101,8 @@ public class HomeActivity extends BaseActivity {
         if (presentationDisplays.length > 1) {
             banner = new BannerActivity(this, presentationDisplays[1]);
         }
-        if(!banner.isShowing())
-        banner.show();
+        if (!banner.isShowing())
+            banner.show();
         return rootView;
     }
 
@@ -103,6 +110,7 @@ public class HomeActivity extends BaseActivity {
     public void initView() {
         if (NetworkUtil.isConnected(this)) {
             getScalesIdByMac(MacManager.getInstace(this).getMac());
+            getSettingData(MacManager.getInstace(this).getMac());
         }
         usbOpen();
     }
@@ -130,6 +138,7 @@ public class HomeActivity extends BaseActivity {
             boolean available = event.getBooleanParam();
             if (available) {
                 getScalesIdByMac(MacManager.getInstace(this).getMac());
+                getSettingData(MacManager.getInstace(this).getMac());
 //                getScalesIdByMac("80:5e:4f:85:57:9d");
             }
         }
@@ -277,19 +286,28 @@ public class HomeActivity extends BaseActivity {
                 if (NetworkUtil.isConnected(this)) {
                     LinkedHashMap valueMap = (LinkedHashMap) SPUtils.readObject(this, KEY_DEFAULT_LOGIN_TYPE);
                     String value = "";
-                    if(valueMap != null){
+                    if (valueMap != null) {
                         value = valueMap.get("val").toString();
                     }
-                    if (TextUtils.equals(value, "卖方卡")) {
+                    if (TextUtils.equals(loginType, "卖方卡") || TextUtils.isEmpty(loginType)) {
                         clientLogin(weightId + "", cardNumberTv.getText().toString(), pwdTv.getText().toString());
                     } else {
                         staffMemberLogin(weightId + "", cardNumberTv.getText().toString(), pwdTv.getText().toString());
                     }
                 } else {
                     if (!TextUtils.isEmpty(cardNumberTv.getText())) {
-                        if (TextUtils.equals(cardNumberTv.getText(), Constants.ADMIN_CARD_NUMBER) && TextUtils.equals(pwdTv.getText(), Constants.ADMIN_CARD_PWD)) {
-                            startDDMActivity(MainActivity.class, false);
+                        User user = SQLite.select().from(User.class).where(User_Table.card_number.is(cardNumberTv.getText().toString())).querySingle();
+                        if (user != null) {
+                            if (TextUtils.equals(pwdTv.getText(), user.password)) {
+                                AccountManager.getInstance().setAdminToken(user.user_token);
+                                startDDMActivity(MainActivity.class, false);
+                            } else {
+                                Toast.makeText(this, "密码错误", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(this, "没有该卡号", Toast.LENGTH_SHORT).show();
                         }
+
                     }
                 }
                 break;
@@ -324,6 +342,46 @@ public class HomeActivity extends BaseActivity {
                 savePwdCtv.setChecked(!savePwdCtv.isChecked());
                 break;
         }
+    }
+
+    public void getSettingData(String mac) {
+        RetrofitFactory.getInstance().API()
+                .getSettingData("", mac)
+                .compose(this.<BaseEntity>setThread())
+                .subscribe(new Observer<BaseEntity>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(BaseEntity baseEntity) {
+                        LinkedTreeMap valueMap = (LinkedTreeMap) ((LinkedTreeMap) baseEntity.getData()).get("value");
+                        loginType = (((LinkedTreeMap) valueMap.get("default_login_type")).get("val")).toString();
+//                        LinkedHashMap saveMap = (LinkedHashMap) SPUtils.readObject(HomeActivity.this, KEY_DEFAULT_LOGIN_TYPE);
+//                        if (saveMap != null) {
+//                            Long loginDate = (Long) saveMap.get("update_time");
+//                            Long valueDate = ((Double) ((LinkedTreeMap) valueMap.get("default_login_type")).get("update_time")).longValue();
+//                            if (loginDate.compareTo(valueDate) > 0) {
+//                                loginTypeTv.setText((saveMap.get("val")).toString());
+//                            } else {
+//                                loginTypeTv.setText((((LinkedTreeMap) valueMap.get("default_login_type")).get("val")).toString());
+//                            }
+//                        } else {
+//                            loginTypeTv.setText((((LinkedTreeMap) valueMap.get("default_login_type")).get("val")) != null ? (((LinkedTreeMap) valueMap.get("default_login_type")).get("val")).toString() : "");
+//                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
     public void getScalesIdByMac(String mac) {
@@ -383,6 +441,12 @@ public class HomeActivity extends BaseActivity {
                             } else {
                                 AccountManager.getInstance().savePwd(serialNumber, null);
                             }
+                            User user = new User();
+                            ModelAdapter<User> userAdapter = FlowManager.getModelAdapter(User.class);
+                            user.card_number = serialNumber;
+                            user.password = password;
+                            user.user_token = loginDataBaseEntity.getData().getToken();
+                            userAdapter.insert(user);
                             startDDMActivity(MainActivity.class, false);
                         } else {
                             showLoading(loginDataBaseEntity.getMsg());
@@ -423,6 +487,12 @@ public class HomeActivity extends BaseActivity {
                             } else {
                                 AccountManager.getInstance().savePwd(serialNumber, null);
                             }
+                            User user = new User();
+                            ModelAdapter<User> userAdapter = FlowManager.getModelAdapter(User.class);
+                            user.card_number = serialNumber;
+                            user.password = password;
+                            user.user_token = loginDataBaseEntity.getData().getToken();
+                            userAdapter.insert(user);
                             startDDMActivity(MainActivity.class, false);
                         } else {
                             showLoading(loginDataBaseEntity.getMsg());
