@@ -1,0 +1,53 @@
+-- Merging decision tree log ---
+manifest
+ADDED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml:1:1-14:12
+INJECTED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml:1:1-14:12
+INJECTED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml:1:1-14:12
+INJECTED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml:1:1-14:12
+INJECTED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml:1:1-14:12
+INJECTED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml:1:1-14:12
+INJECTED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml:1:1-14:12
+	package
+		ADDED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml:2:11-42
+		INJECTED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml
+		INJECTED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml
+	android:versionName
+		INJECTED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml
+		ADDED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml:1:1-14:12
+		INJECTED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml
+	android:versionCode
+		INJECTED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml
+		ADDED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml:1:1-14:12
+		INJECTED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml:1:11-69
+uses-permission#android.permission.BLUETOOTH
+ADDED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml:4:5-67
+	android:name
+		ADDED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml:4:22-65
+uses-permission#android.permission.BLUETOOTH_ADMIN
+ADDED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml:5:5-73
+	android:name
+		ADDED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml:5:22-71
+application
+ADDED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml:7:5-12:19
+	android:supportsRtl
+		ADDED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml:9:18-44
+	android:label
+		ADDED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml:8:18-50
+	android:allowBackup
+		ADDED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml:7:18-44
+uses-sdk
+INJECTED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml
+INJECTED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml
+INJECTED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml
+INJECTED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml
+		ADDED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml
+		INJECTED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml
+		ADDED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml
+		INJECTED from F:\luofaxin\workspace\Weight0903\bthelper\src\main\AndroidManifest.xml

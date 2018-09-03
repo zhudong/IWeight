@@ -6,8 +6,6 @@ package com.axecom.iweight.base;
 
 public class BusEvent {
 
-
-
     public static final int GO_HOME_CODE = 34;
     public static final int LOGIN_SUCCESS = 10;
     public static final int GO_HOME_PAGE = 42;
