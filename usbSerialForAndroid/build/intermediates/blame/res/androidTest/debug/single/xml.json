@@ -1,5 +1,9 @@
 [
     {
+        "merged": "E:\\worksapce\\IWeight\\usbSerialForAndroid\\build\\intermediates\\res\\merged\\androidTest\\debug\\xml\\device_filter.xml",
+        "source": "E:\\worksapce\\IWeight\\usbSerialForAndroid\\build\\intermediates\\bundles\\debug\\res\\xml\\device_filter.xml"
+    },
+    {
         "merged": "D:\\AndroidProjects\\IWeight\\usbSerialForAndroid\\build\\intermediates\\res\\merged\\androidTest\\debug\\xml\\device_filter.xml",
         "source": "D:\\AndroidProjects\\IWeight\\usbSerialForAndroid\\build\\intermediates\\bundles\\debug\\res\\xml\\device_filter.xml"
     }
