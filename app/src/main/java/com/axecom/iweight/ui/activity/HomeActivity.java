@@ -78,6 +78,7 @@ public class HomeActivity extends BaseActivity {
     UsbSerialPort port;
     public BannerActivity banner = null;
     private String loginType;
+
     @Override
     public View setInitView() {
         rootView = LayoutInflater.from(this).inflate(R.layout.activity_home, null);
@@ -356,8 +357,10 @@ public class HomeActivity extends BaseActivity {
 
                     @Override
                     public void onNext(BaseEntity baseEntity) {
-                        LinkedTreeMap valueMap = (LinkedTreeMap) ((LinkedTreeMap) baseEntity.getData()).get("value");
-                        loginType = (((LinkedTreeMap) valueMap.get("default_login_type")).get("val")).toString();
+                        if (baseEntity.isSuccess()) {
+                            LinkedTreeMap valueMap = (LinkedTreeMap) ((LinkedTreeMap) baseEntity.getData()).get("value");
+                            loginType = (((LinkedTreeMap) valueMap.get("default_login_type")).get("val")).toString();
+                        }
 //                        LinkedHashMap saveMap = (LinkedHashMap) SPUtils.readObject(HomeActivity.this, KEY_DEFAULT_LOGIN_TYPE);
 //                        if (saveMap != null) {
 //                            Long loginDate = (Long) saveMap.get("update_time");
