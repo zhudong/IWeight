@@ -289,7 +289,7 @@ public class HomeActivity extends BaseActivity {
                     if (valueMap != null) {
                         value = valueMap.get("val").toString();
                     }
-                    if (TextUtils.equals(loginType, "卖方卡") || TextUtils.isEmpty(loginType)) {
+                    if (TextUtils.equals(value, "卖方卡") || TextUtils.isEmpty(loginType)) {
                         clientLogin(weightId + "", cardNumberTv.getText().toString(), pwdTv.getText().toString());
                     } else {
                         staffMemberLogin(weightId + "", cardNumberTv.getText().toString(), pwdTv.getText().toString());
