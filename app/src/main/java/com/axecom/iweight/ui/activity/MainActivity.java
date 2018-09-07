@@ -695,7 +695,9 @@ public class MainActivity extends BaseActivity {
     public void onEventMainThread(BusEvent event) {
         if (event != null) {
             if (event.getType() == BusEvent.PRINTER_LABEL || event.getType() == BusEvent.POSITION_PATCH) {
-                showLoading("支付成功");
+                if(event.getType() == BusEvent.PRINTER_LABEL){
+                    showLoading("支付成功");
+                }
 
                 final String qrcode = event.getmStrParam03();
                 bitmap = (Bitmap) event.getParam();
