@@ -47,6 +47,8 @@ public class LocalSettingsActivity extends BaseActivity {
     public static final String KEY_READ_CARD_PORT = "read_card_port";
     public static final String KEY_DATA_DAYS = "data_days";
     public static final String KEY_SCREEN_SLEEP = "screen_sleep";
+    public static final String KEY_SERVER_IP = "server_ip";
+    public static final String KEY_SVERVER_PORT = "server_port";
 
     private View rootView;
 
@@ -262,6 +264,31 @@ public class LocalSettingsActivity extends BaseActivity {
                                 sleepTimeTv.setText(valueMap.screen_off.val);
                             }
 
+                            LocalSettingsBean.Value.ServerIp serverIp = (LocalSettingsBean.Value.ServerIp) SPUtils.readObject(LocalSettingsActivity.this, KEY_SERVER_IP);
+                            if (serverIp != null) {
+                                Long loginDate = Long.parseLong(serverIp.update_time);
+                                Long valueDate = Long.parseLong(valueMap.server_ip.update_time);
+                                if (loginDate.compareTo(valueDate) > 0) {
+                                    serverIPTv.setText(serverIp.val);
+                                } else {
+                                    serverIPTv.setText(valueMap.server_ip.val);
+                                }
+                            } else {
+                                serverIPTv.setText(valueMap.server_ip.val);
+                            }
+                            LocalSettingsBean.Value.ServerPort serverPort = (LocalSettingsBean.Value.ServerPort) SPUtils.readObject(LocalSettingsActivity.this, KEY_SVERVER_PORT);
+                            if (serverPort != null) {
+                                Long loginDate = Long.parseLong(serverPort.update_time);
+                                Long valueDate = Long.parseLong(valueMap.server_port.update_time);
+                                if (loginDate.compareTo(valueDate) > 0) {
+                                    serverPortTv.setText(serverPort.val);
+                                } else {
+                                    serverPortTv.setText(valueMap.server_port.val);
+                                }
+                            } else {
+                                serverPortTv.setText(valueMap.server_port.val);
+                            }
+
                             weightPortChooseTv.setText(((LocalSettingsBean.WeightPort) localSettingsBeanBaseEntity.getData().weight_port.get(0)).val);
 
                             ledPortChooseTv.setText(((LocalSettingsBean.ExternalLedPort) localSettingsBeanBaseEntity.getData().external_led_port.get(0)).val);
@@ -269,8 +296,8 @@ public class LocalSettingsActivity extends BaseActivity {
 
                             weightPortTv.setText(localSettingsBeanBaseEntity.getData().value.weight_port.val);
                             baudRateTv.setText(localSettingsBeanBaseEntity.getData().value.weighing_plate_baud_rate.val);
-                            serverIPTv.setText(localSettingsBeanBaseEntity.getData().value.server_ip.val);
-                            serverPortTv.setText(localSettingsBeanBaseEntity.getData().value.server_port.val);
+//                            serverIPTv.setText(localSettingsBeanBaseEntity.getData().value.server_ip.val);
+//                            serverPortTv.setText(localSettingsBeanBaseEntity.getData().value.server_port.val);
                         } else {
                             showLoading(localSettingsBeanBaseEntity.getMsg());
                         }
@@ -319,6 +346,15 @@ public class LocalSettingsActivity extends BaseActivity {
         valueMap.screen_off.update_time = System.currentTimeMillis() + "";
         valueMap.screen_off.val = sleepTimeTv.getText().toString();
         SPUtils.saveObject(this, KEY_SCREEN_SLEEP, valueMap.screen_off);
+
+        valueMap.server_ip.val = serverIPTv.getText().toString();
+        valueMap.server_ip.update_time = System.currentTimeMillis() + "";
+        SPUtils.saveObject(this, KEY_SERVER_IP, valueMap.server_ip);
+
+        valueMap.server_port.val = serverPortTv.getText().toString();
+        valueMap.server_port.update_time = System.currentTimeMillis() + "";
+        SPUtils.saveObject(this, KEY_SVERVER_PORT, valueMap.server_port);
+
         Settings.System.putInt(getContentResolver(), android.provider.Settings.System.SCREEN_OFF_TIMEOUT, 60 * 1000 * Integer.parseInt(sleepTimeTv.getText().toString()));
         EventBus.getDefault().post(new BusEvent(BusEvent.SAVE_LOCAL_SUCCESS, true));
         showLoading("保存成功");

@@ -227,7 +227,6 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="80dp"
-                    android:layout_marginBottom="20dp"
                     android:layout_marginTop="20dp"
                     android:orientation="horizontal">
 
@@ -238,11 +237,10 @@
                         android:layout_weight="1"
                         android:gravity="right"
                         android:text="服务器ip："
-                        android:textColor="@color/gray_555"
+                        android:textColor="@color/black"
                         android:textSize="20sp" />
 
                     <TextView
-                        android:enabled="false"
                         android:id="@+id/local_settings_server_ip_tv"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
@@ -251,7 +249,36 @@
                         android:background="@drawable/shape_white_btn_bg"
                         android:gravity="center_vertical"
                         android:padding="5dp"
-                        android:textColor="@color/gray_555"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="20dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="1"
+                        android:gravity="right"
+                        android:text="服务器端口："
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/local_settings_server_port_tv"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="10dp"
+                        android:layout_weight="2"
+                        android:background="@drawable/shape_white_btn_bg"
+                        android:gravity="center_vertical"
+                        android:padding="5dp"
+                        android:textColor="@color/black"
                         android:textSize="20sp" />
                 </LinearLayout>
             </LinearLayout>
@@ -459,35 +486,7 @@
                         android:textSize="20sp" />
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="80dp"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginTop="20dp"
-                    android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="5dp"
-                        android:layout_weight="1"
-                        android:gravity="right"
-                        android:text="服务器端口："
-                        android:textColor="@color/gray_555"
-                        android:textSize="20sp" />
-
-                    <TextView
-                        android:id="@+id/local_settings_server_port_tv"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="10dp"
-                        android:layout_weight="2"
-                        android:background="@drawable/shape_white_btn_bg"
-                        android:gravity="center_vertical"
-                        android:padding="5dp"
-                        android:textColor="@color/gray_555"
-                        android:textSize="20sp" />
-                </LinearLayout>
 
             </LinearLayout>
 

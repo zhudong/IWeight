@@ -329,7 +329,7 @@ public class UseCashActivity extends BaseActivity implements View.OnClickListene
                             mRun = new MyRun(subOrderBeanBaseEntity);
                             mHandler.postDelayed(mRun, 1000);
                         } else {
-//                            showLoading(subOrderBeanBaseEntity.getMsg());
+                            showLoading(subOrderBeanBaseEntity.getMsg());
                         }
                     }
 
