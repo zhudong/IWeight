@@ -108,7 +108,7 @@ public class AbnormalOrderActivity extends BaseActivity {
                 scrollTo(orderListView, orderListView.getFirstVisiblePosition() - previousPos <= 0 ? 0 : orderListView.getFirstVisiblePosition() - previousPos);
                 break;
             case R.id.abnormal_order_next_btn:
-                getOrders(++currentPage + "", previousPos + "", "1");
+                getOrders(++currentPage + "", previousPos + "", "2");
                 break;
             case R.id.abnormal_order_back_btn:
                 finish();

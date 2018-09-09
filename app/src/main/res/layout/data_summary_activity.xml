@@ -149,7 +149,7 @@
                         android:layout_weight="1"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:text="重量(kg)"
+                        android:text="重量(kg)/件数"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
 
@@ -213,7 +213,16 @@
                         android:layout_weight="1"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:text="单价/件数"
+                        android:text="单价"
+                        android:textColor="@color/black"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="件数"
                         android:textColor="@color/black"
                         android:textSize="20sp" />
 

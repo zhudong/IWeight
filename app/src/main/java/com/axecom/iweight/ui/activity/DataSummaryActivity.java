@@ -171,7 +171,7 @@ public class DataSummaryActivity extends BaseActivity {
                             LogUtils.d("-----list size " + dataList.size());
                             dataAdapter.notifyDataSetChanged();
                             countTotalTv.setText(reportResultBean.total_num + "");
-                            weightTotalTv.setText(reportResultBean.total_weight);
+                            weightTotalTv.setText(reportResultBean.total_weight+"/"+reportResultBean.total_num);
                             grandTotalTv.setText(reportResultBean.total_amount);
                             amountTotalTv.setText(reportResultBean.total_amount);
                             closeLoading();
@@ -440,7 +440,7 @@ public class DataSummaryActivity extends BaseActivity {
             holder.countTv.setText(item.all_num + "");
             holder.incomeTv.setText(item.total_amount);
             holder.grandTotalTv.setText(item.total_amount);
-            holder.weightTv.setText(item.total_weight);
+            holder.weightTv.setText(item.total_weight + "/" + item.all_num);
             return convertView;
         }
 
@@ -488,7 +488,8 @@ public class DataSummaryActivity extends BaseActivity {
                 holder.goodsNameTv = convertView.findViewById(R.id.sales_data_item_goods_name_tv);
                 holder.timeTv = convertView.findViewById(R.id.sales_data_item_time_tv);
                 holder.weightTv = convertView.findViewById(R.id.sales_data_item_weight_tv);
-                holder.priceNumberTv = convertView.findViewById(R.id.sales_data_item_price_number_tv);
+                holder.pricePriceTv = convertView.findViewById(R.id.sales_data_item_price_number_tv);
+                holder.priceNumberTv = convertView.findViewById(R.id.sales_data_item_number_tv);
                 holder.totalAmountTv = convertView.findViewById(R.id.sales_data_item_total_amount_tv);
                 holder.payTypeTv = convertView.findViewById(R.id.sales_data_item_pay_type_tv);
                 convertView.setTag(holder);
@@ -500,7 +501,8 @@ public class DataSummaryActivity extends BaseActivity {
             holder.goodsNameTv.setText(item.goods_name);
             holder.timeTv.setText(item.times);
             holder.weightTv.setText(item.goods_weight);
-            holder.priceNumberTv.setText(item.price_number);
+            holder.pricePriceTv.setText(item.goods_price);
+            holder.pricePriceTv.setText(item.goods_number);
             holder.totalAmountTv.setText(item.total_amount);
             holder.payTypeTv.setText(item.payment_type);
 
@@ -511,6 +513,7 @@ public class DataSummaryActivity extends BaseActivity {
             TextView goodsNameTv;
             TextView timeTv;
             TextView weightTv;
+            TextView pricePriceTv;
             TextView priceNumberTv;
             TextView totalAmountTv;
             TextView payTypeTv;

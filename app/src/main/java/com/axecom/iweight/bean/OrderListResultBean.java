@@ -14,6 +14,8 @@ public class OrderListResultBean<T> extends BaseEntity {
         public String order_no;
         public String goods_name;
         public String goods_weight;
+        public String goods_price;
+        public String goods_number;
         public String price_number;
         public String total_amount;
         public String times;
