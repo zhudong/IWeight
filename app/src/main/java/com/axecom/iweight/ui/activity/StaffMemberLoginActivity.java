@@ -143,7 +143,6 @@ public class StaffMemberLoginActivity extends BaseActivity {
 
                     @Override
                     public void onNext(BaseEntity<LoginData> loginDataBaseEntity) {
-                        AccountManager.getInstance().saveToken(loginDataBaseEntity.getData().getToken());
                         if (loginDataBaseEntity.isSuccess()) {
                             AccountManager.getInstance().saveToken(loginDataBaseEntity.getData().getToken());
                             setResult(RESULT_OK);

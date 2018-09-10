@@ -70,10 +70,10 @@ public class SettingsActivity extends BaseActivity {
     private static final int POSITION_RE_CONNECTING = 9;
     private static final int POSITION_WIFI = 10;
     private static final int POSITION_LOCAL = 11;
-    private static final int POSITION_SYSTEM = 12;
-    private static final int POSITION_BLUETOOTH = 13;
-    private static final int POSITION_WEIGHT = 14;
-    private static final int POSITION_RE_BOOT = 15;
+    private static final int POSITION_WEIGHT = 12;
+    private static final int POSITION_RE_BOOT = 13;
+    private static final int POSITION_SYSTEM = 14;
+    private static final int POSITION_BLUETOOTH = 15;
 
     private static final int[] ICONS = {R.drawable.switching_setting,
             R.drawable.patch_setting,
@@ -87,10 +87,10 @@ public class SettingsActivity extends BaseActivity {
             R.drawable.re_connecting,
             R.drawable.wifi_setting,
             R.drawable.local_setting,
-            R.drawable.system_setting,
-            R.drawable.system_setting,
             R.drawable.weight_setting,
-            R.drawable.re_boot};
+            R.drawable.re_boot,
+            R.drawable.system_setting,
+            R.drawable.system_setting};
 
     private static final int[] TITLES = {R.string.string_switching_setting_txt,
             R.string.string_patch_setting_txt,
@@ -104,10 +104,10 @@ public class SettingsActivity extends BaseActivity {
             R.string.string_reconnection_txt,
             R.string.string_wifi_setting_txt,
             R.string.string_local_setting_txt,
-            R.string.string_system_setting_txt,
-            R.string.string_bluetooth_setting_txt,
             R.string.string_back_txt,
-            R.string.string_reboot_txt};
+            R.string.string_reboot_txt,
+            R.string.string_system_setting_txt,
+            R.string.string_bluetooth_setting_txt};
 
     private View rootView;
     private GridView settingsGV;
@@ -153,8 +153,8 @@ public class SettingsActivity extends BaseActivity {
             value = valueMap.get("val").toString();
         }
         if (TextUtils.equals(value, "卖方卡") || TextUtils.equals(value, "3.0") || TextUtils.isEmpty(value)) {
-            settngsList.remove(10);
-            settngsList.remove(11);
+            settngsList.remove(15);
+            settngsList.remove(14);
         }
         settingsAdapter = new SettingsAdapter(this, settngsList);
         settingsGV.setAdapter(settingsAdapter);

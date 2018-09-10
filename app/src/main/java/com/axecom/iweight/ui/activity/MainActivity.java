@@ -643,6 +643,13 @@ public class MainActivity extends BaseActivity {
                 if (Float.parseFloat(grandTotalTv.getText().toString()) <= 0) {
                     return;
                 }
+                ScalesCategoryGoods.HotKeyGoods selectedGoods = new ScalesCategoryGoods.HotKeyGoods();
+                selectedGoods.cid = MainActivity.this.selectedGoods.cid;
+                selectedGoods.id = MainActivity.this.selectedGoods.id;
+                selectedGoods.name = MainActivity.this.selectedGoods.name;
+                selectedGoods.traceable_code = MainActivity.this.selectedGoods.traceable_code;
+                selectedGoods.is_default = MainActivity.this.selectedGoods.is_default;
+
                 selectedGoods.weight = weightTopTv.getText().toString();
                 selectedGoods.price = TextUtils.isEmpty(priceEt.getText().toString()) ? priceEt.getHint().toString() : priceEt.getText().toString();
                 selectedGoods.grandTotal = grandTotalTv.getText().toString();
