@@ -173,30 +173,97 @@ public interface RequestInterface {
     @POST("getOrderList")
     Observable<BaseEntity<OrderListResultBean>> getOrderList(@Query("token") String token, @Query("mac") String mac, @Query("dateVal") String dateVal, @Query("page") String page, @Query("pageNum") String pageNum);
 
+    /**
+     * 获取本机设置数据
+     * @param token
+     * @param mac
+     * @return
+     */
     @POST("getScalesSettingData")
     Observable<BaseEntity<LocalSettingsBean>> getScalesSettingData(@Query("token") String token, @Query("mac") String mac);
 
+    /**
+     * 获取异常和作废订单订单数据
+     * @param token
+     * @param mac
+     * @param page
+     * @param pageNum
+     * @param typeVal
+     * @return
+     */
     @POST("getOrders")
     Observable<BaseEntity<UnusualOrdersBean>> getOrders(@Query("token") String token, @Query("mac") String mac, @Query("page") String page, @Query("pageNum") String pageNum, @Query("typeVal") String typeVal);
 
+    /**
+     * 商品管理 保存设置
+     * @param goodsReqBean
+     * @return
+     */
     @POST("storeGoodsData")
     Observable<BaseEntity> storeGoodsData(@Body SaveGoodsReqBean goodsReqBean);
 
+    /**
+     * 订单作废操作
+     * @param token
+     * @param mac
+     * @param orderNo
+     * @return
+     */
     @POST("invalidOrders")
     Observable<BaseEntity> invalidOrders(@Query("token") String token, @Query("mac") String mac, @Query("orderNo") String orderNo);
 
+    /**
+     * 获取基本信息
+     * 地址：/api/getLoginInfo
+     * 类型：POST
+     * 状态码：200
+     * 简介：获取当前登录信息，离线情况下默认为“暂无”
+     * @param token
+     * @param mac
+     * @return
+     */
     @POST("getLoginInfo")
     Observable<BaseEntity<LoginInfo>> getLoginInfo(@Query("token") String token, @Query("mac") String mac);
 
+    /**
+     * 获取最新版本
+     * 地址：/api/getVersion
+     * 类型：GET
+     * 状态码：200
+     * @return
+     */
     @GET("getVersion")
     Observable<BaseEntity<VersionBean>> getVersion();
 
+    /**
+     * 获取订单支付情况
+     * 地址：/api/getPayNotice
+     * 类型：POST
+     * 状态码：200
+     * @param order_no
+     * @return
+     */
     @POST("getPayNotice")
     Observable<BaseEntity<PayNoticeBean>> getPayNotice(@Query("order_no") String order_no);
 
+    /**
+     * 获取广告图片
+     * 地址：/api/advertising
+     * 类型：GET
+     * 状态码：200
+     * @return
+     */
     @GET("advertising")
     Observable<BaseEntity<Advertis>> advertising();
 
+    /**
+     * 批量提交订单
+     * 地址：/api/submitOrders
+     * 类型：POST
+     * 状态码：200
+     * @param list
+     * @return
+     */
     @POST("submitOrders")
     Observable<BaseEntity> submitOrders(@Body List<SubOrderReqBean> list);
 }
