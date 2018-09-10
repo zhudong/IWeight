@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -20,19 +21,26 @@ import com.axecom.iweight.base.BaseActivity;
 import com.axecom.iweight.base.BaseEntity;
 import com.axecom.iweight.base.SysApplication;
 import com.axecom.iweight.bean.LoginData;
+import com.axecom.iweight.bean.User;
 import com.axecom.iweight.manager.AccountManager;
 import com.axecom.iweight.net.RetrofitFactory;
 import com.axecom.iweight.ui.view.SoftKey;
 import com.axecom.iweight.utils.LogUtils;
+import com.axecom.iweight.utils.SPUtils;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
+import com.raizlabs.android.dbflow.config.FlowManager;
+import com.raizlabs.android.dbflow.structure.ModelAdapter;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+
+import static com.axecom.iweight.ui.activity.SystemSettingsActivity.KEY_DEFAULT_LOGIN_TYPE;
 
 public class StaffMemberLoginActivity extends BaseActivity {
 
@@ -44,6 +52,7 @@ public class StaffMemberLoginActivity extends BaseActivity {
     UsbManager manager;
     public boolean threadStatus = false; //线程状态，为了安全终止线程
     UsbSerialPort port;
+    private String loginType;
 
     @Override
     public View setInitView() {
@@ -56,7 +65,6 @@ public class StaffMemberLoginActivity extends BaseActivity {
         softKey = rootView.findViewById(R.id.staff_member_softkey);
         doneBtn = rootView.findViewById(R.id.staff_member_done_btn);
         backBtn = rootView.findViewById(R.id.staff_member_back_btn);
-
 
 
         doneBtn.setOnClickListener(this);
@@ -87,7 +95,7 @@ public class StaffMemberLoginActivity extends BaseActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String text = parent.getAdapter().getItem(position).toString();
-                switch (rootView.findFocus().getId()){
+                switch (rootView.findFocus().getId()) {
                     case R.id.staff_member_number_et:
                         setEditText(numberEt, position, text);
                         break;
@@ -103,7 +111,16 @@ public class StaffMemberLoginActivity extends BaseActivity {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.staff_member_done_btn:
+                LinkedHashMap valueMap = (LinkedHashMap) SPUtils.readObject(this, KEY_DEFAULT_LOGIN_TYPE);
+                String value = "";
+                if (valueMap != null) {
+                    value = valueMap.get("val").toString();
+                }
+                if (TextUtils.equals(value, "卖方卡") || TextUtils.equals(value, "3.0") || TextUtils.isEmpty(value)) {
+                    clientLogin( AccountManager.getInstance().getScalesId() + "", numberEt.getText().toString(), pwdEt.getText().toString());
+                } else {
                 staffMemberLogin(AccountManager.getInstance().getScalesId(), numberEt.getText().toString(), pwdEt.getText().toString());
+                }
                 break;
             case R.id.staff_member_back_btn:
                 setResult(RESULT_CANCELED);
@@ -113,7 +130,44 @@ public class StaffMemberLoginActivity extends BaseActivity {
         }
     }
 
-    public void staffMemberLogin(String scalesId, String serialNumber, String password){
+    public void clientLogin(String scalesId, final String serialNumber, final String password) {
+        RetrofitFactory.getInstance().API()
+                .clientLogin(scalesId, serialNumber, password)
+                .compose(this.<BaseEntity<LoginData>>setThread())
+                .subscribe(new Observer<BaseEntity<LoginData>>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        showLoading();
+
+                    }
+
+                    @Override
+                    public void onNext(BaseEntity<LoginData> loginDataBaseEntity) {
+                        AccountManager.getInstance().saveToken(loginDataBaseEntity.getData().getToken());
+                        if (loginDataBaseEntity.isSuccess()) {
+                            AccountManager.getInstance().saveToken(loginDataBaseEntity.getData().getToken());
+                            setResult(RESULT_OK);
+                            finish();
+                        } else {
+                            showLoading(loginDataBaseEntity.getMsg());
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        closeLoading();
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        closeLoading();
+
+                    }
+                });
+    }
+
+    public void staffMemberLogin(String scalesId, String serialNumber, String password) {
         RetrofitFactory.getInstance().API()
                 .staffMemberLogin(scalesId, serialNumber, password)
                 .compose(this.<BaseEntity<LoginData>>setThread())
@@ -126,11 +180,11 @@ public class StaffMemberLoginActivity extends BaseActivity {
 
                     @Override
                     public void onNext(BaseEntity<LoginData> loginDataBaseEntity) {
-                        if(loginDataBaseEntity.isSuccess()){
+                        if (loginDataBaseEntity.isSuccess()) {
                             AccountManager.getInstance().setAdminToken(loginDataBaseEntity.getData().getAdminToken());
                             setResult(RESULT_OK);
                             finish();
-                        }else {
+                        } else {
                             showLoading(loginDataBaseEntity.getMsg());
                         }
                     }
@@ -230,9 +284,9 @@ public class StaffMemberLoginActivity extends BaseActivity {
                         }
 //                        LogUtils.d("Read " + s + " bytes.");
                         String[] cards = s.split(" ");
-                        String cardNo="";
+                        String cardNo = "";
                         for (int i = 9; i > 5; i--) {
-                            cardNo+=cards[i];
+                            cardNo += cards[i];
                         }
                         final String finalCardNo = cardNo;
                         runOnUiThread(new Runnable() {

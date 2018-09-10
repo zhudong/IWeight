@@ -26,6 +26,7 @@ import com.axecom.iweight.R;
 import com.axecom.iweight.base.BaseActivity;
 import com.axecom.iweight.base.BusEvent;
 import com.axecom.iweight.bean.SettingsBean;
+import com.axecom.iweight.manager.AccountManager;
 import com.axecom.iweight.manager.PrinterManager;
 import com.axecom.iweight.ui.view.BTHelperDialog;
 import com.axecom.iweight.ui.view.CustomDialog;
@@ -34,6 +35,7 @@ import com.axecom.iweight.utils.SPUtils;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -44,6 +46,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import top.wuhaojie.bthelper.BtHelperClient;
+
+import static com.axecom.iweight.ui.activity.SystemSettingsActivity.KEY_DEFAULT_LOGIN_TYPE;
 
 /**
  * Created by Administrator on 2018-5-16.
@@ -138,9 +142,19 @@ public class SettingsActivity extends BaseActivity {
         List<SettingsBean> settngsList = new ArrayList<>();
         for (int i = 0; i < ICONS.length; i++) {
             SettingsBean bean = new SettingsBean();
+            bean.setId(i);
             bean.setIcon(ICONS[i]);
             bean.setTitle(TITLES[i]);
             settngsList.add(bean);
+        }
+        LinkedHashMap valueMap = (LinkedHashMap) SPUtils.readObject(this, KEY_DEFAULT_LOGIN_TYPE);
+        String value = "";
+        if (valueMap != null) {
+            value = valueMap.get("val").toString();
+        }
+        if (TextUtils.equals(value, "卖方卡") || TextUtils.equals(value, "3.0") || TextUtils.isEmpty(value)) {
+            settngsList.remove(10);
+            settngsList.remove(11);
         }
         settingsAdapter = new SettingsAdapter(this, settngsList);
         settingsGV.setAdapter(settingsAdapter);

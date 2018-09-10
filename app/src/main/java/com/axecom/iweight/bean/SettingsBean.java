@@ -5,6 +5,15 @@ package com.axecom.iweight.bean;
  */
 
 public class SettingsBean {
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    private int id;
     private int icon;
     private int title;
 
