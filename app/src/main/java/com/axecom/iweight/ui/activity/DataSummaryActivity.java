@@ -170,7 +170,7 @@ public class DataSummaryActivity extends BaseActivity {
                             dataList.addAll(reportResultBean.list);
                             LogUtils.d("-----list size " + dataList.size());
                             dataAdapter.notifyDataSetChanged();
-                            countTotalTv.setText(reportResultBean.total_num + "");
+                            countTotalTv.setText(reportResultBean.all_number + "");
                             weightTotalTv.setText(reportResultBean.total_weight+"/"+reportResultBean.total_num);
                             grandTotalTv.setText(reportResultBean.total_amount);
                             amountTotalTv.setText(reportResultBean.total_amount);
@@ -440,7 +440,7 @@ public class DataSummaryActivity extends BaseActivity {
             holder.countTv.setText(item.all_num + "");
             holder.incomeTv.setText(item.total_amount);
             holder.grandTotalTv.setText(item.total_amount);
-            holder.weightTv.setText(item.total_weight + "/" + item.all_num);
+            holder.weightTv.setText(item.total_weight + "/" + item.total_amount);
             return convertView;
         }
 
