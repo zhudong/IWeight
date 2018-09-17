@@ -987,6 +987,7 @@ public class MainActivity extends BaseActivity {
                             hotKeyGoodsList.clear();
                             hotKeyGoodsList.addAll(scalesCategoryGoodsBaseEntity.getData().hotKeyGoods);
                             HotKeyBean hotKey = new HotKeyBean();
+                            SQLite.delete(HotKeyBean.class).execute();
                             ModelAdapter<HotKeyBean> modelAdapter = FlowManager.getModelAdapter(HotKeyBean.class);
                             for (ScalesCategoryGoods.HotKeyGoods goods : hotKeyGoodsList) {
                                 hotKey.id = goods.id;

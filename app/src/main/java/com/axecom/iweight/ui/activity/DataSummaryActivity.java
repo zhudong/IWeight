@@ -209,6 +209,7 @@ public class DataSummaryActivity extends BaseActivity {
                     public void onNext(BaseEntity<OrderListResultBean> orderListResultBeanBaseEntity) {
                         if (orderListResultBeanBaseEntity.isSuccess()) {
                             orderListResultBean = orderListResultBeanBaseEntity.getData();
+                            orderList.clear();
                             orderList.addAll(orderListResultBean.list);
                             salesAdapter.notifyDataSetChanged();
                             scrollTo(salesDetailsListView,salesDetailsListView.getCount() - 1);
