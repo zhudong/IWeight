@@ -147,12 +147,9 @@ public class SettingsActivity extends BaseActivity {
             bean.setTitle(TITLES[i]);
             settngsList.add(bean);
         }
-        LinkedHashMap valueMap = (LinkedHashMap) SPUtils.readObject(this, KEY_DEFAULT_LOGIN_TYPE);
-        String value = "";
-        if (valueMap != null) {
-            value = valueMap.get("val").toString();
-        }
-        if (TextUtils.equals(value, "卖方卡") || TextUtils.equals(value, "3.0") || TextUtils.isEmpty(value)) {
+
+        int userType = AccountManager.getInstance().getUserType();
+        if(userType == 1 || userType == 2){
             settngsList.remove(15);
             settngsList.remove(14);
         }

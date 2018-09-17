@@ -111,16 +111,19 @@ public class StaffMemberLoginActivity extends BaseActivity {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.staff_member_done_btn:
-                LinkedHashMap valueMap = (LinkedHashMap) SPUtils.readObject(this, KEY_DEFAULT_LOGIN_TYPE);
-                String value = "";
-                if (valueMap != null) {
-                    value = valueMap.get("val").toString();
-                }
-                if (TextUtils.equals(value, "卖方卡") || TextUtils.equals(value, "3.0") || TextUtils.isEmpty(value)) {
-                    clientLogin( AccountManager.getInstance().getScalesId() + "", numberEt.getText().toString(), pwdEt.getText().toString());
-                } else {
-                staffMemberLogin(AccountManager.getInstance().getScalesId(), numberEt.getText().toString(), pwdEt.getText().toString());
-                }
+                clientLogin( AccountManager.getInstance().getScalesId() + "", numberEt.getText().toString(), pwdEt.getText().toString());
+
+
+//                LinkedHashMap valueMap = (LinkedHashMap) SPUtils.readObject(this, KEY_DEFAULT_LOGIN_TYPE);
+//                String value = "";
+//                if (valueMap != null) {
+//                    value = valueMap.get("val").toString();
+//                }
+//                if (TextUtils.equals(value, "卖方卡") || TextUtils.equals(value, "3.0") || TextUtils.isEmpty(value)) {
+//                    clientLogin( AccountManager.getInstance().getScalesId() + "", numberEt.getText().toString(), pwdEt.getText().toString());
+//                } else {
+//                staffMemberLogin(AccountManager.getInstance().getScalesId(), numberEt.getText().toString(), pwdEt.getText().toString());
+//                }
                 break;
             case R.id.staff_member_back_btn:
                 setResult(RESULT_CANCELED);
@@ -145,6 +148,8 @@ public class StaffMemberLoginActivity extends BaseActivity {
                     public void onNext(BaseEntity<LoginData> loginDataBaseEntity) {
                         if (loginDataBaseEntity.isSuccess()) {
                             AccountManager.getInstance().saveToken(loginDataBaseEntity.getData().getToken());
+                            AccountManager.getInstance().setAdminToken(loginDataBaseEntity.getData().getToken());
+                            AccountManager.getInstance().setUserType(loginDataBaseEntity.getData().getUser_type());
                             setResult(RESULT_OK);
                             finish();
                         } else {

@@ -13,6 +13,15 @@ public class AccountManager {
     private String adminToken;
     private String scalesId;
     private static Context mCtx;
+    private int userType;
+
+    public int getUserType() {
+        return userType;
+    }
+
+    public void setUserType(int userType) {
+        this.userType = userType;
+    }
 
     private AccountManager(){}
 
