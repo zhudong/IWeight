@@ -170,8 +170,8 @@ public class DataSummaryActivity extends BaseActivity {
                             dataList.addAll(reportResultBean.list);
                             LogUtils.d("-----list size " + dataList.size());
                             dataAdapter.notifyDataSetChanged();
-                            countTotalTv.setText(reportResultBean.all_number + "");
-                            weightTotalTv.setText(reportResultBean.total_weight+"/"+reportResultBean.total_num);
+                            countTotalTv.setText(reportResultBean.total_num + "");
+                            weightTotalTv.setText(reportResultBean.total_weight+"/"+reportResultBean.all_number);
                             grandTotalTv.setText(reportResultBean.total_amount);
                             amountTotalTv.setText(reportResultBean.total_amount);
                             closeLoading();
