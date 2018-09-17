@@ -440,7 +440,7 @@ public class DataSummaryActivity extends BaseActivity {
             holder.countTv.setText(item.all_num + "");
             holder.incomeTv.setText(item.total_amount);
             holder.grandTotalTv.setText(item.total_amount);
-            holder.weightTv.setText(item.total_weight + "/" + item.total_amount);
+            holder.weightTv.setText(item.total_weight + "/" + item.total_number);
             return convertView;
         }
 
