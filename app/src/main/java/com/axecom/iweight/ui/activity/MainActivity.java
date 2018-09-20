@@ -66,6 +66,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -220,25 +221,25 @@ public class MainActivity extends BaseActivity {
         commoditysGridView.setAdapter(gridAdapter);
         boolean isConnected = NetworkUtil.isConnected(this);
 //        if (isConnected) {
-            List<HotKeyBean> hotKeyBeanList = SQLite.select().from(HotKeyBean.class).queryList();
-            if (hotKeyBeanList != null && hotKeyBeanList.size() > 0) {
-                ScalesCategoryGoods.HotKeyGoods hotKeyGoods;
-                for (HotKeyBean goods : hotKeyBeanList) {
-                    hotKeyGoods = new ScalesCategoryGoods.HotKeyGoods();
-                    hotKeyGoods.id = goods.id;
-                    hotKeyGoods.cid = goods.cid;
-                    hotKeyGoods.price = goods.price;
-                    hotKeyGoods.weight = goods.weight;
-                    hotKeyGoods.grandTotal = goods.grandTotal;
-                    hotKeyGoods.traceable_code = goods.traceable_code;
-                    hotKeyGoods.is_default = goods.is_default;
-                    hotKeyGoods.name = goods.name;
-                    hotKeyGoodsList.add(hotKeyGoods);
-                }
-                gridAdapter.notifyDataSetChanged();
-            } else {
-                getGoodsData();
+        List<HotKeyBean> hotKeyBeanList = SQLite.select().from(HotKeyBean.class).queryList();
+        if (hotKeyBeanList != null && hotKeyBeanList.size() > 0) {
+            ScalesCategoryGoods.HotKeyGoods hotKeyGoods;
+            for (HotKeyBean goods : hotKeyBeanList) {
+                hotKeyGoods = new ScalesCategoryGoods.HotKeyGoods();
+                hotKeyGoods.id = goods.id;
+                hotKeyGoods.cid = goods.cid;
+                hotKeyGoods.price = goods.price;
+                hotKeyGoods.weight = goods.weight;
+                hotKeyGoods.grandTotal = goods.grandTotal;
+                hotKeyGoods.traceable_code = goods.traceable_code;
+                hotKeyGoods.is_default = goods.is_default;
+                hotKeyGoods.name = goods.name;
+                hotKeyGoodsList.add(hotKeyGoods);
             }
+            gridAdapter.notifyDataSetChanged();
+        } else {
+            getGoodsData();
+        }
 
 //        } else {
 //            List<ScalesCategoryGoods.HotKeyGoods> saveHotKeys = (List<ScalesCategoryGoods.HotKeyGoods>) SPUtils.readObject(this, KEY_HOT_KEY_GOODS);
@@ -376,7 +377,7 @@ public class MainActivity extends BaseActivity {
                     countEt.setText(s.subSequence(1, 2));
                     countEt.setSelection(1);
                     return;
-                    
+
                 }
             }
 
@@ -387,22 +388,21 @@ public class MainActivity extends BaseActivity {
             String temp = s.toString();
             int posDot = temp.indexOf(".");
             //小数点之前保留3位数字或者一千
-            if (posDot <= 0){
+            if (posDot <= 0) {
                 //temp
-                if(temp.equals("10000")){
+                if (temp.equals("10000")) {
                     return;
-                }else{
-                    if(temp.length()<=4){
+                } else {
+                    if (temp.length() <= 4) {
                         return;
-                    }else{
+                    } else {
                         s.delete(4, 5);
                         return;
                     }
                 }
             }
             //保留三位小数
-            if (temp.length() - posDot - 1 > 1)
-            {
+            if (temp.length() - posDot - 1 > 1) {
                 s.delete(posDot + 2, posDot + 3);
             }
 
@@ -702,7 +702,7 @@ public class MainActivity extends BaseActivity {
     public void onEventMainThread(BusEvent event) {
         if (event != null) {
             if (event.getType() == BusEvent.PRINTER_LABEL || event.getType() == BusEvent.POSITION_PATCH) {
-                if(event.getType() == BusEvent.PRINTER_LABEL){
+                if (event.getType() == BusEvent.PRINTER_LABEL) {
                     showLoading("支付成功");
                 }
 
@@ -769,7 +769,9 @@ public class MainActivity extends BaseActivity {
             }
             if (event.getType() == BusEvent.PRINTER_NO_BITMAP) {
                 showLoading("支付成功");
-                orderNo = (Math.random() * 9 + 1) * 100000 + getCurrentTime("yyyyMMddHHmmss");
+//                orderNo = (Math.random() * 9 + 1) * 100000 + getCurrentTime("yyyyMMddHHmmss");
+                int random = (int)(Math.random() * 9 + 1) * 100;
+                orderNo = "AX" + getCurrentTime("yyyyMMddHHmmss") + random;
                 payId = event.getStrParam02();
                 SPUtils.putString(this, "print_price", priceTotalTv.getText().toString());
                 if (TextUtils.equals(port, "/dev/ttyS4")) {
@@ -809,7 +811,7 @@ public class MainActivity extends BaseActivity {
 //                SPUtils.saveObject(MainActivity.this, KEY_HOT_KEY_GOODS, hotKeyGoodsList);
 //                boolean isConnected = NetworkUtil.isConnected(this);
 //                if (isConnected) {
-                    getGoodsData();
+                getGoodsData();
 
 
 //                } else {
@@ -925,7 +927,7 @@ public class MainActivity extends BaseActivity {
                 subOrderReqBean.setGoods(goodsList);
                 if (switchSimpleOrComplex) {
                     subOrderReqBean.setPricing_model("2");
-                }else {
+                } else {
                     subOrderReqBean.setPricing_model("1");
                 }
                 Bundle bundle = new Bundle();

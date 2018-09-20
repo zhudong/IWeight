@@ -400,13 +400,17 @@ public class LocalSettingsActivity extends BaseActivity {
                 }).show();
                 break;
             case R.id.local_settings_read_card_port_choose_btn:
-                chooseBuilder.create(deviceList, readCardPortPos, new ChooseDialog2.OnSelectedListener() {
-                    @Override
-                    public void onSelected(AdapterView<?> parent, View view, int position, long id) {
-                        readCardPortPos = position;
-                        readCardPortChooseTv.setText(((ChooseBean) parent.getAdapter().getItem(position)).getChooseItem());
-                    }
-                }).show();
+                if (deviceList == null) {
+                    showLoading("没有接入外部设备");
+                } else {
+                    chooseBuilder.create(deviceList, readCardPortPos, new ChooseDialog2.OnSelectedListener() {
+                        @Override
+                        public void onSelected(AdapterView<?> parent, View view, int position, long id) {
+                            readCardPortPos = position;
+                            readCardPortChooseTv.setText(((ChooseBean) parent.getAdapter().getItem(position)).getChooseItem());
+                        }
+                    }).show();
+                }
                 break;
             case R.id.local_settings_read_card_type_choose_btn:
                 ChooseBean cardReaderType;
@@ -450,7 +454,7 @@ public class LocalSettingsActivity extends BaseActivity {
                 softBuilder.create(new SoftKeyborad.OnConfirmedListener() {
                     @Override
                     public void onConfirmed(String result) {
-                        if(result.equals("0")){
+                        if (result.equals("0")) {
                             showLoading("最小为1份");
                             return;
                         }
